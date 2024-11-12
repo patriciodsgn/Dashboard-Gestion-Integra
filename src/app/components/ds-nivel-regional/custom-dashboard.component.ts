@@ -15,7 +15,9 @@ import { faChild, faBed, faBaby, faPeopleRoof,
     faHeart,
     faCog,
     faBook,
-    faCalendarDays
+    faCalendarDays,
+    faHome,
+    faShoppingCart
 
 } from '@fortawesome/free-solid-svg-icons';
 import Highcharts from 'highcharts';
@@ -34,6 +36,14 @@ import { WS_ADM_SOLService } from 'src/app/services/WS_ADM_SOL.service';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MapColorsService } from 'src/app/services/map-colors.service';
+
+import OfflineExportingModule from 'highcharts/modules/offline-exporting';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+
+// Asegúrate de inicializar los módulos de exportación
+ExportingModule(Highcharts);
+OfflineExportingModule(Highcharts);
 
 interface MapFeatureData {
   'hc-key': string;
@@ -114,6 +124,11 @@ interface CustomPoint extends Highcharts.Point {
     gru: string;
     cap: string;
 }
+interface TarjetaSuperior {
+  valor: number;
+  titulo: string;
+  icon: IconProp;  // Cambia a IconDefinition si es necesario
+}
 ExportingModule(Highcharts);
 FullScreenModule(Highcharts);
 @Component({
@@ -123,11 +138,14 @@ FullScreenModule(Highcharts);
 })
 export class CustomDashboardComponent implements OnInit, OnDestroy {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
+  public backgroundColor: string = '#F5F5F5'; // Color predeterminado
+  public cardColor: string = '#9E9E9E';       // Color predeterminado para las tarjetas
+  headerColor: string = '#E6F3FF';  // Color de fondo inicial del encabezado
   private chart: Highcharts.Chart | undefined;
   private currentRegionId: number | null = null;
   private readonly destroy$ = new Subject<void>();
   JardinesporRegion: Jardin[] = [];
-RegionSeleccionada: string = '';
+  RegionSeleccionada: string = '';
   fechaActual: string = new Date().toLocaleDateString();
   chartOptions: any;
   
@@ -138,668 +156,7 @@ RegionSeleccionada: string = '';
   informacionAdicional: InfoAdicional[] = [];
   //jardinesData: { [region: string]: { [comuna: string]: number } } = {};
   jardinesData: JardinesPorRegionYComuna = {};
-
-  
-  regionColors: { [key: string]: { [key: string]: string } } = {
-    'Ñuble': {
-        // 1. Chillán
-        'Chillán': '#66B3CC',  // Azul turquesa medio
-        
-        // 2. Chillán Viejo
-        'Chillán Viejo': '#B8E6B8',  // Verde muy claro
-        
-        // 3. San Ignacio
-        'San Ignacio': '#E6B8B8',  // Rosa claro
-        
-        // 4. El Carmen
-        'El Carmen': '#006666',  // Verde azulado oscuro
-        
-        // 5. Yungay
-        'Yungay': '#99CCFF',  // Azul claro
-        
-        // 6. Pemuco
-        'Pemuco': '#B3E6FF',  // Azul muy claro
-        
-        // 7. Bulnes
-        'Bulnes': '#F5E6D3',  // Beige claro
-        
-        // 8. Quillón
-        'Quillón': '#006699',  // Azul marino
-        
-        // 9. San Carlos
-        'San Carlos': '#80D4E6',  // Azul celeste
-        
-        // 10. Ñiquén
-        'Ñiquén': '#006E7F',  // Azul verdoso oscuro
-        
-        // 11. San Fabián
-        'San Fabián': '#4D88FF',  // Azul medio
-        
-        // 12. Coihueco
-        'Coihueco': '#D4D4F5',  // Lila claro
-        
-        // 13. San Nicolás
-        'San Nicolás': '#0077BE',  // Azul medio
-        
-        // 14. Ranquil
-        'Ranquil': '#00A3CC',  // Azul turquesa
-        
-        // 15. Portezuelo
-        'Portezuelo': '#FFA500',  // Naranja/Amarillo
-        
-        // 16. Coelemu
-        'Coelemu': '#98FB98',  // Verde claro
-        
-        // 17. Treguaco
-        'Treguaco': '#90EE90',  // Verde claro
-        
-        // 18. Cobquecura
-        'Cobquecura': '#006699',  // Azul oscuro
-        
-        // 19. Quirihue
-        'Quirihue': '#B3E6FF',  // Azul muy claro
-        
-        // 20. Ninhue
-        'Ninhue': '#663399',  // Púrpura
-        
-        // 21. Portezuela
-        'Pinto': '#00CED1'  // Turquesa
-    },
-    'Arica y Parinacota': {
-        // 1. Arica
-        'Arica': '#E6E6FA',  // Lila/Lavanda
-        
-        // 2. Putre
-        'Putre': '#FFF3D4',  // Amarillo muy claro/crema
-        
-        // 3. General Lagos
-        'General Lagos': '#E8B89B',  // Coral/Melocotón
-        
-        // La zona inferior del mapa
-        'Camarones': '#F5B7B1'  // Rosa salmón
-    },
-    'Magallanes': {
-        // 1. Natales
-        'Natales': '#6AACB8',  // Azul turquesa medio
-        
-        // 2. Punta Arenas
-        'Punta Arenas': '#4A7B3F',  // Verde oliva oscuro
-        
-        // 3. Porvenir
-        'Porvenir': '#90EE90',  // Verde claro
-        
-        // La sección amarilla que aparece en el mapa parece ser parte de Natales
-        // pero con un color distintivo para alguna subregión o área especial
-        'Torres del Paine': '#F4D03F'  // Amarillo - si necesitas incluir esta subdivisión
-    },
-    'Aysén': {
-      // 1. Coyhaique
-      'Coyhaique': '#A5C7D3',  // Azul grisáceo claro
-      
-      // 2. Lago Verde
-      'Lago Verde': '#2D5A4A',  // Verde oscuro azulado
-      
-      // 3. Aysén
-      'Aysén': '#90EE90',  // Verde claro
-      
-      // 4. Cisnes
-      'Cisnes': '#4A7B3F',  // Verde oliva
-      
-      // 5. Guaitecas
-      'Guaitecas': '#F4D03F',  // Amarillo
-      
-      // 6. Río Ibañez
-      'Río Ibañez': '#FFE4D6',  // Rosa muy claro/beige
-      
-      // 7. Cochrane
-      'Cochrane': '#68A568',  // Verde medio
-      
-      // 8. O'Higgins
-      'O\'Higgins': '#1D4B2C'  // Verde oscuro
-  },
-    'Los Lagos': {
-      // 1. Osorno
-      'Osorno': '#B2D8E6',  // Azul claro
-      
-      // 2. San Pablo
-      'San Pablo': '#2D5A27',  // Verde oscuro
-      
-      // 3. Puyehue
-      'Puyehue': '#B8E6B8',  // Verde claro
-      
-      // 4. Purranque
-      'Purranque': '#F4D03F',  // Amarillo
-      
-      // 5. Río Negro
-      'Río Negro': '#F4D03F',  // Amarillo
-      
-      // 6. Puerto Montt
-      'Puerto Montt': '#2D5A27',  // Verde oscuro
-      
-      // 7. Puerto Varas
-      'Puerto Varas': '#1D4B2C',  // Verde oscuro intenso
-      
-      // 8. Cochamó
-      'Cochamó': '#D6EAF8',  // Azul muy claro
-      
-      // 9. Calbuco
-      'Calbuco': '#90EE90',  // Verde claro
-      
-      // 10. Maullín
-      'Maullín': '#F4D03F',  // Amarillo
-      
-      // 11. Los Muermos
-      'Los Muermos': '#5F9EA0',  // Verde azulado
-      
-      // 12. Fresia
-      'Fresia': '#4A7B4A',  // Verde medio oscuro
-      
-      // 13. Llanquihue
-      'Llanquihue': '#A8D5AA',  // Verde medio claro
-      
-      // 14. Frutillar
-      'Frutillar': '#90EE90',  // Verde claro
-      
-      // 15. Castro
-      'Castro': '#98FB98',  // Verde pastel
-      
-      // 16. Ancud
-      'Ancud': '#B8E6B8',  // Verde claro
-      
-      // 17. Quemchi
-      'Quemchi': '#2D5A27',  // Verde oscuro
-      
-      // 18. Dalcahue
-      'Dalcahue': '#4A7B4A',  // Verde medio oscuro
-      
-      // 19. Curaco de Vélez
-      'Curaco de Vélez': '#90EE90',  // Verde claro
-      
-      // 20. Quinchao
-      'Quinchao': '#98FB98',  // Verde pastel
-      
-      // 21. Puqueldón
-      'Puqueldón': '#90EE90',  // Verde claro
-      
-      // 22. Chonchi
-      'Chonchi': '#B8E6B8',  // Verde claro
-      
-      // 23. Queilén
-      'Queilén': '#98FB98',  // Verde pastel
-      
-      // 24. Quellón
-      'Quellón': '#4A7B4A',  // Verde medio oscuro
-      
-      // 25. Hualaihué
-      'Hualaihué': '#F4D03F',  // Amarillo
-      
-      // 26. Futaleufú
-      'Futaleufú': '#2D5A27',  // Verde oscuro
-      
-      // 27. Palena
-      'Palena': '#5F9EA0'  // Verde azulado
-  },
-    'Los Ríos': {
-        // 1. Valdivia
-        'Valdivia': '#9FD4A1',  // Verde claro
-        
-        // 2. Corral
-        'Corral': '#2D5A27',  // Verde oscuro
-        
-        // 3. Lanco
-        'Lanco': '#1D4B2C',  // Verde oscuro
-        
-        // 4. Los Lagos
-        'Los Lagos': '#FFE4D6',  // Rosa muy claro/beige
-        
-        // 5. Máfil
-        'Máfil': '#A8D5AA',  // Verde medio claro
-        
-        // 6. Mariquina
-        'Mariquina': '#F4D03F',  // Amarillo
-        
-        // 7. Paillaco
-        'Paillaco': '#5F9EA0',  // Verde azulado
-        
-        // 8. Panguipulli
-        'Panguipulli': '#90EE90',  // Verde claro brillante
-        
-        // 9. La Unión
-        'La Unión': '#98FB98',  // Verde pastel claro
-        
-        // 10. Futrono
-        'Futrono': '#B8E6B8',  // Verde claro suave
-        
-        // 11. Lago Ranco
-        'Lago Ranco': '#1D4B2C',  // Verde oscuro
-        
-        // 12. Río Bueno
-        'Río Bueno': '#8FBC8F'  // Verde grisáceo medio
-    },
-    'Araucania': {
-        // 1. Angol
-        'Angol': '#90CE90',  // Verde claro
-        
-        // 2. Renaico
-        'Renaico': '#FFE4D6',  // Rosa muy claro
-        
-        // 3. Collipulli
-        'Collipulli': '#B8E6B8',  // Verde claro
-        
-        // 4. Lonquimay
-        'Lonquimay': '#2E8B57',  // Verde oscuro
-        
-        // 5. Curacautín
-        'Curacautín': '#98FB98',  // Verde pastel
-        
-        // 6. Ercilla
-        'Ercilla': '#B8E6B8',  // Verde claro
-        
-        // 7. Victoria
-        'Victoria': '#C1E6C1',  // Verde suave
-        
-        // 8. Traiguén
-        'Traiguén': '#B8E6B8',  // Verde claro
-        
-        // 9. Lumaco
-        'Lumaco': '#0B5345',  // Verde oscuro
-        
-        // 10. Purén
-        'Purén': '#F7DC6F',  // Amarillo
-        
-        // 11. Los Sauces
-        'Los Sauces': '#F7DC6F',  // Amarillo
-        
-        // 12. Temuco
-        'Temuco': '#A3E4D7',  // Verde agua claro
-        
-        // 13. Lautaro
-        'Lautaro': '#FFE4D6',  // Rosa muy claro
-        
-        // 14. Perquenco
-        'Perquenco': '#90CE90',  // Verde claro
-        
-        // 15. Vilcún
-        'Vilcún': '#5F9EA0',  // Verde azulado
-        
-        // 16. Cunco
-        'Cunco': '#F7DC6F',  // Amarillo
-        
-        // 17. Melipeuco
-        'Melipeuco': '#98FB98',  // Verde pastel
-        
-        // 18. Curarrehue
-        'Curarrehue': '#FFE4D6',  // Rosa muy claro
-        
-        // 19. Pucón
-        'Pucón': '#FFE4D6',  // Rosa muy claro
-        
-        // 20. Villarrica
-        'Villarrica': '#AED6F1',  // Azul muy claro
-        
-        // 21. Freire
-        'Freire': '#B8E6B8',  // Verde claro
-        
-        // 22. Pitrufquén
-        'Pitrufquén': '#2E8B57',  // Verde oscuro
-        
-        // 23. Gorbea
-        'Gorbea': '#F7DC6F',  // Amarillo
-        
-        // 24. Loncoche
-        'Loncoche': '#B8E6B8',  // Verde claro
-        
-        // 25. Toltén
-        'Toltén': '#98FB98',  // Verde pastel
-        
-        // 26. Teodoro Schmidt
-        'Teodoro Schmidt': '#2E8B57',  // Verde oscuro
-        
-        // 27. Puerto Saavedra
-        'Puerto Saavedra': '#90CE90',  // Verde claro
-        
-        // 28. Carahue
-        'Carahue': '#B8E6B8',  // Verde claro
-        
-        // 29. Nueva Imperial
-        'Nueva Imperial': '#C1E6C1',  // Verde suave
-        
-        // 30. Galvarino
-        'Galvarino': '#F7DC6F',  // Amarillo
-        
-        // 31. Padre Las Casas
-        'Padre Las Casas': '#2F4F4F',  // Verde muy oscuro
-        
-        // 32. Cholchol
-        'Cholchol': '#AED6F1'  // Azul muy claro
-    },
-    'Biobio': {
-      // 1. Los Ángeles
-      'Los Ángeles': '#0088CC',  // Azul medio
-      
-      // 2. Cabrero
-      'Cabrero': '#003366',  // Azul oscuro
-      
-      // 3. Tucapel
-      'Tucapel': '#E6D5A7',  // Beige claro
-      
-      // 4. Antuco
-      'Antuco': '#E6D5A7',  // Beige claro
-      
-      // 5. Quilleco
-      'Quilleco': '#A8E6F4',  // Azul claro
-      
-      // 6. Santa Bárbara
-      'Santa Bárbara': '#C4B7D7',  // Lila claro
-      
-      // 7. Quilaco
-      'Quilaco': '#6699CC',  // Azul grisáceo
-      
-      // 8. Mulchén
-      'Mulchén': '#99CCDD',  // Azul celeste claro
-      
-      // 9. Negrete
-      'Negrete': '#006699',  // Azul petróleo
-      
-      // 10. Nacimiento
-      'Nacimiento': '#CCE6CC',  // Verde muy claro
-      
-      // 11. Laja
-      'Laja': '#B3D9E6',  // Azul muy claro
-      
-      // 12. San Rosendo
-      'San Rosendo': '#80CCEE',  // Azul celeste
-      
-      // 13. Yumbel
-      'Yumbel': '#0099CC',  // Azul medio brillante
-      
-      // 14. Concepción
-      'Concepción': '#D5E6D5',  // Verde grisáceo claro
-      
-      // 15. Talcahuano
-      'Talcahuano': '#CC9966',  // Marrón claro
-      
-      // 16. Penco
-      'Penco': '#E6D5A7',  // Beige
-      
-      // 17. Tomé
-      'Tomé': '#006699',  // Azul oscuro
-      
-      // 18. Florida
-      'Florida': '#E6D5A7',  // Beige claro
-      
-      // 19. Hualqui
-      'Hualqui': '#0088CC',  // Azul medio
-      
-      // 20. Santa Juana
-      'Santa Juana': '#B3D9E6',  // Azul claro
-      
-      // 21. Lota
-      'Lota': '#99CCDD',  // Azul celeste
-      
-      // 22. Coronel
-      'Coronel': '#CCE6F2',  // Azul muy claro
-      
-      // 23. San Pedro de la Paz
-      'San Pedro de la Paz': '#80CCEE',  // Azul celeste medio
-      
-      // 24. Chiguayante
-      'Chiguayante': '#99CCDD',  // Azul celeste claro
-      
-      // 25. Lebu
-      'Lebu': '#9966CC',  // Púrpura
-      
-      // 26. Arauco
-      'Arauco': '#006699',  // Azul oscuro
-      
-      // 27. Curanilahue
-      'Curanilahue': '#99CCDD',  // Azul celeste
-      
-      // 28. Los Álamos
-      'Los Álamos': '#C4B7D7',  // Lila claro
-      
-      // 29. Cañete
-      'Cañete': '#E6D5A7',  // Beige
-      
-      // 30. Contulmo
-      'Contulmo': '#0066CC',  // Azul brillante
-      
-      // 31. Tirúa
-      'Tirúa': '#99CCDD'  // Azul celeste
-    },
-    'Maule': {
-     // 1. Curicó
-     'Curicó': '#9FE5F0',
-     // 2. Teno
-     'Teno': '#BFF0D4',
-     // 3. Romeral
-     'Romeral': '#E0F7E7',
-     // 4. Molina
-     'Molina': '#AEE1F9',
-     // 5. Sagrada Familia
-     'Sagrada Familia': '#B8C8E7',
-     // 6. Licantén
-     'Licantén': '#FFFFFF',  // Color claro
-     // 7. Vichuquén
-     'Vichuquén': '#5CB3D0',
-     // 8. Rauco
-     'Rauco': '#71C5E7',
-     // 9. Talca
-     'Talca': '#8ED7F2',
-     // 10. Pelarco
-     'Pelarco': '#7CCBE8',
-     // 11. Río Claro
-     'Río Claro': '#69BDE1',
-     // 12. San Clemente
-     'San Clemente': '#A5DEF4',
-     // 13. Maule
-     'Maule': '#88D1ED',
-     // 14. Empedrado
-     'Empedrado': '#7EC9E6',
-     // 15. Pencahue
-     'Pencahue': '#6CBFE3',
-     // 16. Constitución
-     'Constitución': '#5BB2D0',
-     // 17. Curepto
-     'Curepto': '#4DA6C8',
-     // 18. Linares
-     'Linares': '#9DE4EF',
-     // 19. Yerbas Buenas
-     'Yerbas Buenas': '#8AD8EA',
-     // 20. Colbún
-     'Colbún': '#B1EBF6',
-     // 21. Longaví
-     'Longaví': '#93DBED',
-     // 22. Parral
-     'Parral': '#7BCCE7',
-     // 23. Retiro
-     'Retiro': '#B4C4E5',
-     // 24. Villa Alegre
-     'Villa Alegre': '#EBC5D5',
-     // 25. San Javier
-     'San Javier': '#8ED7F2',
-     // 26. Cauquenes
-     'Cauquenes': '#A7E0F5',
-     // 27. Pelluhue
-     'Pelluhue': '#E8D0D8',
-     // 28. Chanco
-     'Chanco': '#EECDD6'
-    },
-    'O’ higgins': {
-    'Rancagua': '#7fc4d4',           // Comuna 1
-    'Graneros': '#80b0a8',           // Comuna 2
-    'Mostazal': '#7aa2b2',           // Comuna 3
-    'Codegua': '#99c7d6',            // Comuna 4
-    'Machalí': '#5e97a3',            // Comuna 5
-    'Olivar': '#98b9d1',             // Comuna 6
-    'Requínoa': '#6cbec1',           // Comuna 7
-    'Rengo': '#7cabc1',              // Comuna 8
-    'Malloa': '#91c7cf',             // Comuna 9
-    'Quinta de Tilcoco': '#aacdc0',  // Comuna 10
-    'San Vicente': '#86b0c2',        // Comuna 11
-    'Pichidegua': '#75d2d8',         // Comuna 12
-    'Peumo': '#99a3b6',              // Comuna 13
-    'Doñihue': '#7aa8bd',            // Comuna 14
-    'Las Cabras': '#88bccb',         // Comuna 15
-    'San Fernando': '#648ea8',       // Comuna 16
-    'Chimbarongo': '#7b8fb2',        // Comuna 17
-    'Nancagua': '#61a0ad',           // Comuna 18
-    'Chépica': '#78a7b0',            // Comuna 19
-    'Santa Cruz': '#6eb8c2',         // Comuna 20
-    'Palmilla': '#95b6b7',           // Comuna 21
-    'Peralillo': '#68b4c2',          // Comuna 22
-    'Pichilemu': '#7cbba6',          // Comuna 23
-    'Navidad': '#b3a585',            // Comuna 24
-    'Litueche': '#a69d78',           // Comuna 25
-    'La Estrella': '#9f8f72',        // Comuna 26
-    'Marchihue': '#9a846f',          // Comuna 27
-    'Paredones': '#9e6c52'           // Comuna 28
-    },
-    'NorPoniente': {
-    'Independencia': '#f4b6c2', // Color para la comuna 1
-    'Conchalí': '#c1c8e4',      // Color para la comuna 2
-    'Huechuraba': '#ffdecc',    // Color para la comuna 3
-    'Recoleta': '#a1d3e2',      // Color para la comuna 4
-    'Estación Central': '#d4a5a5', // Color para la comuna 5
-    'Cerrillos': '#b5e7a0',     // Color para la comuna 6
-    'Maipú': '#c39bd3',         // Color para la comuna 7
-    'Quinta Normal': '#ffcccb', // Color para la comuna 8
-    'Lo Prado': '#b2d8d8',      // Color para la comuna 9
-    'Pudahuel': '#ffd3b6',      // Color para la comuna 10
-    'Cerro Navia': '#98d7c2',   // Color para la comuna 11
-    'Renca': '#f7cac9',         // Color para la comuna 12
-    'Quilicura': '#d5a6bd',     // Color para la comuna 13
-    'Santiago': '#ffe5b4'       // Color para la comuna 14
-    },
-    'Sur Oriente': {
-    'Santiago': '#ffb6c1',            // Comuna 1
-    'Providencia': '#c1c8e4',         // Comuna 2
-    'Lo Barnechea': '#ffab91',        // Comuna 3
-    'Las Condes': '#a1d3e2',          // Comuna 4
-    'Ñuñoa': '#d4a5a5',               // Comuna 5
-    'La Reina': '#b5e7a0',            // Comuna 6
-    'Macul': '#c39bd3',               // Comuna 7
-    'La Florida': '#ffcccb',          // Comuna 8
-    'Peñalolén': '#b2d8d8',           // Comuna 9
-    'San Joaquín': '#ffd3b6',         // Comuna 10
-    'La Granja': '#98d7c2',           // Comuna 11
-    'La Pintana': '#f7cac9',          // Comuna 12
-    'San Ramón': '#d5a6bd',           // Comuna 13
-    'San Miguel': '#ffe5b4',          // Comuna 14
-    'La Cisterna': '#f8b6d1',         // Comuna 15
-    'El Bosque': '#f9dda0',           // Comuna 16
-    'Pedro Aguirre Cerda': '#d1c4e9', // Comuna 17
-    'Lo Espejo': '#bbdefb',           // Comuna 18
-    'Puente Alto': '#b39ddb',         // Comuna 19
-    'Pirque': '#ffcc80',              // Comuna 20
-    'San José de Maipo': '#ffab91'    // Comuna 21
-    },
-    'Rural Norponiente': {
-    'Alhué': '#f8b6d1',              // Comuna 15
-    'Buin': '#f9dda0',               // Comuna 16
-    'Calera de Tango': '#d1c4e9',    // Comuna 17
-    'Colina': '#bbdefb',             // Comuna 18
-    'Curacaví': '#b39ddb',           // Comuna 19
-    'El Monte': '#ffcc80',           // Comuna 20
-    'Isla de Maipo': '#ffab91',      // Comuna 21
-    'Lampa': '#c8e6c9',              // Comuna 22
-    'María Pinto': '#e6ee9c',        // Comuna 23
-    'Melipilla': '#fff59d',          // Comuna 24
-    'Padre Hurtado': '#ffccbc',      // Comuna 25
-    'Paine': '#dcedc8',              // Comuna 26
-    'Peñaflor': '#f48fb1',           // Comuna 27
-    'San Pedro': '#ce93d8',          // Comuna 28
-    'Talagante': '#b0bec5',          // Comuna 29
-    'Til Til': '#ffe082',            // Comuna 30
-    'San Bernardo': '#c5e1a5'        // Comuna 31
-    },
-    'Tarapacá': {
-      'Iquique': '#f4b6c2',
-      'Alto Hospicio': '#c1c8e4',
-      'Pozo Almonte': '#f7cac9',
-      'Pica': '#ffdecc',
-      'Camiña': '#a1d3e2',
-      'Colchane': '#d4a5a5'
-    },
-    'Antofagasta': {
-      'Antofagasta': '#E8D0C1',
-      'María Elena': '#F2A594',
-      'Mejillones': '#FFC4AD',
-      'Sierra Gorda': '#E6DCEF',
-      'Taltal': '#D5A4CC',
-      'Tocopilla': '#7EBCB6',
-      'Calama': '#E88B83',
-      'San Pedro de Atacama': '#F2B998'
-    },
-    'Atacama': {
-      'Copiapó': '#d1a3a4',
-      'Caldera': '#a4c4b5',
-      'Chañaral': '#f2b6b6',
-      'Diego de Almagro': '#f4c7a1',
-      'Vallenar': '#f3e2c6',
-      'Huasco': '#e8d3b9',
-      'Freirina': '#c6e2e8',
-      'Tierra Amarilla': '#e1b0a2',
-      'Alto del Carmen': '#f4a4b5'
-    },
-    'Coquimbo': {
-      'La Serena': '#d9a789',
-      'Coquimbo': '#b68578',
-      'Andacollo': '#d1a7cb',
-      'La Higuera': '#c8b39e',
-      'Vicuña': '#d4a6a5',
-      'Paihuano': '#e3b7af',
-      'Monte Patria': '#d8b1a4',
-      'Combarbalá': '#b98b85',
-      'Ovalle': '#bf7265',
-      'Punitaqui': '#d09c93',
-      'Río Hurtado': '#a2b9b4',
-      'Salamanca': '#e28f8f',
-      'Illapel': '#cf7474',
-      'Los Vilos': '#b9a99d',
-      'Canela': '#e6b9a4'
-    },
-    'Valparaíso': {
-      'Petorca': '#d2a976',
-      'La Ligua': '#a3c9de',
-      'Cabildo': '#6b8ab6',
-      'Zapallar': '#d3a2a0',
-      'Papudo': '#e0c392',
-      'Los Andes': '#0f6c5f',
-      'San Esteban': '#219ebc',
-      'Rinconada': '#b2d9e6',
-      'Calle Larga': '#d3e7ef',
-      'Santa María': '#b1b6d1',
-      'San Felipe': '#7fb4d9',
-      'Putaendo': '#ccddee',
-      'Panquehue': '#99c0d1',
-      'Catemu': '#c2a3d9',
-      'Llaillay': '#88aab8',
-      'Quillota': '#96c7b3',
-      'La Cruz': '#8a9eb5',
-      'Nogales': '#a1a2c3',
-      'Hijuelas': '#5a87a8',
-      'Calera': '#2e4972',
-      'Limache': '#486b92',
-      'Olmué': '#769db4',
-      'Villa Alemana': '#9fadc3',
-      'Quilpué': '#80a3c1',
-      'Concón': '#66b9d4',
-      'Valparaíso': '#669fd9',
-      'Viña del Mar': '#4d7ec7',
-      'Puchuncaví': '#3060c7',
-      'Quintero': '#1e5ea0',
-      'Casablanca': '#1a4068',
-      'San Antonio': '#4179aa',
-      'Cartagena': '#b3d4e4',
-      'El Quisco': '#7ea8c0',
-      'El Tabo': '#a1c4d4',
-      'Algarrobo': '#5d91b6',
-      'Santo Domingo': '#a9d3a7' // Santo Domingo para Isla de Pascua visualmente cercana
-    }
-  };
-
-
+  private jardinesAcumulados: Jardin[] = [];
   
   // Font Awesome icons
   faChild = faChild;
@@ -826,14 +183,15 @@ RegionSeleccionada: string = '';
   faCog=faCog;
   faBook=faBook;
   faCalendarDays=faCalendarDays;
+  
 
-  tarjetasSuperiores = [
-    { icon: this.faChild, titulo: 'Salas Cuna y Jardines Infantiles', valor: 80 },
-    { icon: this.faBed, titulo: 'Jardines Infantiles', valor: 28 },
-    { icon: this.faBaby, titulo: 'Sala Cuna', valor: 6 },
-    { icon: this.faPeopleRoof, titulo: 'Establecimientos', valor: 116 },
-    { icon: this.faBus, titulo: 'Jardín Sobre Ruedas', valor: 16 },
-    { icon: this.faBaby, titulo: 'Modalidad No Convencional', valor: 80 }
+  tarjetasSuperiores: TarjetaSuperior[] = [
+    { valor: 20, titulo: 'Establecimientos', icon: faHome },
+    { valor: 14, titulo: 'Salas Cuna y Jardines Infantiles', icon: faBaby },
+    { valor: 2, titulo: 'Jardines Infantiles', icon: faBed },
+    { valor: 2, titulo: 'Sala Cuna', icon: faShoppingCart },
+    { valor: 2, titulo: 'Modalidad No convencional', icon: faChild },
+    { valor: 4, titulo: 'Jardín Sobre Ruedas', icon: faBus },
   ];
 
   tarjetasInferiores: TarjetaItem[] = [
@@ -850,18 +208,26 @@ RegionSeleccionada: string = '';
     { titulo: 'Indicador 1 Ejemplo', icon: faHeart },
     { titulo: 'Indicador 1 Ejemplo', icon: faCog }
 ];
+
+tarjetaEstablecimientos: any;
+tarjetaJardinSobreRuedas: any;
+establecimientosColor: any;
   
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private sharedDataService: SharedDataService,
-    
+    private mapColorsService: MapColorsService,  // Agregar esta línea
     private wsAdmSolService: WS_ADM_SOLService  // Agregar el nuevo servicio
   ) {}
 
   private isLoading = false;
 
   private clearState(): void {
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = undefined;
+    }
     this.jardinesAcumulados = [];
     this.JardinesporRegion = [];
     this.mapInitialized = false;
@@ -869,30 +235,39 @@ RegionSeleccionada: string = '';
     if (this.updateTimeout) {
       clearTimeout(this.updateTimeout);
     }
+    console.log('Estado limpiado');
   }
+  
 
 
   ngOnInit(): void {
       // Limpiamos el estado inicial
-      this.clearState();
-      this.jardinesAcumulados = [];
-      this.JardinesporRegion = [];
-      
-      // Suscribirse a los cambios de navegación
-      this.router.events.pipe(
-          filter(event => event instanceof NavigationEnd)
-      ).subscribe(() => {
-          const regionId = Number(this.route.snapshot.paramMap.get('regionId'));
-          if (!isNaN(regionId)) {
-              this.loadRegionDataFromSidebar(regionId);
-          }
-      });
+    this.updateRegionColors();  // Aplicar colores cuando se carga el componente
+    this.setRegionColors();   
+    this.clearState();
+  
+  // Logging inicial
+  console.log('Iniciando componente Dashboard');
+
+  // Suscribirse a los cambios de navegación usando takeUntil para manejo de memoria
+  this.router.events.pipe(
+    filter(event => event instanceof NavigationEnd),
+    takeUntil(this.destroy$)
+  ).subscribe(() => {
+    const regionId = Number(this.route.snapshot.paramMap.get('regionId'));
+    if (!isNaN(regionId)) {
+      console.log('Navegación detectada - cargando región:', regionId);
+      this.loadRegionDataFromSidebar(regionId);
+    }
+  });
   
       // Carga inicial
-      const initialRegionId = Number(this.route.snapshot.paramMap.get('regionId'));
-      if (!isNaN(initialRegionId)) {
-          this.loadRegionDataFromSidebar(initialRegionId);
-      }
+  const initialRegionId = Number(this.route.snapshot.paramMap.get('regionId'));
+  if (!isNaN(initialRegionId)) {
+    console.log('Carga inicial - región:', initialRegionId);
+    this.loadRegionDataFromSidebar(initialRegionId);
+  }
+  //this.setupJardinesObserver();
   }
   // Método seguro para obtener datos del mapa
 private async fetchMapData(url: string): Promise<any> {
@@ -907,256 +282,359 @@ private async fetchMapData(url: string): Promise<any> {
     return null;
   }
 }
-
-  private setupMapEventListeners(): void {
-    if (!this.chart || !this.mapContainer?.nativeElement) return;
-
-    const container = this.mapContainer.nativeElement;
-    
-    // Remover listeners existentes de manera segura
-    const newContainer = container.cloneNode(true);
-    container.parentNode?.replaceChild(newContainer, container);
-
-    // Configurar nuevos listeners con manejo de errores
-    newContainer.addEventListener('wheel', (e: WheelEvent) => {
-      e.preventDefault();
-      if (!this.chart) return;
-
-      const mapView = (this.chart as any).mapView;
-      if (!mapView) return;
-
-      const zoomDelta = e.deltaY > 0 ? 0.8 : 1.2;
-      requestAnimationFrame(() => {
-        try {
-          mapView.zoomBy(zoomDelta);
-        } catch (error) {
-          console.error('Error durante zoom:', error);
-        }
-      });
-    }, { passive: false });
+// Método para actualizar colores en función de la región seleccionada
+updateRegionColors(): void {
+  if (this.RegionSeleccionada) {
+    this.headerColor = this.mapColorsService.getRegionLightColor(this.RegionSeleccionada);
+    this.cardColor = this.mapColorsService.getRegionDarkColor(this.RegionSeleccionada);
+    console.log(`Colores para ${this.RegionSeleccionada}: Encabezado - ${this.headerColor}, Tarjetas - ${this.cardColor}`);
   }
-  private createMapOptions(mapData: any, seriesData: any[]): Highcharts.Options {
-    const jardinesPoints = this.processJardinesPoints();
-    console.log('Puntos procesados:', jardinesPoints.length);
+}
+// Método para manejar el cambio de selección de la región
+onRegionSelect(region: string): void {
+  this.RegionSeleccionada = region;
+  this.updateRegionColors();
+}
+setRegionColors() {
+  this.backgroundColor = this.mapColorsService.getRegionLightColor(this.RegionSeleccionada);
+  this.cardColor = this.mapColorsService.getRegionDarkColor(this.RegionSeleccionada);
   
-    return {
-      chart: {
-        map: mapData,
-        backgroundColor: '#ffffff',
-        height: '500px',
-        style: {
-          fontFamily: 'Arial, sans-serif'
-        },
-        animation: {
-          duration: 1000
-        },
-        events: {
-          load: function() {
-            try {
-              const chart = this as any;
-              if (chart.mapView) {
-                const bounds = chart.series[0].bounds;
-                if (bounds) {
-                  const centerX = (bounds.x1 + bounds.x2) / 2;
-                  const centerY = (bounds.y1 + bounds.y2) / 2;
+  console.log('Background color:', this.backgroundColor);
+  console.log('Card color:', this.cardColor);
+}
+private setupJardinesObserver(): void {
+  // Configurar un observador para los cambios en JardinesporRegion
+  setInterval(() => {
+    if (this.JardinesporRegion.length > 0) {
+      console.log('Jardines cargados:', this.JardinesporRegion.length);
+      console.log('Muestra de coordenadas:', 
+        this.JardinesporRegion.slice(0, 3).map(jardin => ({
+          nombre: jardin.nombreJardin,
+          lat: jardin.latitud,
+          lon: jardin.longitud,
+          comuna: jardin.comuna
+        }))
+      );
+    }
+  }, 2000); // Revisar cada 2 segundos
+}
+private setupMapEventListeners(): void {
+  if (!this.chart || !this.mapContainer?.nativeElement) return;
+
+  const container = this.mapContainer.nativeElement;
   
-                  const padding = 0.1;
-                  const containerAspectRatio = chart.chartWidth / chart.chartHeight;
-                  const boundsWidth = bounds.x2 - bounds.x1;
-                  const boundsHeight = bounds.y2 - bounds.y1;
-                  const boundsAspectRatio = boundsWidth / boundsHeight;
-  
-                  let zoom;
-                  if (containerAspectRatio > boundsAspectRatio) {
-                    zoom = (chart.chartHeight / boundsHeight) * (1 - padding);
-                  } else {
-                    zoom = (chart.chartWidth / boundsWidth) * (1 - padding);
-                  }
-  
-                  chart.mapView.setView(
-                    [centerY, centerX],
-                    zoom,
-                    false
-                  );
-  
-                  chart.mapView.minZoom = zoom * 0.5;
-                  chart.mapView.maxZoom = zoom * 4;
+  // Reemplaza el contenedor para limpiar eventos previos
+  const newContainer = container.cloneNode(true) as HTMLElement;
+  container.parentNode?.replaceChild(newContainer, container);
+
+  // Configura el evento `wheel`
+  newContainer.addEventListener('wheel', (e: WheelEvent) => {
+    e.preventDefault();
+
+    if (!this.chart) return;
+
+    const mapView = (this.chart as any).mapView;
+    if (!mapView) return;
+
+    const isZoomIn = e.deltaY < 0; // Determina si el scroll es hacia arriba (aumenta el zoom)
+    const zoomFactor = isZoomIn ? 1.2 : 0.8; // Aumenta si es hacia arriba, reduce si es hacia abajo
+
+    requestAnimationFrame(() => {
+      try {
+        mapView.zoomBy(zoomFactor); // Ajusta el zoom basado en el desplazamiento
+      } catch (error) {
+        console.error('Error al hacer zoom:', error);
+      }
+    });
+  }, { passive: false });
+}
+
+private createMapOptions(mapData: any, seriesData: any[]): Highcharts.Options {
+  const jardinesPoints = this.processJardinesPoints();
+
+  // Asegurarse de que los colores se apliquen correctamente
+  const dataWithColors = seriesData.map(item => ({
+    ...item,
+    color: this.mapColorsService.getCommuneColor(this.RegionSeleccionada, item.name) || '#E6F3FF'
+  }));
+
+  return {
+    chart: {
+      map: mapData,
+      backgroundColor: '#ffffff',
+      height: '500px',
+      style: {
+        fontFamily: 'Arial, sans-serif'
+      },
+      animation: {
+        duration: 1000
+      },
+      events: {
+        load: function() {
+          try {
+            const chart = this as any;
+            if (chart.mapView) {
+              const bounds = chart.series[0].bounds;
+              if (bounds) {
+                const centerX = (bounds.x1 + bounds.x2) / 2;
+                const centerY = (bounds.y1 + bounds.y2) / 2;
+
+                const padding = 0.1;
+                const containerAspectRatio = chart.chartWidth / chart.chartHeight;
+                const boundsWidth = bounds.x2 - bounds.x1;
+                const boundsHeight = bounds.y2 - bounds.y1;
+                const boundsAspectRatio = boundsWidth / boundsHeight;
+
+                let zoom;
+                if (containerAspectRatio > boundsAspectRatio) {
+                  zoom = (chart.chartHeight / boundsHeight) * (1 - padding);
+                } else {
+                  zoom = (chart.chartWidth / boundsWidth) * (1 - padding);
                 }
+
+                chart.mapView.setView(
+                  [centerY, centerX],
+                  zoom,
+                  false
+                );
+
+                chart.mapView.minZoom = zoom * 0.5;
+                chart.mapView.maxZoom = zoom * 4;
               }
-            } catch (error) {
-              console.error('Error en el evento load del mapa:', error);
             }
+          } catch (error) {
+            console.error('Error en el evento load del mapa:', error);
           }
         }
-      },
-      title: {
-        text: 'Mapa de ' + this.RegionSeleccionada,
+      }
+    },
+    title: {
+      text: 'Mapa de ' + this.RegionSeleccionada,
+      style: {
+        fontSize: '18px',
+        fontWeight: 'bold'
+      }
+    },
+    mapView: {
+      projection: {
+        name: 'WebMercator'
+      }
+    },
+    mapNavigation: {
+      enabled: true,
+      enableButtons: true,
+      enableDoubleClickZoom: false,
+      enableMouseWheelZoom: true,
+      enableTouchZoom: true,
+      buttonOptions: {
+        verticalAlign: 'middle',
+        align: 'right',
+        width: 30,
+        height: 30,
         style: {
-          fontSize: '18px',
+          fontSize: '15px',
           fontWeight: 'bold'
         }
       },
-      mapView: {
-        projection: {
-          name: 'WebMercator'
-        }
-      },
-      mapNavigation: {
-        enabled: true,
-        enableButtons: true,
-        enableDoubleClickZoom: false,
-        enableMouseWheelZoom: true,
-        enableTouchZoom: true,
-        buttonOptions: {
-          verticalAlign: 'middle',
-          align: 'right',
-          width: 30,
-          height: 30,
-          style: {
-            fontSize: '15px',
-            fontWeight: 'bold'
-          }
-        },
-        buttons: {
-          zoomIn: {
-            text: '+',
-            onclick: function(e: MouseEvent) {
-              e.preventDefault();
-              e.stopPropagation();
-              const chart = (this as any).chart;
-              if (chart.mapView) {
-                chart.mapView.zoomBy(1.25);
-              }
-            }
-          },
-          zoomOut: {
-            text: '-',
-            onclick: function(e: MouseEvent) {
-              e.preventDefault();
-              e.stopPropagation();
-              const chart = (this as any).chart;
-              if (chart.mapView) {
-                chart.mapView.zoomBy(0.8);
-              }
-            }
-          }
-        }
-      },
-      colorAxis: undefined,
-      legend: {
-        enabled: false
-      },
-      tooltip: this.getTooltipConfig(),
-      plotOptions: {
-        series: {
-          animation: {
-            duration: 500
-          },
-          states: {
-            hover: {
-              brightness: 0.1
-            },
-            inactive: {
-              opacity: 1
+      buttons: {
+        zoomIn: {
+          text: '+',
+          onclick: function(e: MouseEvent) {
+            e.preventDefault();
+            e.stopPropagation();
+            const chart = (this as any).chart;
+            if (chart.mapView) {
+              chart.mapView.zoomBy(1.25);
             }
           }
         },
-        map: {
-          nullInteraction: true,
-          allAreas: true,
-          enableMouseTracking: true,
-          states: {
-            hover: {
-              brightness: 0.1
+        zoomOut: {
+          text: '-',
+          onclick: function(e: MouseEvent) {
+            e.preventDefault();
+            e.stopPropagation();
+            const chart = (this as any).chart;
+            if (chart.mapView) {
+              chart.mapView.zoomBy(0.8);
             }
           }
         }
-      },
-      series: [
-        {
-          type: 'map',
-          name: 'Comunas',
-          states: {
-            hover: {
-              brightness: 0.1,
-              borderColor: '#303030',
-              borderWidth: 2
-            }
-          },
-          dataLabels: {
-            enabled: true,
-            format: '{point.name}',
-            style: {
-              color: 'black',
-              textOutline: '2px white',
-              fontWeight: 'normal',
-              fontSize: '11px'
-            }
-          },
-          data: seriesData.map(item => ({
-            ...item,
-            color: this.regionColors[this.RegionSeleccionada]?.[item.name] || '#E6F3FF'
-          })),
-          joinBy: ['Comuna', 'hc-key']
-        } as any,
-        {
-          type: 'mappoint',
-          name: 'Jardines',
-          data: jardinesPoints,
-          tooltip: {
-            headerFormat: '',
-            pointFormat: `
-              <div style="padding: 10px;">
-                <h4 style="margin: 0 0 8px 0; color: #333;">{point.datos.nombreJardin}</h4>
-                <p style="margin: 4px 0;"><strong>Dirección:</strong> {point.datos.calle}</p>
-                <p style="margin: 4px 0;"><strong>Comuna:</strong> {point.datos.codCom}</p>
-                <p style="margin: 4px 0;"><strong>Director:</strong> {point.datos.director}</p>
-                <p style="margin: 4px 0;"><strong>Código Jardín:</strong> {point.datos.jardin}</p>
-                <p style="margin: 4px 0;"><strong>Modalidad:</strong> {point.datos.modalidad}</p>
-                <p style="margin: 4px 0;"><strong>Estado:</strong> {point.datos.estado}</p>
-                <p style="margin: 4px 0;"><strong>Ubicación:</strong> {point.datos.ubicacion}</p>
-              </div>
-            `
-          }
-        }
-      ],
-      credits: {
-        enabled: false
       }
-    };
-  }
+    },
+    colorAxis: undefined,
+    legend: {
+      enabled: false
+    },
+    plotOptions: {
+      series: {
+        animation: {
+          duration: 500
+        },
+        states: {
+          hover: {
+            brightness: 0.1
+          },
+          inactive: {
+            opacity: 1
+          }
+        }
+      },
+      map: {
+        nullInteraction: true,
+        allAreas: true,
+        enableMouseTracking: true,
+        states: {
+          hover: {
+            brightness: 0.1
+          }
+        }
+      }
+    },
+    series: [
+      {
+        type: 'map',
+        name: 'Comunas',
+        states: {
+          hover: {
+            brightness: 0.1,
+            borderColor: '#303030',
+            borderWidth: 2
+          }
+        },
+        dataLabels: {
+          enabled: true,
+          format: '{point.name}',
+          style: {
+            color: 'black',
+            textOutline: '2px white',
+            fontWeight: 'normal',
+            fontSize: '11px'
+          }
+        },
+        data: dataWithColors,
+        joinBy: ['Comuna', 'hc-key'],
+        borderColor: '#A0A0A0',
+        borderWidth: 0.5,
+        nullColor: '#E6F3FF'
+      } as any,
+      {
+        type: 'mappoint',
+        name: 'Jardines',
+        color: '#FF1493',
+        data: jardinesPoints.map(jardin => ({
+          ...jardin,
+          value: jardin.datos.cantidadJardines  // Asegúrate de que el punto tenga un valor "cantidadJardines"
+        })),
+        marker: {
+          enabled: true,
+          symbol: 'circle',
+          radius: 10,  // Ajusta el tamaño del marcador para que el número sea visible
+          fillColor: '#FF1493',
+          lineWidth: 1,
+          lineColor: '#FFFFFF'
+        },
+        dataLabels: {
+          enabled: true,
+          format: '{point.value}',  // Muestra la cantidad de jardines en cada marcador
+          style: {
+            fontSize: '12px',
+            fontWeight: 'bold',
+            color: '#FFFFFF',
+            textOutline: '1px contrast'
+          },
+          align: 'center',
+          verticalAlign: 'middle',
+          inside: true
+        },
+        tooltip: {
+          headerFormat: '',
+          pointFormat: `
+            <div style="padding: 10px; border-radius: 8px; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+              <h4 style="margin: 0 0 8px 0; color: #333;">{point.datos.nombreJardin}</h4>
+              <p style="margin: 4px 0;"><strong>Dirección:</strong> {point.datos.calle}</p>
+              <p style="margin: 4px 0;"><strong>Comuna:</strong> {point.datos.codCom}</p>
+              <p style="margin: 4px 0;"><strong>Director:</strong> {point.datos.director}</p>
+              <p style="margin: 4px 0;"><strong>Código Jardín:</strong> {point.datos.jardin}</p>
+              <p style="margin: 4px 0;"><strong>Modalidad:</strong> {point.datos.modalidad}</p>
+              <p style="margin: 4px 0;"><strong>Estado:</strong> {point.datos.estado}</p>
+              <p style="margin: 4px 0;"><strong>Ubicación:</strong> {point.datos.ubicacion}</p>
+            </div>
+          `
+        },
+        point: {
+          events: {
+            mouseOver: function(this: any) {
+              if (this.graphic) {
+                this.graphic.attr({
+                  r: 12,  // Aumenta el radio al pasar el mouse
+                  fillColor: '#FF69B4'  // Cambia el color al pasar el mouse
+                });
+              }
+            },
+            mouseOut: function(this: any) {
+              if (this.graphic) {
+                this.graphic.attr({
+                  r: 10,  // Restaura el radio original
+                  fillColor: '#FF1493'  // Restaura el color original
+                });
+              }
+            }
+          }
+        }
+      }
+    ],
+    credits: {
+      enabled: false
+    }
+  };
+}
+
+
 
   private processJardinesPoints(): any[] {
     console.log('Procesando jardines:', this.JardinesporRegion.length);
-    
-    return this.JardinesporRegion
-      .filter(jardin => {
-        const hasCoords = jardin.latitud && jardin.longitud;
-        if (!hasCoords) {
-          console.warn('Jardín sin coordenadas:', jardin.nombreJardin);
-        }
-        return hasCoords;
-      })
-      .map(jardin => {
-        try {
-          const lat = this.parseCoordinate(jardin.latitud);
-          const lon = this.parseCoordinate(jardin.longitud);
+  
+  const points = this.JardinesporRegion
+    .filter(jardin => {
+      const hasCoords = jardin.latitud && jardin.longitud;
+      if (!hasCoords) {
+        console.warn('Jardín sin coordenadas:', jardin.nombreJardin);
+      }
+      return hasCoords;
+    })
+    .map(jardin => {
+      try {
+        const lat = this.parseCoordinate(jardin.latitud);
+        const lon = this.parseCoordinate(jardin.longitud);
+
+        console.log('Procesando jardín:', {
+          nombre: jardin.nombreJardin,
+          latitudOriginal: jardin.latitud,
+          longitudOriginal: jardin.longitud,
+          latitudProcesada: lat,
+          longitudProcesada: lon
+        });
+  
+          // Verificar coordenadas válidas
+          if (isNaN(lat) || isNaN(lon) || !this.isValidCoordinate(lat, lon)) {
+            console.warn('Coordenadas inválidas para:', jardin.nombreJardin);
+            return null;
+          }
   
           return {
             type: 'mappoint',
-            name: jardin.nombreJardin || '',
-            geometry: {
-              type: 'Point',
-              coordinates: [lon, lat]
-            },
-            marker: {
-              enabled: true,
-              symbol: 'circle',
-              radius: 4,
-              fillColor: '#FF1493',
-              lineWidth: 1,
-              lineColor: '#FFFFFF'
-            },
+          name: jardin.nombreJardin,
+          lat: lat,
+          lon: lon,
+          coordinates: [lon, lat], // Agregar coordenadas en formato array
+          marker: {
+            enabled: true,
+            symbol: 'circle',
+            radius: 4,
+            fillColor: '#FF1493',
+            lineWidth: 1,
+            lineColor: '#FFFFFF'
+          },
             datos: {
               nombreJardin: jardin.nombreJardin || '',
               calle: jardin.calle || '',
@@ -1174,6 +652,12 @@ private async fetchMapData(url: string): Promise<any> {
         }
       })
       .filter(point => point !== null);
+  
+    // Log final de resultados
+    console.log('Puntos procesados exitosamente:', points.length);
+    console.log('Muestra de puntos:', points.slice(0, 3));
+  
+    return points;
   }
   // Método corregido para crear el mapa
 private async createMap(mapData: any, seriesData: any[]): Promise<void> {
@@ -1258,7 +742,6 @@ private async updateMapData(seriesData: any[]): Promise<void> {
     });
   });
 }
-  // Método actualizado para la carga de datos de región
 private async loadRegionDataFromSidebar(regionId: number) {
   if (this.updatePending) {
     console.log('Actualización pendiente, esperando...');
@@ -1266,181 +749,223 @@ private async loadRegionDataFromSidebar(regionId: number) {
   }
 
   this.updatePending = true;
+  console.log('Iniciando carga de región:', regionId);
 
   try {
-    if (this.updateTimeout) {
-      clearTimeout(this.updateTimeout);
-    }
+    // Limpiar datos anteriores
+    this.jardinesAcumulados = [];
+    this.JardinesporRegion = [];
 
-    await new Promise<void>((resolve) => {
-      this.updateTimeout = setTimeout(async () => {
-        try {
-          console.log('Iniciando carga de región:', regionId);
+    // Esperar a que los datos se carguen
+    await new Promise<void>((resolve, reject) => {
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      const checkData = () => {
+        this.loadData(regionId.toString());
+        attempts++;
+        
+        console.log(`Intento ${attempts} de cargar datos:`, {
+          acumulados: this.jardinesAcumulados.length,
+          porRegion: this.JardinesporRegion.length
+        });
 
-          await this.loadData(regionId.toString());
-          
-          const mapDataUrl = this.getGeoJsonUrl(regionId);
-          const mapData = await this.fetchMapData(mapDataUrl);
-          const seriesData = this.processMapData(mapData);
-
-          if (this.currentRegionId !== regionId) {
-            this.currentRegionId = regionId;
-            this.RegionSeleccionada = this.getRegionNameById(regionId);
-            await this.createMap(mapData, seriesData);
-          } else {
-            await this.updateExistingMap(seriesData);
-          }
-
+        if (this.JardinesporRegion.length > 0) {
           resolve();
-        } catch (error) {
-          console.error('Error en la carga de datos:', error);
-          resolve();
+        } else if (attempts >= maxAttempts) {
+          reject(new Error('Máximo de intentos alcanzado'));
+        } else {
+          setTimeout(checkData, 1000);
         }
-      }, this.debounceTime);
+      };
+
+      checkData();
     });
 
+    console.log('Datos cargados:', {
+      totalJardines: this.JardinesporRegion.length,
+      primerosJardines: this.JardinesporRegion.slice(0, 3).map(j => ({
+        nombre: j.nombreJardin,
+        comuna: j.comuna,
+        coords: [j.latitud, j.longitud]
+      }))
+    });
+
+    // Cargar datos del mapa
+    const mapDataUrl = this.getGeoJsonUrl(regionId);
+    const mapData = await this.fetchMapData(mapDataUrl);
+    
+    if (!mapData) {
+      throw new Error('No se pudo cargar el mapa');
+    }
+
+    const seriesData = this.processMapData(mapData);
+    
+    // Actualizar región y mapa
+    this.currentRegionId = regionId;
+    this.RegionSeleccionada = this.getRegionNameById(regionId);
+
+    // Obtener colores dinámicos para el encabezado y las tarjetas
+    const headerColor = this.mapColorsService.getRegionLightColor(this.RegionSeleccionada);
+    const cardColor = this.mapColorsService.getRegionDarkColor(this.RegionSeleccionada);
+    
+    // Aplicar los colores
+    this.applyColors(headerColor, cardColor);
+
+    await this.renderMap(mapData, seriesData);
+
   } catch (error) {
-    console.error('Error en loadRegionDataFromSidebar:', error);
+    console.error('Error cargando región:', error);
   } finally {
     this.updatePending = false;
   }
 }
 
+// Método adicional para aplicar los colores al encabezado y las tarjetas
+private applyColors(headerColor: string, cardColor: string): void {
+  this.headerColor = headerColor;
+  this.cardColor = cardColor;
+  console.log('Colores aplicados:', { headerColor, cardColor });
+}
 
 
-private jardinesAcumulados: Jardin[] = [];
-
-loadData(region: string, offset: string = ''): void {
-    // Limpiar acumulador solo en la primera llamada
-    if (!offset) {
-      this.jardinesAcumulados = [];
-    }
+private loadData(region: string, offset: string = ''): void {
+  console.log(`Cargando datos para región ${region}, offset: ${offset}`);
   
-    this.wsAdmSolService.getData(region, offset).subscribe({
-      next: (fields) => {
-        try {
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(fields, 'text/xml');
-          
-          const solmasElement = xmlDoc.getElementsByTagName('SOLMAS')[0];
-          const solmas = solmasElement ? solmasElement.textContent?.trim() : '';
-          
-          const soloutElement = xmlDoc.getElementsByTagName('SOLOUT')[0];
-          if (!soloutElement) {
-            throw new Error('No se encontró el elemento SOLOUT');
-          }
-  
-          const jsonContent = soloutElement.textContent;
-          if (!jsonContent) {
-            throw new Error('SOLOUT está vacío');
-          }
-  
-          const jsonData = JSON.parse(jsonContent);
-          const dataArray = Array.isArray(jsonData) ? jsonData : [jsonData];
-          
-          console.log('Procesando lote de', dataArray.length, 'jardines');
-          
-          dataArray.forEach(item => {
-            const primerJorNiv = item.Jor_Niv && item.Jor_Niv.length > 0 ? item.Jor_Niv[0] : null;
-  
-            this.jardinesAcumulados.push({
-              codReg: item.CodReg || '',
-              region: item.Region || '',
-              codCom: item.CodCom || '',
-              comuna: item.Comuna || '',
-              jardin: item.Jardin || '',
-              nombreJardin: item.Nombre_Jardin || '',
-              estado: item.Estado || '',
-              codMod: item.CodMod || '',
-              modalidad: item.Modalidad || '',
-              ubicacion: item.Ubicacion || '',
-              latitud: item.Latitud || '',
-              longitud: item.Longitud || '',
-              calle: item.Calle || '',
-              rbd: item.RBD || '',
-              fono_1: item.Fono_1 || '',
-              correo: item.Correo || '',
-              director: item.Director || '',
-              cjor: primerJorNiv ? primerJorNiv.Cjor || '' : '',
-              jor: primerJorNiv ? primerJorNiv.Jor || '' : '',
-              cniv: primerJorNiv ? primerJorNiv.Cniv || '' : '',
-              niv: primerJorNiv ? primerJorNiv.Niv || '' : '',
-              gru: primerJorNiv ? primerJorNiv.Gru || '' : '',
-              cap: primerJorNiv ? primerJorNiv.Cap || '' : ''
-            });
-          });
-  
-          console.log(`Jardines acumulados hasta ahora: ${this.jardinesAcumulados.length}`);
-          
-          if (solmas && solmas !== '') {
-            console.log(`Cargando más datos con offset: ${solmas}`);
-            this.loadData(region, solmas);
-          } else {
-            console.log('Carga completa. Total de jardines:', this.jardinesAcumulados.length);
-            this.JardinesporRegion = [...this.jardinesAcumulados];
-            console.log('Tabla definitiva de jardines acumulados:', this.JardinesporRegion);
-          }
-  
-        } catch (error) {
-          console.error('Error procesando los datos:', error);
-          if (this.jardinesAcumulados.length > 0) {
-            this.JardinesporRegion = [...this.jardinesAcumulados];
-            console.log('Tabla definitiva de jardines acumulados (con error):', this.JardinesporRegion);
-          }
-        }
-      },
-      error: (error) => {
-        console.error('Error cargando datos:', error);
-        if (this.jardinesAcumulados.length > 0) {
-          this.JardinesporRegion = [...this.jardinesAcumulados];
-          console.log('Tabla definitiva de jardines acumulados (con error):', this.JardinesporRegion);
-        }
-      }
-    });
+  if (!offset) {
+    this.jardinesAcumulados = [];
   }
+
+  this.wsAdmSolService.getData(region, offset).subscribe({
+    next: (fields) => {
+      try {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(fields, 'text/xml');
+        
+        const solmasElement = xmlDoc.getElementsByTagName('SOLMAS')[0];
+        const solmas = solmasElement ? solmasElement.textContent?.trim() : '';
+        
+        console.log('SOLMAS:', solmas);
+
+        const soloutElement = xmlDoc.getElementsByTagName('SOLOUT')[0];
+        if (!soloutElement) {
+          throw new Error('No se encontró el elemento SOLOUT');
+        }
+
+        const jsonContent = soloutElement.textContent;
+        if (!jsonContent) {
+          throw new Error('SOLOUT está vacío');
+        }
+
+        const jsonData = JSON.parse(jsonContent);
+        const dataArray = Array.isArray(jsonData) ? jsonData : [jsonData];
+        
+        console.log(`Procesando ${dataArray.length} jardines`);
+
+        dataArray.forEach(item => {
+          const primerJorNiv = item.Jor_Niv && item.Jor_Niv.length > 0 ? item.Jor_Niv[0] : null;
+
+          const jardin: Jardin = {
+            codReg: item.CodReg || '',
+            region: item.Region || '',
+            codCom: item.CodCom || '',
+            comuna: item.Comuna || '',
+            jardin: item.Jardin || '',
+            nombreJardin: item.Nombre_Jardin || '',
+            estado: item.Estado || '',
+            codMod: item.CodMod || '',
+            modalidad: item.Modalidad || '',
+            ubicacion: item.Ubicacion || '',
+            latitud: item.Latitud || '',
+            longitud: item.Longitud || '',
+            calle: item.Calle || '',
+            rbd: item.RBD || '',
+            fono_1: item.Fono_1 || '',
+            correo: item.Correo || '',
+            director: item.Director || '',
+            cjor: primerJorNiv ? primerJorNiv.Cjor || '' : '',
+            jor: primerJorNiv ? primerJorNiv.Jor || '' : '',
+            cniv: primerJorNiv ? primerJorNiv.Cniv || '' : '',
+            niv: primerJorNiv ? primerJorNiv.Niv || '' : '',
+            gru: primerJorNiv ? primerJorNiv.Gru || '' : '',
+            cap: primerJorNiv ? primerJorNiv.Cap || '' : ''
+          };
+
+          this.jardinesAcumulados.push(jardin);
+        });
+
+        if (solmas && solmas !== '') {
+          console.log(`Cargando más datos con offset: ${solmas}`);
+          this.loadData(region, solmas);
+        } else {
+          console.log('Carga completa. Actualizando JardinesporRegion');
+          this.JardinesporRegion = [...this.jardinesAcumulados];
+          console.log('Jardines totales:', this.JardinesporRegion.length);
+        }
+
+      } catch (error) {
+        console.error('Error procesando datos:', error);
+      }
+    },
+    error: (error) => {
+      console.error('Error en la llamada al servicio:', error);
+    }
+  });
+}
 
 
 
 
 private async loadRegionData(regionId: number): Promise<void> {
-    try {
-      // Esperar a que los datos se carguen completamente
-      await new Promise<void>((resolve) => {
-        this.loadData(regionId.toString());
-        
-        const checkInterval = setInterval(() => {
-          if (this.JardinesporRegion.length > 0) {
-            clearInterval(checkInterval);
-            resolve();
-          }
-        }, 100);
-        
-        // Timeout después de 10 segundos
-        setTimeout(() => {
-          clearInterval(checkInterval);
-          resolve();
-        }, 10000);
+  try {
+      console.log(`Iniciando carga de datos para la región con ID: ${regionId}`);
+
+      // Cargar los datos de jardines y esperar hasta que `JardinesporRegion` se haya llenado
+      await new Promise<void>((resolve, reject) => {
+          this.loadData(regionId.toString());
+
+          const checkInterval = setInterval(() => {
+              if (this.JardinesporRegion.length > 0) {
+                  console.log(`✅ Datos de jardines cargados: ${this.JardinesporRegion.length} jardines en total.`);
+                  clearInterval(checkInterval);
+                  resolve();
+              }
+          }, 100);
+
+          setTimeout(() => {
+              clearInterval(checkInterval);
+              if (this.JardinesporRegion.length === 0) {
+                  console.warn('⚠️ Tiempo de espera agotado. No se han cargado jardines.');
+                  reject(new Error('Timeout: No se cargaron datos de jardines en el tiempo esperado.'));
+              } else {
+                  resolve();
+              }
+          }, 10000); // Espera máximo de 10 segundos
       });
-  
+
       // Cargar y procesar los datos del mapa
       const mapDataUrl = this.getGeoJsonUrl(regionId);
+      console.log(`Cargando datos del mapa desde: ${mapDataUrl}`);
+
       const response = await fetch(mapDataUrl);
-      
       if (!response.ok) {
-        throw new Error(`Error HTTP: ${response.status}`);
+          throw new Error(`Error al obtener los datos del mapa. Código de estado HTTP: ${response.status}`);
       }
-  
+
       const mapData = await response.json();
-      console.log('MapData cargado:', mapData);
-      
-      // Procesar datos y renderizar
+      console.log('✅ Datos del mapa cargados con éxito.');
+
+      // Procesar y renderizar el mapa
       const seriesData = this.processMapData(mapData);
+      console.log('Procesando y renderizando el mapa...');
       await this.renderMap(mapData, seriesData);
-  
-    } catch (error) {
-      console.error('Error al cargar los datos de la región:', error);
-    }
+      console.log('✅ Mapa renderizado exitosamente para la región:', this.RegionSeleccionada);
+
+  } catch (error) {
+      console.error('❌ Error al cargar los datos de la región:', error);
   }
+}
+
 
 // Método corregido para procesar datos del mapa
 private processMapData(mapData: any) {
@@ -1449,39 +974,31 @@ private processMapData(mapData: any) {
     return [];
   }
 
-  // Asegurarnos de obtener los colores correctos para la región actual
-  const regionKey = this.RegionSeleccionada?.trim() || '';
-  const comunaColors = this.regionColors[regionKey] || {};
-  const jardinesRegion = this.jardinesData[regionKey] || {};
-
-  console.log('Región seleccionada:', regionKey);
-  console.log('Colores disponibles:', comunaColors);
+  console.log('Procesando región:', this.RegionSeleccionada);
+  this.mapColorsService.logRegionInfo(this.RegionSeleccionada);
 
   return mapData.features.map((f: any) => {
     try {
       const nombreComuna = f.properties?.['Comuna'] || '';
-      const datosComuna = jardinesRegion[nombreComuna.toUpperCase()] || {};
-      
-      // Obtener el color específico para la comuna
-      const comunaColor = comunaColors[nombreComuna];
-      console.log(`Comuna: ${nombreComuna}, Color asignado: ${comunaColor}`);
+      const color = this.mapColorsService.getCommuneColor(this.RegionSeleccionada, nombreComuna);
 
+      if (!color) {
+        console.warn(`No se encontró color para la comuna: ${nombreComuna} en la región: ${this.RegionSeleccionada}`);
+      }
       return {
         'hc-key': nombreComuna,
         name: nombreComuna,
         cantidadJardines: f.properties?.['CantidadJardines'] || 0,
         codigoComuna: f.properties?.['CodCom'] || '',
         value: f.properties?.['CantidadJardines'] || 0,
-        color: comunaColor || '#E6F3FF', // Color por defecto si no hay color asignado
-        properties: {
-          ...f.properties
-        }
+        color: color || '#E6F3FF',  // Color por defecto si no se encuentra
+        properties: f.properties
       };
     } catch (error) {
       console.error('Error procesando feature del mapa:', error);
       return null;
     }
-  }).filter((item: MapFeatureData | null): item is MapFeatureData => item !== null);
+  }).filter((item: null) => item !== null);
 }
 
 private getTooltipConfig(): Highcharts.TooltipOptions {
@@ -1624,22 +1141,58 @@ private getTooltipConfig(): Highcharts.TooltipOptions {
       }
     };
   }
+  private isValidCoordinate(lat: number, lon: number): boolean {
+    // Validar rango de coordenadas para Chile
+    const isValidLat = lat >= -56 && lat <= -17; // Rango aproximado para Chile
+    const isValidLon = lon >= -76 && lon <= -66; // Rango aproximado para Chile
+  
+    if (!isValidLat || !isValidLon) {
+      console.warn('Coordenada fuera de rango:', { lat, lon });
+    }
+  
+    return isValidLat && isValidLon;
+  }
+
+  // Método para debugging
+private logCoordinateStatus(): void {
+  const jardines = this.JardinesporRegion;
+  console.log('Análisis de coordenadas:', {
+    total: jardines.length,
+    conLatitud: jardines.filter(j => j.latitud).length,
+    conLongitud: jardines.filter(j => j.longitud).length,
+    ejemplos: jardines.slice(0, 5).map(j => ({
+      nombre: j.nombreJardin,
+      latitud: j.latitud,
+      longitud: j.longitud
+    }))
+  });
+}
   private parseCoordinate(coord: string): number {
     try {
       if (!coord) return NaN;
-      
-      // Limpiar la cadena de coordenadas
-      const cleanCoord = coord.replace(/['"°\s]/g, '').trim();
-      
-      // Convertir a número y verificar que es válido
+  
+      // Limpiar y normalizar la coordenada
+      let cleanCoord = coord.toString()
+        .replace(/['"°º\s]/g, '')  // Remover caracteres especiales
+        .replace(/,/g, '.')        // Reemplazar comas por puntos
+        .trim();
+  
+      // Manejar coordenadas negativas
+      if (cleanCoord.includes('S') || cleanCoord.includes('W') || cleanCoord.includes('O')) {
+        cleanCoord = '-' + cleanCoord.replace(/[SWON]/g, '');
+      } else {
+        cleanCoord = cleanCoord.replace(/[NESN]/g, '');
+      }
+  
+      // Convertir a número
       const num = parseFloat(cleanCoord);
-      
+  
+      // Validar el resultado
       if (isNaN(num)) {
-        console.warn('Coordenada inválida:', coord);
+        console.warn('Coordenada inválida después de procesar:', coord, '→', cleanCoord);
         return NaN;
       }
-      
-      // Redondear a 6 decimales para evitar problemas de precisión
+  
       return Number(num.toFixed(6));
     } catch (error) {
       console.error('Error parseando coordenada:', coord, error);
@@ -1651,19 +1204,17 @@ private getTooltipConfig(): Highcharts.TooltipOptions {
     return new Promise((resolve) => {
       requestAnimationFrame(() => {
         try {
-            const jardinesPoints = this.JardinesporRegion
-            .filter(jardin => jardin.latitud && jardin.longitud) // Filtrar jardines sin coordenadas
+          // Procesar puntos de jardines con coordenadas válidas
+          const jardinesPoints = this.JardinesporRegion
+            .filter(jardin => jardin.latitud && jardin.longitud)
             .map(jardin => {
               const lat = this.parseCoordinate(jardin.latitud);
               const lon = this.parseCoordinate(jardin.longitud);
-          
+  
               return {
                 type: 'mappoint',
                 name: '',
-                geometry: {
-                  type: 'Point',
-                  coordinates: [lon, lat]
-                },
+                geometry: { type: 'Point', coordinates: [lon, lat] },
                 marker: {
                   enabled: true,
                   symbol: 'circle',
@@ -1686,129 +1237,38 @@ private getTooltipConfig(): Highcharts.TooltipOptions {
             })
             .filter(point => {
               const coords = point.geometry.coordinates;
-              return coords && 
-                     Array.isArray(coords) && 
-                     coords.length === 2 && 
-                     !isNaN(coords[0]) && 
-                     !isNaN(coords[1]) && 
-                     coords[0] !== 0 && 
-                     coords[1] !== 0;
+              return coords && Array.isArray(coords) && coords.length === 2 && 
+                     !isNaN(coords[0]) && !isNaN(coords[1]) &&
+                     coords[0] !== 0 && coords[1] !== 0;
             });
-          
-          console.log('Puntos procesados:', jardinesPoints.length);
-                    
   
-          console.log('Puntos a renderizar:', jardinesPoints.length);
+          // Asignar colores a seriesData usando el servicio de colores
+          const dataWithColors = seriesData.map(item => ({
+            ...item,
+            color: this.mapColorsService.getCommuneColor(this.RegionSeleccionada, item.name) || '#E6F3FF'
+          }));
   
+          // Configuración del mapa con tooltip enriquecido
           const mapOptions: Highcharts.Options = {
             chart: {
               map: mapData,
               backgroundColor: '#ffffff',
               height: '400px',
-              style: {
-                fontFamily: 'Arial, sans-serif'
-              },
-              animation: {
-                duration: 1000
-              },
-              events: {
-                load: function() {
-                  try {
-                    const chart = this as any;
-                    if (chart.mapView) {
-                      const bounds = chart.series[0].bounds;
-                      if (bounds) {
-                        const centerX = (bounds.x1 + bounds.x2) / 2;
-                        const centerY = (bounds.y1 + bounds.y2) / 2;
-  
-                        const padding = 0.1;
-                        const containerAspectRatio = chart.chartWidth / chart.chartHeight;
-                        const boundsWidth = bounds.x2 - bounds.x1;
-                        const boundsHeight = bounds.y2 - bounds.y1;
-                        const boundsAspectRatio = boundsWidth / boundsHeight;
-  
-                        let zoom;
-                        if (containerAspectRatio > boundsAspectRatio) {
-                          zoom = (chart.chartHeight / boundsHeight) * (1 - padding);
-                        } else {
-                          zoom = (chart.chartWidth / boundsWidth) * (1 - padding);
-                        }
-  
-                        chart.mapView.setView(
-                          [centerY, centerX],
-                          zoom,
-                          false
-                        );
-  
-                        chart.mapView.minZoom = zoom * 0.5;
-                        chart.mapView.maxZoom = zoom * 4;
-                      }
-                    }
-                  } catch (error) {
-                    console.error('Error en el evento load:', error);
-                  }
-                }
-              }
+              style: { fontFamily: 'Arial, sans-serif' },
+              animation: { duration: 1000 }
             },
             title: {
               text: 'Mapa de ' + this.RegionSeleccionada,
-              style: {
-                fontSize: '18px',
-                fontWeight: 'bold'
-              }
+              style: { fontSize: '18px', fontWeight: 'bold' }
             },
-            subtitle: {
-              text: '',
-              style: {
-                fontSize: '12px',
-                color: '#666666'
-              }
-            },
-            mapView: {
-              projection: {
-                name: 'WebMercator'
-              }
-            },
+            
+            mapView: { projection: { name: 'WebMercator' } },
             mapNavigation: {
               enabled: true,
               enableButtons: true,
               enableDoubleClickZoom: false,
               enableMouseWheelZoom: true,
-              enableTouchZoom: true,
-              buttonOptions: {
-                verticalAlign: 'middle',
-                align: 'right',
-                width: 30,
-                height: 30,
-                style: {
-                  fontSize: '15px',
-                  fontWeight: 'bold'
-                }
-              },
-              buttons: {
-                zoomIn: {
-                  text: '+',
-                  onclick: function(e: MouseEvent) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const chart = (this as any).chart;
-                    if (chart.mapView) {
-                      chart.mapView.zoomBy(1.25);
-                    }
-                  }
-                },
-                zoomOut: {
-                  text: '-',
-                  onclick: function(e: MouseEvent) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const chart = (this as any).chart;
-                    if (chart.mapView) {
-                      chart.mapView.zoomBy(0.8);
-                    }
-                  }
-                }
-              }
+              enableTouchZoom: true
             },
             colorAxis: [{
               min: 0,
@@ -1822,156 +1282,91 @@ private getTooltipConfig(): Highcharts.TooltipOptions {
               align: 'right',
               verticalAlign: 'middle',
               layout: 'vertical',
-              title: {
-                text: 'Valores'
-              }
+              title: { text: 'Valores' }
             },
             tooltip: {
               useHTML: true,
-              headerFormat: '',
               formatter: function(this: Highcharts.TooltipFormatterContextObject): string {
                 const point = this.point as any;
-                
+            
                 if (point.series.type === 'mappoint') {
                   return `
-                    <div style="padding: 10px;">
-                      <h4 style="margin: 0 0 8px 0; color: #333;">${point.datos.nombreJardin || ''}</h4>
-                      <p style="margin: 4px 0;"><strong>Dirección:</strong> ${point.datos.calle || ''}</p>
-                      <p style="margin: 4px 0;"><strong>Comuna:</strong> ${point.datos.codCom || ''}</p>
-                      <p style="margin: 4px 0;"><strong>Director:</strong> ${point.datos.director || ''}</p>
-                      <p style="margin: 4px 0;"><strong>Código Jardín:</strong> ${point.datos.jardin || ''}</p>
-                      <p style="margin: 4px 0;"><strong>Modalidad:</strong> ${point.datos.modalidad || ''}</p>
-                      <p style="margin: 4px 0;"><strong>Estado:</strong> ${point.datos.estado || ''}</p>
-                      <p style="margin: 4px 0;"><strong>Ubicación:</strong> ${point.datos.ubicacion || ''}</p>
+                    <div style="padding: 10px; border-radius: 8px; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 24px; height: 24px; background-image: url('assets/images/Integra-Palmundo-32.png'); background-size: cover;"></div>
+                        <h4 style="margin: 0; color: #333;">${point.datos.nombreJardin || ''}</h4>
+                      </div>
+                      <hr style="margin: 10px 0; border-color: #eee;">
+                      <p><strong>Dirección:</strong> ${point.datos.calle || ''}</p>
+                      <p><strong>Comuna:</strong> ${point.datos.codCom || ''}</p>
+                      <p><strong>Director:</strong> ${point.datos.director || ''}</p>
+                      <p><strong>Código Jardín:</strong> ${point.datos.jardin || ''}</p>
+                      <p><strong>Modalidad:</strong> ${point.datos.modalidad || ''}</p>
+                      <p><strong>Estado:</strong> ${point.datos.estado || ''}</p>
+                      <p><strong>Ubicación:</strong> ${point.datos.ubicacion || ''}</p>
                     </div>
                   `;
                 } else {
                   return `
-                    <div style="padding: 10px;">
-                      <h4 style="margin: 0 0 8px 0; color: #333;">${point.name || ''}</h4>
-                      <p style="margin: 4px 0;"><strong>Total Jardines:</strong> ${point.value || 0}</p>
+                    <div style="padding: 10px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                      <h4 style="margin: 0; color: #333;">${point.name || ''}</h4>
+                      <p><strong>Total Jardines:</strong> ${point.value || 0}</p>
                     </div>
                   `;
                 }
               }
-            },
-            plotOptions: {
-              series: {
-                animation: {
-                  duration: 500
-                },
-                states: {
-                  hover: {
-                    brightness: 0.1
-                  },
-                  inactive: {
-                    opacity: 1
-                  }
-                }
-              },
-              map: {
-                nullInteraction: true,
-                allAreas: true,
-                enableMouseTracking: true,
-                states: {
-                  hover: {
-                    color: '#a4edba'
-                  }
-                }
-              }
-            },
-            series: [
-                {
-                  type: 'map',
-                  name: 'Comunas',
-                  states: {
-                    hover: {
-                      brightness: 0.1,
-                      borderColor: '#303030',
-                      borderWidth: 2
-                    }
-                  },
-                  dataLabels: {
-                    enabled: false
-                  },
-                  data: seriesData,
-                  joinBy: ['Comuna', 'hc-key']
-                } as any,
-                {
-                  type: 'mappoint',
-                  name: 'Jardines',
-                  data: jardinesPoints,
-                  dataLabels: {
-                    enabled: false  // Deshabilitar las etiquetas de datos
-                  },
-                  tooltip: {
-                    headerFormat: ''
-                  },
-                  animation: {
-                    duration: 1000
-                  }
-                }
-              ],
-            credits: {
-              enabled: false
             }
+            ,
+            series: [
+              {
+                type: 'map',
+                name: 'Comunas',
+                data: dataWithColors,
+                joinBy: ['Comuna', 'hc-key']
+              },
+              {
+                type: 'mappoint',
+                name: 'Jardines',
+                data: jardinesPoints,
+                tooltip: { headerFormat: '' }
+              }
+            ],
+            credits: { enabled: false }
           };
   
+          // Inicialización del contenedor del mapa y creación del mapa
           const container = document.getElementById('map-container');
-         // 1. Verificación inicial del contenedor
-if (container) {
-    // 2. Inicialización de Highcharts.maps
-    if (!Highcharts.maps) {
-      Highcharts.maps = {}; // Asegura que existe el objeto maps
-    }
+          if (container) {
+            if (this.chart) this.chart.destroy(); // Elimina el mapa anterior
   
-    // 3. Limpieza de instancia previa
-    if (this.chart) {
-      this.chart.destroy(); // Destruye la instancia anterior para evitar memory leaks
-    }
+            container.style.height = '500px';
+            container.style.width = '100%';
   
-    // 4. Configuración del contenedor
-    container.style.height = '500px';
-    container.style.width = '100%';
+            this.chart = Highcharts.mapChart('map-container', mapOptions);
   
-    // 5. Creación del nuevo mapa
-    this.chart = Highcharts.mapChart('map-container', mapOptions);
-  
-    // 6. Manejador del evento wheel (scroll del mouse)
-    const handleWheel = (e: WheelEvent) => {
-        e.preventDefault();     // Previene el scroll por defecto
-        e.stopPropagation();   // Evita que el evento se propague a elementos padres
-        
-        // Usar type assertion para acceder a mapView
-        const chartInstance = this.chart as any;
-        if (chartInstance?.mapView) {
-          const delta = e.deltaY;  // Obtiene la dirección del scroll
-          const zoomDelta = delta > 0 ? 0.8 : 1.2;  // scroll hacia abajo = alejar, hacia arriba = acercar
-          
-          requestAnimationFrame(() => {
-            try {
-              chartInstance.mapView.zoomBy(zoomDelta);
-            } catch (error) {
-              console.error('Error al hacer zoom:', error);
-            }
-          });
-        }
-      };
-  
-    // 8. Gestión de eventos
-    container.removeEventListener('wheel', handleWheel); // Remueve listener previo
-    
-    // 9. Agrega el nuevo listener
-    container.addEventListener('wheel', handleWheel, { 
-      passive: false,  // Permite usar preventDefault()
-      capture: true    // Captura el evento en la fase de captura
-    });
-  
-    resolve(); // Resuelve la promesa
-  } else {
-    console.error('Contenedor del mapa no encontrado');
-    resolve();
-  }
+            // Manejo de zoom en eventos de desplazamiento del mouse
+            const handleWheel = (e: WheelEvent) => {
+              e.preventDefault();
+              const chartInstance = this.chart as any;
+              if (chartInstance?.mapView) {
+                const zoomDelta = e.deltaY > 0 ? 0.8 : 1.2;
+                requestAnimationFrame(() => {
+                  try {
+                    chartInstance.mapView.zoomBy(zoomDelta);
+                  } catch (error) {
+                    console.error('Error al hacer zoom:', error);
+                  }
+                });
+              }
+            };
+            
+            container.removeEventListener('wheel', handleWheel);
+            container.addEventListener('wheel', handleWheel, { passive: false, capture: true });
+            resolve();
+          } else {
+            console.error('Contenedor del mapa no encontrado');
+            resolve();
+          }
         } catch (error) {
           console.error('Error al renderizar el mapa:', error);
           resolve();
@@ -1979,6 +1374,8 @@ if (container) {
       });
     });
   }
+  
+  
   
 
   private updateRegion(regionId: number): void {
@@ -2004,7 +1401,7 @@ if (container) {
         throw new Error('Network response was not ok');
       }
       const mapData = await response.json();
-      console.log('Datos GeoJSON recibidos');
+      //console.log('Datos GeoJSON recibidos');
       
       this.chartOptions = this.createChartOptions(mapData);
       
@@ -2216,41 +1613,127 @@ if (container) {
   
 
   createChartOptions(mapData: any): any {
+    // Obtener coordenadas y colores usando el servicio
     const coordinates = this.getRegionCoordinates(this.RegionSeleccionada);
-    const comunaColors = this.regionColors[this.RegionSeleccionada] || {};
+    const comunaColors = this.mapColorsService.getRegionColors(this.RegionSeleccionada);
   
-    const seriesData = mapData.features.map((f: any) => ({
-      'hc-key': f.properties['Comuna'],
-      value: f.properties['CantidadJardines'] || 0,
-      color: comunaColors[f.properties['Comuna']] || '#cccccc',
-      name: f.properties['Comuna'],
-      codigoComuna: f.properties['CodCom'], // Código de la comuna
-      cantidadJardines: f.properties['CantidadJardines'] || 0,
-      properties: f.properties
-    }));
-    console.log("Datos de seriesData:", seriesData);
+    // Log para debugging
+    console.log('Región seleccionada:', this.RegionSeleccionada);
+    console.log('Colores disponibles:', comunaColors);
+  
+    // Procesar los datos del mapa
+    const seriesData = mapData.features.map((f: any) => {
+      const nombreComuna = f.properties['Comuna'];
+      const color = this.mapColorsService.getCommuneColor(this.RegionSeleccionada, nombreComuna);
+      
+      return {
+        'hc-key': nombreComuna,
+        value: f.properties['CantidadJardines'] || 0,
+        color: color,
+        name: nombreComuna,
+        codigoComuna: f.properties['CodCom'],
+        cantidadJardines: f.properties['CantidadJardines'] || 0,
+        properties: f.properties
+      };
+    });
+  
     return {
       chart: {
         map: mapData,
+        backgroundColor: '#ffffff',
+        style: {
+          fontFamily: 'Arial, sans-serif'
+        },
         events: {
           load: function(this: Highcharts.MapChart) {
-            //if (this.mapView) {
-            //  this.mapView.setView([coordinates[1], coordinates[0]], 5);
-           // }
+            try {
+              const chart = this as any;
+              if (chart.mapView) {
+                const bounds = chart.series[0].bounds;
+                if (bounds) {
+                  const centerX = (bounds.x1 + bounds.x2) / 2;
+                  const centerY = (bounds.y1 + bounds.y2) / 2;
+  
+                  const padding = 0.1;
+                  const containerAspectRatio = chart.chartWidth / chart.chartHeight;
+                  const boundsWidth = bounds.x2 - bounds.x1;
+                  const boundsHeight = bounds.y2 - bounds.y1;
+                  const boundsAspectRatio = boundsWidth / boundsHeight;
+  
+                  let zoom;
+                  if (containerAspectRatio > boundsAspectRatio) {
+                    zoom = (chart.chartHeight / boundsHeight) * (1 - padding);
+                  } else {
+                    zoom = (chart.chartWidth / boundsWidth) * (1 - padding);
+                  }
+  
+                  chart.mapView.setView(
+                    [centerY, centerX],
+                    zoom,
+                    false
+                  );
+  
+                  chart.mapView.minZoom = zoom * 0.5;
+                  chart.mapView.maxZoom = zoom * 4;
+                }
+              }
+            } catch (error) {
+              console.error('Error en el evento load del mapa:', error);
+            }
+          }
+        }
+      },
+      title: {
+        text: 'Mapa de ' + this.RegionSeleccionada,
+        style: {
+          fontSize: '18px',
+          fontWeight: 'bold'
+        }
+      },
+      plotOptions: {
+        map: {
+          allAreas: true,
+          nullColor: '#E6F3FF',
+          borderColor: '#A0A0A0',
+          borderWidth: 0.5,
+          states: {
+            hover: {
+              color: '#a4edba',
+              borderColor: '#303030',
+              borderWidth: 2
+            }
           }
         }
       },
       series: [{
+        type: 'map',
+        name: 'Comunas',
         mapData: mapData,
         data: seriesData,
-        joinBy: ['Comuna', 'hc-key']
+        joinBy: ['Comuna', 'hc-key'],
+        dataLabels: {
+          enabled: true,
+          format: '{point.name}',
+          style: {
+            color: 'black',
+            textOutline: '2px white',
+            fontWeight: 'normal',
+            fontSize: '11px'
+          }
+        }
       }]
     };
   }
 
   DistribuirEnColumnas(numColumnas: number = 4): ItemLista[][] {
+    // Filtrar jardines duplicados en `JardinesporRegion`
+    const uniqueJardines = this.JardinesporRegion.filter(
+        (jardin, index, self) =>
+            index === self.findIndex((j) => j.nombreJardin === jardin.nombreJardin && j.comuna === jardin.comuna)
+    );
+
     const listaCompleta: ItemLista[] = [];
-    const jardinesAgrupados = this.getJardinesAgrupados();
+    const jardinesAgrupados = this.getJardinesAgrupados(uniqueJardines);
     const comunasOrdenadas = Array.from(jardinesAgrupados.entries())
         .sort((a, b) => a[0].localeCompare(b[0]));
 
@@ -2259,11 +1742,15 @@ if (container) {
         listaCompleta.push({
             tipo: 'comuna',
             nombre: comuna,
-            modalidad: '' // Agregar modalidad como un campo vacío para cumplir con la estructura
+            modalidad: '' // Campo vacío para cumplir con la estructura
         });
 
-        // Agregar establecimientos ordenados alfabéticamente
-        jardines
+        // Agregar establecimientos únicos, ordenados alfabéticamente
+        const uniqueEstablecimientos = jardines.filter((jardin, index, self) =>
+            index === self.findIndex((j) => j.nombreJardin === jardin.nombreJardin)
+        );
+
+        uniqueEstablecimientos
             .sort((a, b) => a.nombreJardin.localeCompare(b.nombreJardin))
             .forEach(jardin => {
                 listaCompleta.push({
@@ -2290,6 +1777,7 @@ if (container) {
     return columnas;
 }
 
+
 // Añade estos métodos a tu clase CustomDashboardComponent
 getTipoEstablecimiento(modalidad: string): string {
     const modalidadUpper = modalidad?.toUpperCase() || '';
@@ -2303,28 +1791,47 @@ getTipoEstablecimiento(modalidad: string): string {
 }
 
 getJardinesAgrupadosEnColumnas(): ComunaGroup[] {
-    // Primero agrupamos por comuna
-    const jardinesAgrupados = new Map<string, Jardin[]>();
-    
-    this.JardinesporRegion.forEach(jardin => {
-        if (!jardinesAgrupados.has(jardin.comuna)) {
-            jardinesAgrupados.set(jardin.comuna, []);
-        }
-        jardinesAgrupados.get(jardin.comuna)?.push(jardin);
-    });
+  // Primero agrupamos por comuna
+  console.log('Debug: JardinesporRegion contiene', this.JardinesporRegion.length, 'jardines.');
+  // Verifica si el array está vacío
+  if (this.JardinesporRegion.length === 0) {
+      console.warn('⚠️ Atención: JardinesporRegion está vacío.');
+      return [];
+  }
 
-    // Convertimos el Map a un array de objetos con la estructura deseada
-    const comunasArray: ComunaGroup[] = Array.from(jardinesAgrupados.entries())
-        .map(([comuna, jardines]) => ({
-            nombreComuna: comuna,
-            establecimientos: jardines.sort((a, b) => 
-                a.nombreJardin.localeCompare(b.nombreJardin)
-            )
-        }))
-        .sort((a, b) => a.nombreComuna.localeCompare(b.nombreComuna));
+  const jardinesAgrupados = new Map<string, Jardin[]>();
 
-    return comunasArray;
+  this.JardinesporRegion.forEach(jardin => {
+      if (!jardinesAgrupados.has(jardin.comuna)) {
+          jardinesAgrupados.set(jardin.comuna, []);
+      }
+      jardinesAgrupados.get(jardin.comuna)?.push(jardin);
+  });
+
+  // Convertimos el Map a un array de objetos con la estructura deseada
+  const comunasArray: ComunaGroup[] = Array.from(jardinesAgrupados.entries())
+      .map(([comuna, jardines]) => ({
+          nombreComuna: comuna,
+          establecimientos: jardines.sort((a, b) => 
+              a.nombreJardin.localeCompare(b.nombreJardin)
+          )
+      }))
+      .sort((a, b) => a.nombreComuna.localeCompare(b.nombreComuna));
+
+  // Log para verificar el total de jardines por comuna
+  comunasArray.forEach(comunaGroup => {
+      const totalJardines = comunaGroup.establecimientos.length;
+      console.log(`***Comuna: ${comunaGroup.nombreComuna}, Total Jardines: ${totalJardines}`);
+      
+      // Verificar y registrar comunas con 0 jardines
+      if (totalJardines === 0) {
+          console.warn(`⚠️ Atención: La comuna "${comunaGroup.nombreComuna}" tiene 0 jardines.`);
+      }
+  });
+
+  return comunasArray;
 }
+
 
 sortEstablecimientos(establecimientos: Jardin[]): Jardin[] {
     // Primero los ordena por tipo y luego por nombre
@@ -2338,19 +1845,25 @@ sortEstablecimientos(establecimientos: Jardin[]): Jardin[] {
     });
 }  
 // Añade este método a tu clase CustomDashboardComponent
-getJardinesAgrupados() {
-    const jardinesAgrupados = new Map<string, Jardin[]>();
-    
-    this.JardinesporRegion.forEach(jardin => {
-        if (!jardinesAgrupados.has(jardin.comuna)) {
-            jardinesAgrupados.set(jardin.comuna, []);
-        }
-        jardinesAgrupados.get(jardin.comuna)?.push(jardin);
-    });
+getJardinesAgrupados(jardines: Jardin[]): Map<string, Jardin[]> {
+  const jardinesAgrupados = new Map<string, Jardin[]>();
 
-    // Ordenar las comunas alfabéticamente
-    return new Map([...jardinesAgrupados.entries()].sort());
+  // Agrupar por comuna y eliminar duplicados por nombre de jardín dentro de cada comuna
+  jardines.forEach(jardin => {
+      if (!jardinesAgrupados.has(jardin.comuna)) {
+          jardinesAgrupados.set(jardin.comuna, []);
+      }
+      const comunaJardines = jardinesAgrupados.get(jardin.comuna);
+      const exists = comunaJardines?.some((j) => j.nombreJardin === jardin.nombreJardin);
+
+      if (!exists) {
+          comunaJardines?.push(jardin);
+      }
+  });
+
+  return new Map([...jardinesAgrupados.entries()].sort());
 }
+
 
 // También puedes agregar este método helper si necesitas formatear la modalidad
 getModalidadAbreviada(modalidad: string): string {
@@ -2442,7 +1955,9 @@ getModalidadAbreviada(modalidad: string): string {
       this.chart.destroy();
       this.chart = undefined;
     }
+    console.log('Componente destruido');
   }
+  
 }
 
 
