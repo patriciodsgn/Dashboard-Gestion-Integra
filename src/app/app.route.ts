@@ -9,6 +9,19 @@ import { CustomDashboardComponent } from '../app/components/ds-nivel-regional/cu
 import { CustomDashboardInicialComponent } from './components/ds-nivel-nacional/custom-dashboard-inicial.component';
 
 
+import { DsEducacionDataComponent } from './components/ds-educacion-data/ds-educacion-data.component';
+import { DsEducacionNeeComponent } from './components/ds-educacion-nee/ds-educacion-nee.component';
+import { DsEducacionAtet1Component } from './components/ds-educacion-atet1/ds-educacion-atet1.component';
+import { DsEducacionAtet2Component } from './components/ds-educacion-atet2/ds-educacion-atet2.component';
+import { DsPersonasMenuComponent } from './components/ds-personas-menu/ds-personas-menu.component';
+import { DsPersonasData1Component } from './components/ds-personas-data1/ds-personas-data1.component';
+import { DsPersonasData2Component } from './components/ds-personas-data2/ds-personas-data2.component';
+import { DsPresupuestoDaftComponent } from './components/ds-presupuesto-daft/ds-presupuesto-daft.component';
+import { DsPresupuestoEjecucion1Component } from './components/ds-presupuesto-ejecucion1/ds-presupuesto-ejecucion1.component';
+import { DsPresupuestoEjecucion2Component } from './components/ds-presupuesto-ejecucion2/ds-presupuesto-ejecucion2.component';
+
+
+
 
 
 // widgets
@@ -63,6 +76,24 @@ export const routes: Routes = [
             // pages
             { path: 'pages/knowledge-base', component: KnowledgeBaseComponent, data: { title: 'Knowledge Base' } },
             { path: 'pages/faq', component: FaqComponent, data: { title: 'FAQ' } },
+
+
+            // components
+
+            { path: 'ds-educacion-data', component: DsEducacionDataComponent, data: { title: 'Educación Data' } },
+            { path: 'ds-educacion-nee', component: DsEducacionNeeComponent, data: { title: 'Educación NEE' } },
+            { path: 'ds-educacion-atet1', component: DsEducacionAtet1Component, data: { title: 'Educación ATET1' } },
+            { path: 'ds-educacion-atet2', component: DsEducacionAtet2Component, data: { title: 'Educación ATET2' } },
+            
+            { path: 'ds-personas-menu', component: DsPersonasMenuComponent, data: { title: 'Personas Menu' } },
+            { path: 'ds-personas-data1', component: DsPersonasData1Component, data: { title: 'Personas Data 1' } },
+            { path: 'ds-personas-data2', component: DsPersonasData2Component, data: { title: 'Personas Data 2' } },
+            
+            { path: 'ds-presupuesto-daft', component: DsPresupuestoDaftComponent, data: { title: 'Presupuesto DAFT' } },
+            { path: 'ds-presupuesto-ejecucion1', component: DsPresupuestoEjecucion1Component, data: { title: 'Presupuesto Ejecución 1' } },
+            { path: 'ds-presupuesto-ejecucion2', component: DsPresupuestoEjecucion2Component, data: { title: 'Presupuesto Ejecución 2' } },
+
+
 
             //apps
             { path: 'apps', loadChildren: () => import('./apps/apps.module').then((d) => d.AppsModule) },
