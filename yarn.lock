@@ -1978,6 +1978,13 @@
   resolved "https://registry.npmjs.org/@types/geojson/-/geojson-7946.0.14.tgz"
   integrity sha512-WCfD5Ht3ZesJUsONdhvm84dmzWOiOzOAqOncN0++w0lBw1o8OuDNJF2McvvCef/yBqb/HYRahp1BYtODFQ8bRg==
 
+"@types/highcharts@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/@types/highcharts/-/highcharts-7.0.0.tgz"
+  integrity sha512-YDevls0s9uqz6VEbchxp+NEaKssAPq5aDZgqEUpxOIUCQEncQtXxibp1w4lvgKyhM4qDejAcSZ+DKfA/kzqR0A==
+  dependencies:
+    highcharts "*"
+
 "@types/http-errors@*":
   version "2.0.4"
   resolved "https://registry.npmjs.org/@types/http-errors/-/http-errors-2.0.4.tgz"
@@ -3944,6 +3951,11 @@ headlessui-angular@^0.0.9:
   dependencies:
     tslib ">=2.0.0"
 
+highcharts-3d@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.npmjs.org/highcharts-3d/-/highcharts-3d-0.1.7.tgz"
+  integrity sha512-7rdMe0rUy9df0ePd79sRJNsgm7ZFXRlU2cz7DZHGO49kKFX5JyJTZUAF5olzEy/Ij90XeqGwhwWLPJTt1tTXqQ==
+
 highcharts-angular@^4.0.1:
   version "4.0.1"
   resolved "https://registry.npmjs.org/highcharts-angular/-/highcharts-angular-4.0.1.tgz"
@@ -3951,7 +3963,17 @@ highcharts-angular@^4.0.1:
   dependencies:
     tslib "^2.0.0"
 
-highcharts@^11.4.8, highcharts@>=9.0.0:
+highcharts-item-series@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.npmjs.org/highcharts-item-series/-/highcharts-item-series-0.1.7.tgz"
+  integrity sha512-xYiZB0IJPF0V2FW1Zthu9CkbuMrZacxpqOfYs4C9eLQ+BIzxRlU0VOGa2Vs472mLQZ5BE6LIlBely7e33GfMRA==
+
+highcharts-variable-pie@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.npmjs.org/highcharts-variable-pie/-/highcharts-variable-pie-0.1.7.tgz"
+  integrity sha512-MT8sERd/72djCW1+jUOlNiBN03wJCG5bDaJNJTuj9C+JfsAEPN0fY+z+y6ySO4ffPRfLWAzJ1KU/1ZX7EGUlBA==
+
+highcharts@*, highcharts@^11.4.8, highcharts@>=9.0.0:
   version "11.4.8"
   resolved "https://registry.npmjs.org/highcharts/-/highcharts-11.4.8.tgz"
   integrity sha512-5Tke9LuzZszC4osaFisxLIcw7xgNGz4Sy3Jc9pRMV+ydm6sYqsPYdU8ELOgpzGNrbrRNDRBtveoR5xS3SzneEA==

@@ -217,7 +217,7 @@ establecimientosColor: any;
     private route: ActivatedRoute,
     private router: Router,
     private sharedDataService: SharedDataService,
-    private mapColorsService: MapColorsService,  // Agregar esta línea
+    public mapColorsService: MapColorsService,  // Agregar esta línea
     private wsAdmSolService: WS_ADM_SOLService  // Agregar el nuevo servicio
   ) {}
 
@@ -294,6 +294,14 @@ updateRegionColors(): void {
 onRegionSelect(region: string): void {
   this.RegionSeleccionada = region;
   this.updateRegionColors();
+}
+
+getImageFilter() {
+  // Si estás usando el color del header
+  return this.mapColorsService.getImageFilter(this.headerColor);
+  
+  // O si quieres usar directamente el color de la región
+  // return this.mapColorsService.getRegionImageFilter(this.RegionSeleccionada);
 }
 setRegionColors() {
   this.backgroundColor = this.mapColorsService.getRegionLightColor(this.RegionSeleccionada);
