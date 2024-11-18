@@ -1,10 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
+import { BrowserModule } from '@angular/platform-browser';
 
 // shared module
 import { SharedModule } from 'src/shared.module';
+import { DataTableModule } from '@bhplugin/ng-datatable'; // Importa el módulo de la tabla de datos
 
+// Componentes de la aplicación
 import { ScrumboardComponent } from './scrumboard';
 import { ContactsComponent } from './contacts';
 import { NotesComponent } from './notes';
@@ -32,7 +35,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes), CommonModule, SharedModule.forRoot()],
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        SharedModule.forRoot(),
+        DataTableModule // Añade el módulo de la tabla de datos aquí
+    ],
     declarations: [
         ChatComponent,
         ScrumboardComponent,

@@ -150,71 +150,75 @@
     </div>
  </li>
                     <!-- Menú de Direcciones -->
-                    <li class="accordion menu nav-item">
-                        <button
-                            type="button"
-                            class="nav-link group w-full"
-                            [ngClass]="{ active: activeDropdown.includes('direcciones') }"
-                            (click)="toggleAccordion('direcciones')"
-                        >
-                            <div class="flex items-center">
-                                <fa-icon [icon]="faBuilding" class="shrink-0 group-hover:!text-primary" />
-                                <span class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3 hidden lg:block">Direcciones</span>
-                            </div>
-                            <div [ngClass]="{ 'rtl:rotate-90 -rotate-90': !activeDropdown.includes('direcciones') }">
-                                <icon-caret-down />
-                            </div>
-                        </button>
-                        <div *ngIf="activeDropdown.includes('direcciones')" class="accordion-content">
-                            <ul class="sub-menu text-gray-500 space-y-1 list-none pl-0 border-l-0 ">
-                                <li>
-                                    <a routerLink="/direccion/1" routerLinkActive="active" (click)="toggleMobileMenu()">Administración y Finanzas</a>
-                                </li>
-                                <li>
-                                    <a routerLink="/direccion/2" routerLinkActive="active" (click)="toggleMobileMenu()">PGR</a>
-                                </li>
-                                <li>
-                                    <a routerLink="/direccion/3" routerLinkActive="active" (click)="toggleMobileMenu()">Educación</a>
-                                </li>
-                                <li>
-                                    <a routerLink="/direccion/4" routerLinkActive="active" (click)="toggleMobileMenu()">Personas</a>
-                                </li>
-                                <li>
-                                    <a routerLink="/direccion/5" routerLinkActive="active" (click)="toggleMobileMenu()">Jurídico</a>
-                                </li>
-                                <li class="accordion nav-item">
-                                    <button
-                                        type="button"
-                                        class="nav-link group w-full"
-                                        [ngClass]="{ active: activeDropdown.includes('subdireccion') }"
-                                        (click)="toggleAccordion('subdireccion')"
-                                    >
-                                        <fa-icon [icon]="faLaptopCode" class="shrink-0 group-hover:!text-primary" />
-                                        <span class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3 hidden lg:block">Subdirección TI</span>
-                                        <div [ngClass]="{ 'rtl:rotate-90 -rotate-90': !activeDropdown.includes('subdireccion') }">
-                                            <icon-caret-down />
-                                        </div>
-                                    </button>
-                                    <div *ngIf="activeDropdown.includes('subdireccion')" class="accordion-content">
-                                        <ul class="sub-menu text-gray-500 space-y-1 list-none pl-0 border-l-0">
-                                            <li>
-                                                <a routerLink="/subdireccion/1" routerLinkActive="active" (click)="toggleMobileMenu()">Proyecto 1</a>
-                                            </li>
-                                            <li>
-                                                <a routerLink="/subdireccion/2" routerLinkActive="active" (click)="toggleMobileMenu()">Proyecto 2</a>
-                                            </li>
-                                            <li>
-                                                <a routerLink="/subdireccion/3" routerLinkActive="active" (click)="toggleMobileMenu()">Proyecto 3</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
-                                <li>
-                                    <a routerLink="/direccion/6" routerLinkActive="active" (click)="toggleMobileMenu()">PPI</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
+<li class="accordion menu nav-item">
+    <button
+        type="button"
+        class="nav-link group w-full"
+        [ngClass]="{ active: activeDropdown.includes('direcciones') }"
+        (click)="toggleAccordion('direcciones')"
+    >
+        <div class="flex items-center">
+            <fa-icon [icon]="faBuilding" class="shrink-0 group-hover:!text-primary" />
+            <span class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3 hidden lg:block">Direcciones</span>
+        </div>
+        <div [ngClass]="{ 'rtl:rotate-90 -rotate-90': !activeDropdown.includes('direcciones') }">
+            <icon-caret-down />
+        </div>
+    </button>
+        <div *ngIf="activeDropdown.includes('direcciones')" class="accordion-content">
+            <ul class="sub-menu text-gray-500 space-y-1 list-none pl-0 border-l-0 ">
+            <li>
+                <a routerLink="/direccion/daft" routerLinkActive="active" (click)="toggleMobileMenu()">
+                    <fa-icon [icon]="faBriefcase" class="shrink-0 group-hover:!text-primary" /> DAFT
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/indicadores-dashboard', 'DPGR']" routerLinkActive="active" (click)="toggleMobileMenu()">DPGR</a>
+                    <fa-icon [icon]="faFileAlt" class="shrink-0 group-hover:!text-primary" /> DPGR                
+                <fa-icon [icon]="faCircle" class="text-purple-500 shrink-0 group-hover:!text-primary" /> Dirección Ejecutiva
+            </li>
+            <li>
+                <a routerLink="/direccion/dppi" routerLinkActive="active" (click)="toggleMobileMenu()">
+                <fa-icon [icon]="faClipboard" class="shrink-0 group-hover:!text-primary" /> DPPI
+            </a>
+            </li>
+            <li>
+                <a routerLink="/direccion/educacion" routerLinkActive="active" (click)="toggleMobileMenu()">
+                    <fa-icon [icon]="faSchool" class="shrink-0 group-hover:!text-primary" /> D. Educación
+                </a>
+            </li>
+            <li>
+                <a routerLink="/direccion/personas" routerLinkActive="active" (click)="toggleMobileMenu()">
+                    <fa-icon [icon]="faUsers" class="shrink-0 group-hover:!text-primary" /> D. Personas
+                </a>
+            </li>
+            <li>
+                <a routerLink="/direccion/juridico" routerLinkActive="active" (click)="toggleMobileMenu()">
+                    <fa-icon [icon]="faGavel" class="shrink-0 group-hover:!text-primary" /> D. Jurídico
+                </a>
+            </li>
+            <li>
+                <a routerLink="/direccion/subdireccion-ti" routerLinkActive="active" (click)="toggleMobileMenu()">
+                    <fa-icon [icon]="faLaptopCode" class="shrink-0 group-hover:!text-primary" /> D. Subdirección TI
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/indicadores-dashboard', 'DIRECCION EJECUTIVA']" routerLinkActive="active" (click)="toggleMobileMenu()">Dirección Ejecutiva</a>
+                    <fa-icon [icon]="faCircle" class="text-purple-500 shrink-0 group-hover:!text-primary" /> Dirección Ejecutiva
+                
+            </li>            <li>
+                <a routerLink="/direccion/contraloria" routerLinkActive="active" (click)="toggleMobileMenu()">
+                    <fa-icon [icon]="faCircle" class="text-purple-500 shrink-0 group-hover:!text-primary" /> Contraloría
+                </a>
+            </li>
+            <li>
+                <a routerLink="/direccion/comunicaciones" routerLinkActive="active" (click)="toggleMobileMenu()">
+                    <fa-icon [icon]="faCircle" class="text-purple-500 shrink-0 group-hover:!text-primary" /> Comunicaciones
+                </a>
+            </li>
+    </ul>
+</div>
+</li>
 
                     <!-- Menú de Reportes (comportamiento de acordeón) -->
                     <li class="accordion menu nav-item">

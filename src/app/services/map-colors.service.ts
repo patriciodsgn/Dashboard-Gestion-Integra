@@ -300,12 +300,12 @@ export class MapColorsService {
           'Ollagüe': '#A9DEF9'
         },
         'Tarapacá': {
-          'Iquique': '#f4b6c2',
-          'Alto Hospicio': '#c1c8e4',
-          'Pozo Almonte': '#f7cac9',
-          'Pica': '#ffdecc',
-          'Camiña': '#a1d3e2',
-          'Colchane': '#d4a5a5'
+          'Iquique': '#F4A2A2',
+          'Alto Hospicio': '#F9C285',
+          'Pozo Almonte': '#E38E8E',
+          'Pica': '#C8A4D8',
+          'Camiña': '#8AD4E4',
+          'Colchane': '#F8DDA0'
         },
         'NorPoniente': {
           'Independencia': '#f4b6c2',
@@ -405,11 +405,11 @@ export class MapColorsService {
     const regionColors = Object.entries(this.regionColors)
       .find(([key]) => this.normalizeText(key) === normalizedRegionName);
 
-    console.log('Buscando colores para región:', {
-      original: regionName,
-      normalizada: normalizedRegionName,
-      encontrado: !!regionColors
-    });
+  //  console.log('Buscando colores para región:', {
+  //    original: regionName,
+  //    normalizada: normalizedRegionName,
+  //    encontrado: !!regionColors
+  //  });
 
     return regionColors ? regionColors[1] : {};
   }
@@ -459,13 +459,13 @@ export class MapColorsService {
     const regionExists = this.hasRegion(regionName);
     const regionColors = this.getRegionColors(regionName);
 
-    console.log('Información de la región:', {
-      nombre: regionName,
-      nombreNormalizado: normalizedRegionName,
-      existeRegion: regionExists,
-      comunas: Object.keys(regionColors),
-      coloresDisponibles: regionColors
-    });
+    //console.log('Información de la región:', {
+    //  nombre: regionName,
+    //  nombreNormalizado: normalizedRegionName,
+    //  existeRegion: regionExists,
+    //  comunas: Object.keys(regionColors),
+    //  coloresDisponibles: regionColors
+    //});
   }
 
   // Método auxiliar para obtener todas las comunas de una región
@@ -473,4 +473,42 @@ export class MapColorsService {
     const colors = this.getRegionColors(regionName);
     return Object.keys(colors);
   }
+  // Agregar estos métodos al final de la clase MapColorsService
+
+  getImageFilter(color: string) {
+    if (color) {
+      // Si el color está en formato hex, conviértelo a RGB
+      let rgbColor = color;
+      if (color.startsWith('#')) {
+        const r = parseInt(color.slice(1, 3), 16);
+        const g = parseInt(color.slice(3, 5), 16);
+        const b = parseInt(color.slice(5, 7), 16);
+        rgbColor = `rgb(${r}, ${g}, ${b})`;
+      }
+      // Filtro ajustado para mantener la visibilidad
+      return `brightness(0.8) sepia(1) hue-rotate(${this.calculateHueRotate(rgbColor)}deg) saturate(5)`;
+    }
+    return '';
+  }
+
+// Método privado para calcular la rotación del matiz
+private calculateHueRotate(color: string): number {
+  const matches = color.match(/\d+/g);
+  if (matches) {
+    const [r, g, b] = matches.map(Number);
+    // Calcular el ángulo de rotación de matiz basado en el color predominante
+    const hue = Math.atan2(Math.sqrt(3) * (g - b), 2 * r - g - b) * 180 / Math.PI;
+    return hue;
+  }
+  return 0;
+}
+
+/// También ajusta el método getRegionImageFilter
+getRegionImageFilter(regionName: string): string {
+  const color = this.getRegionLightColor(regionName);
+  if (!color) return '';
+  
+  // Ajusta estos valores según sea necesario para tu caso específico
+  return `brightness(0.8) sepia(0.5) hue-rotate(${this.calculateHueRotate(color)}deg) saturate(2)`;
+}
 }

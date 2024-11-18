@@ -40,7 +40,7 @@ import { MapColorsService } from 'src/app/services/map-colors.service';
 
 import OfflineExportingModule from 'highcharts/modules/offline-exporting';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-
+import { DashboardStateService } from '../../core/services/dashboard-state.service';
 // Asegúrate de inicializar los módulos de exportación
 ExportingModule(Highcharts);
 OfflineExportingModule(Highcharts);
@@ -218,7 +218,8 @@ establecimientosColor: any;
     private router: Router,
     private sharedDataService: SharedDataService,
     public mapColorsService: MapColorsService,  // Agregar esta línea
-    private wsAdmSolService: WS_ADM_SOLService  // Agregar el nuevo servicio
+    private wsAdmSolService: WS_ADM_SOLService,  // Agregar el nuevo servicio
+    private dashboardState: DashboardStateService
   ) {}
 
   private isLoading = false;
@@ -241,34 +242,47 @@ establecimientosColor: any;
 
 
   ngOnInit(): void {
-      // Limpiamos el estado inicial
-    this.updateRegionColors();  // Aplicar colores cuando se carga el componente
-    this.setRegionColors();   
+    // Limpiamos el estado inicial
+    this.updateRegionColors();
+    this.setRegionColors();
     this.clearState();
-  
-  // Logging inicial
-  console.log('Iniciando componente Dashboard');
 
-  // Suscribirse a los cambios de navegación usando takeUntil para manejo de memoria
-  this.router.events.pipe(
-    filter(event => event instanceof NavigationEnd),
-    takeUntil(this.destroy$)
-  ).subscribe(() => {
-    const regionId = Number(this.route.snapshot.paramMap.get('regionId'));
-    if (!isNaN(regionId)) {
-      console.log('Navegación detectada - cargando región:', regionId);
-      this.loadRegionDataFromSidebar(regionId);
+    // Logging inicial
+    console.log('Iniciando componente Dashboard');
+
+    // Suscribirse a los cambios de navegación
+    this.router.events.pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+    ).subscribe(() => {
+        const regionId = Number(this.route.snapshot.paramMap.get('regionId'));
+        
+        console.group('Cambio de Navegación Detectado');
+        console.log('Region ID:', regionId);
+        
+        // Actualizar el estado con la región seleccionada y vista nacional en falso
+        this.dashboardState.setRegionalView(regionId);
+        
+        console.log('Estado del Dashboard:', {
+            region: this.dashboardState.selectedRegion,
+            vistaNacional: this.dashboardState.vistaNacional
+        });
+        console.groupEnd();
+
+        // Cargar datos de la región
+        this.loadRegionDataFromSidebar(regionId);
+    });
+
+    // Obtener región inicial
+    const initialRegionId = Number(this.route.snapshot.paramMap.get('regionId'));
+    if (!isNaN(initialRegionId)) {
+        console.log('Carga inicial - región:', initialRegionId);
+        this.loadRegionDataFromSidebar(initialRegionId);
+        
+        // Establecer estado inicial
+        this.dashboardState.setRegionalView(initialRegionId);
     }
-  });
-  
-      // Carga inicial
-  const initialRegionId = Number(this.route.snapshot.paramMap.get('regionId'));
-  if (!isNaN(initialRegionId)) {
-    console.log('Carga inicial - región:', initialRegionId);
-    this.loadRegionDataFromSidebar(initialRegionId);
-  }
-  //this.setupJardinesObserver();
-  }
+}
   // Método seguro para obtener datos del mapa
 private async fetchMapData(url: string): Promise<any> {
   try {

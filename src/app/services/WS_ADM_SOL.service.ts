@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';  // Añadir import de tap
+import { catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WS_ADM_SOLService {
-  private apiUrl2 = '/api/web/services/WS_ADM_SOLService/WS_ADM_SOL';
+  private api = '/api/adm-sol';  // Actualiza el endpoint a la ruta de proxy configurada
 
   constructor(private http: HttpClient) {}
 
   getData(region: string, offset: string = ''): Observable<string> {
+    // Definimos el cuerpo de la solicitud SOAP
     const soapEnvelope = `
       <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws_adm_sol.wsbeans.iseries/">
         <soapenv:Header/>
@@ -26,18 +27,24 @@ export class WS_ADM_SOLService {
         </soapenv:Body>
       </soapenv:Envelope>`;
 
+    // Configuramos las cabeceras de la solicitud
     const headers = new HttpHeaders({
       'Content-Type': 'text/xml',
       'SOAPAction': ''
     });
 
-    return this.http.post(this.apiUrl2, soapEnvelope, {
+    // Realizamos la solicitud POST y aplicamos los operadores
+    return this.http.post(this.api, soapEnvelope, {
       headers,
       responseType: 'text'
     }).pipe(
-      tap((response: string) => {}),
-      catchError((error: Error) => {
-        return throwError(() => error);
+      tap((response: string) => {
+        // Aquí puedes añadir cualquier lógica adicional de procesamiento
+        //console.log('Respuesta recibida:', response);
+      }),
+      catchError((error) => {
+        console.error('Error al obtener los datos del servicio WSDL:', error);
+        return throwError(() => new Error('Error en la llamada SOAP: ' + error.message));
       })
     );
   }

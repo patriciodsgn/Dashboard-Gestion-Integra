@@ -15,10 +15,15 @@ import { SharedDataService } from 'src/app/services/shared-data.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import tarjetasSuperioresData from '../../../assets/tarjetas-superiores.json';
-
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import Exporting from 'highcharts/modules/exporting';
+import Highcharts3D from 'highcharts/highcharts-3d';
+import { DataService } from 'src/app/services/data.service';
+import { DashboardStateService } from '../../core/services/dashboard-state.service';
 MapModule(Highcharts);
 HighchartsMore(Highcharts);
-
+Exporting(Highcharts);
+Highcharts3D(Highcharts);
 @Component({
   selector: 'app-custom-dashboard-inicial',
   templateUrl: './custom-dashboard-inicial.component.html',
@@ -30,10 +35,18 @@ export class CustomDashboardInicialComponent implements OnInit, OnDestroy {
   // Propiedades Highcharts
   Highcharts: typeof Highcharts = Highcharts;
   chartOptions: Highcharts.Options = {};
-  
+  ejecucionData: any[] = [];
   // Suscripciones
   private dataSubscription: Subscription | undefined;
   private regionSubscription: Subscription | undefined;
+   // Suscripciones
+  private dataSubscriptionEp: Subscription | undefined;
+
+   // Datos simulados
+   totalEjecutado = 0;
+   totalVigente = 0;
+   gastosEjecutados = 0;
+   saldoPorGastar = 0;
 
   // Estado y datos
   isExpanded = false;
@@ -141,10 +154,13 @@ export class CustomDashboardInicialComponent implements OnInit, OnDestroy {
   ];
 
   constructor(
+    private http: HttpClient,
     private library: FaIconLibrary,
     private wsJarlisService: WsJarlisService,
     private sharedDataService: SharedDataService,
-    private router: Router
+    private dataService: DataService,
+    private router: Router,
+    private dashboardState: DashboardStateService
   ) {
     const today = new Date();
     this.fechaActual = `${today.getDate()} / ${today.getMonth() + 1} / ${today.getFullYear()}`;
@@ -166,6 +182,14 @@ export class CustomDashboardInicialComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.dashboardState.initializeNationalView();
+    // Mostrar valores iniciales
+    console.log('=== VALORES INICIALES ===');
+    console.log('Región:', this.dashboardState.selectedRegion);
+    console.log('Vista Nacional:', this.dashboardState.vistaNacional);
+
+    this.loadEjecucionPresupuestaria();
+    this.loadPresupuestoResumen();
     Highcharts.setOptions({
       accessibility: {
         enabled: false
@@ -176,7 +200,27 @@ export class CustomDashboardInicialComponent implements OnInit, OnDestroy {
     this.generateRegionTable();
     this.loadTarjetasSuperiores();
   }
+  private loadEjecucionPresupuestaria(): void {
+    this.dataSubscriptionEp = this.dataService.getEjecucionPresupuestaria().subscribe((response) => {
+      this.ejecucionData = response["getePHomeNacional1"];
+      console.log("Datos de Ejecución Presupuestaria:", this.ejecucionData);
 
+      this.totalEjecutado = this.ejecucionData.reduce((sum: number, item: any) => sum + item.total_ejecutado, 0);
+      this.totalVigente = this.ejecucionData.reduce((sum: number, item: any) => sum + item.total_Vigente, 0);
+
+      this.initializeCharts();
+    });
+  }
+
+  private loadPresupuestoResumen(): void {
+    this.dataSubscriptionEp = this.dataService.getPresupuestoResumen().subscribe((response) => {
+      const resumenData = response["getePHomeNacional2"][0];
+      this.gastosEjecutados = resumenData.gastos_ejecutados;
+      this.saldoPorGastar = resumenData.saldo_por_gastar;
+      console.log("**this.dataSubscriptionEp ", this.dataSubscriptionEp )
+      this.initializeCharts();
+    });
+  }
   ngAfterViewInit() {
     setTimeout(() => {
       this.initializeMap();
@@ -193,7 +237,7 @@ export class CustomDashboardInicialComponent implements OnInit, OnDestroy {
       this.regionSubscription.unsubscribe();
     }
   }
-
+  
   loadTarjetasSuperiores() {
     this.tarjetasSuperiores = tarjetasSuperioresData.map(item => ({
       titulo: item.tipo,
@@ -221,14 +265,220 @@ export class CustomDashboardInicialComponent implements OnInit, OnDestroy {
     }
   }
 
-  initializeCharts() {
-    if (document.getElementById('chart-bar-container')) {
-      Highcharts.chart('chart-bar-container', this.chartOptionsBar);
+  private initializeCharts(): void {
+    console.log("Configurando gráficos con los datos:", this.ejecucionData);
+  
+    const maxValue = Math.max(
+      ...this.ejecucionData.map((item: any) => item.total_Vigente),
+      ...this.ejecucionData.map((item: any) => item.total_ejecutado)
+  );
+  
+  this.chartOptionsBar = {
+    chart: {
+        type: 'bar', // Cambia a 'bar' para barras horizontales
+        backgroundColor: '#f9f9f9',
+        options3d: {
+            enabled: true,
+            alpha: 10, // Ángulo de inclinación
+            beta: 15,  // Ángulo de rotación
+            depth: 50,
+            viewDistance: 25
+        }
+    },
+    title: { text: 'Presupuesto Vigente vs Presupuesto Ejecutado' },
+    xAxis: { 
+        //categories: this.ejecucionData.map((item: any) => item.DireccionGestora),
+        //title: { text: 'Direcciones' },
+        labels: { 
+            style: { fontSize: '10px', color: '#333' },
+            align: 'right'
+        }
+    },
+    yAxis: { 
+        min: 0,
+        //title: { text: 'Cantidad' },
+        labels: { 
+            format: '{value}', 
+            style: { fontSize: '12px', color: '#333' } 
+        }
+    },
+    legend: {
+        enabled: false // Desactiva la leyenda
+    },
+    tooltip: {
+        enabled: false // Desactiva el tooltip para que no muestre valores
+    },
+    plotOptions: {
+        bar: { // Ajustes específicos para el tipo 'bar'
+            grouping: false, // Desactiva el agrupamiento para mantener las barras separadas
+            shadow: false,
+            borderWidth: 0,
+            depth: 20 // Profundidad para efecto 3D
+        },
+        series: {
+            dataLabels: {
+                enabled: false // Desactiva las etiquetas de datos en las barras
+            }
+        }
+    },
+    series: [
+        { 
+            type: 'bar', 
+            name: 'Presupuesto Vigente', 
+            color: 'rgba(70,130,180,1)', 
+            data: this.ejecucionData.map(() => 0) // Coloca valores de 0 en todos los datos para que no se muestren valores
+        },
+        { 
+            type: 'bar', 
+            name: 'Presupuesto Ejecutado', 
+            color: 'rgba(30,144,255,1)', 
+            data: this.ejecucionData.map(() => 0) // Coloca valores de 0 en todos los datos
+        }
+    ],
+    credits: { enabled: false },
+    exporting: {
+        enabled: true,
+        buttons: {
+            contextButton: {
+                menuItems: ["viewFullscreen", "printChart", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG"]
+            }
+        }
     }
-    if (document.getElementById('chart-pie-container')) {
-      Highcharts.chart('chart-pie-container', this.chartOptionsPie);
-    }
+};
+
+  
+  
+  this.chartOptionsBar = {
+      chart: {
+          type: 'bar', // Cambia a 'bar' para barras horizontales
+          backgroundColor: '#f9f9f9',
+          options3d: {
+              enabled: true,
+              alpha: 10, // Ángulo de inclinación
+              beta: 15,  // Ángulo de rotación
+              depth: 50,
+              viewDistance: 25
+          }
+      },
+      title: { text: 'Presupuesto Vigente vs Presupuesto Ejecutado' },
+      xAxis: { 
+          categories: this.ejecucionData.map((item: any) => item.DireccionGestora),
+          //title: { text: 'Direcciones' },
+          labels: { 
+              style: { fontSize: '10px', color: '#333' },
+              align: 'right'
+          }
+      },
+      yAxis: { 
+          min: 0,
+          max: maxValue,
+          //title: { text: 'Cantidad' },
+          labels: { 
+              format: '{value}', 
+              style: { fontSize: '12px', color: '#333' } 
+          }
+      },
+      legend: {
+          enabled: false // Desactiva la leyenda
+      },
+      tooltip: {
+          shared: true
+      },
+      plotOptions: {
+          bar: { // Ajustes específicos para el tipo 'bar'
+              grouping: true, // Desactiva el agrupamiento para mantener las barras separadas
+              shadow: false,
+              borderWidth: 0,
+              depth: 20 // Profundidad para efecto 3D
+          },
+          series: {
+              dataLabels: {
+                  enabled: true,
+                  format: '{y}',
+                  style: { color: '#333' }
+              }
+          }
+      },
+      series: [
+          { 
+              type: 'bar', 
+              name: 'Presupuesto Vigente', 
+              color: 'rgba(70,130,180,1)', 
+              data: this.ejecucionData.map((item: any) => item.total_Vigente),
+              pointPadding: 0.3,
+              pointPlacement: -0.2
+          },
+          { 
+              type: 'bar', 
+              name: 'Presupuesto Ejecutado', 
+              color: 'rgba(30,144,255,1)', 
+              data: this.ejecucionData.map((item: any) => item.total_ejecutado),
+              pointPadding: 0.3,
+              pointPlacement: 0.2
+          }
+      ],
+      credits: { enabled: false },
+      exporting: {
+          enabled: true,
+          buttons: {
+              contextButton: {
+                  menuItems: ["viewFullscreen", "printChart", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG"]
+              }
+          }
+      }
+  };
+  
+  
+  
+  
+  
+  
+  
+    // Configuración del gráfico de torta
+    this.chartOptionsPie = {
+      chart: {
+        type: 'pie',
+        backgroundColor: '#f9f9f9',
+      },
+      title: { text: 'Distribución de Gastos Ejecutados vs Saldo por Gastar' },
+      series: [{
+        type: 'pie',
+        name: 'Presupuesto',
+        data: [
+          { name: 'Gastos Ejecutados', y: this.gastosEjecutados, color: '#007bff' },
+          { name: 'Saldo por Gastar', y: this.saldoPorGastar, color: '#6c757d' }
+        ],
+        dataLabels: {
+          enabled: true,
+          format: '{point.name}: {point.y:.1f}',
+          style: { color: '#333' }
+        }
+      }],
+      legend: {
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'bottom'
+      },
+      plotOptions: {
+        pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+            enabled: true,
+            format: '{point.name}: {point.percentage:.1f} %',
+            style: { color: '#333' }
+          }
+        }
+      },
+      credits: { enabled: false }
+    };
+  
+    // Renderizar gráficos en los contenedores
+    Highcharts.chart('chart-bar-container', this.chartOptionsBar);
+    Highcharts.chart('chart-pie-container', this.chartOptionsPie);
   }
+  
+  
   initializeMap() {
     if (!this.mapContainer || !this.mapContainer.nativeElement) return;
 
@@ -478,7 +728,7 @@ export class CustomDashboardInicialComponent implements OnInit, OnDestroy {
 
 @NgModule({
   declarations: [CustomDashboardInicialComponent],
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule, HttpClientModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class CustomDashboardInicialModule {}

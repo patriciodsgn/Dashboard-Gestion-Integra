@@ -1,8 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import Highcharts3D from 'highcharts/highcharts-3d';
 import HighchartsExporting from 'highcharts/modules/exporting';
 import HighchartsExportData from 'highcharts/modules/export-data';
+import { DashboardService } from '../../core/services/dashboard.services';
+import { PuebloOriginarioStats, RegionStats, EstadisticasTotales } from '../../core/models/models';
+import { DashboardStateService } from '../../core/services/dashboard-state.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Options, YAxisOptions } from 'highcharts';
+
+interface DataPoint {
+  y: number;
+  dataLabels?: Highcharts.DataLabelsOptions;
+}
+
+interface SeriesConfig {
+  name: string;
+  type: 'column';
+  color: string;
+  data: DataPoint[];
+}
 
 // Inicializar módulos
 Highcharts3D(Highcharts);
@@ -14,22 +32,35 @@ HighchartsExportData(Highcharts);
   templateUrl: './indigenous-peoples-dashboard.component.html',
   styleUrls: ['./indigenous-peoples-dashboard.component.css']
 })
-export class IndigenousPeoplesDashboardComponent {
-  Highcharts = Highcharts;
+export class IndigenousPeoplesDashboardComponent implements OnInit {
+  // Variables de estado global
+  private destroy$ = new Subject<void>();
+  vistaNacional: boolean = true;
+  selectedRegion: number = 0;
 
-  // Opciones de gráfico para un donut en 3D
+  Highcharts = Highcharts;
+  pueblosOriginarios: PuebloOriginarioStats[] = [];
+  estadisticasRegion: RegionStats[] = [];
+ 
+  estadisticasTotales: EstadisticasTotales = {
+  nombre: '',
+  totalNinos: 0,
+  ninosOriginarios: 0,
+  porcentaje: 0.0
+  };
+
   nationalChartOptions: Highcharts.Options = {
     chart: {
       type: 'pie',
-      backgroundColor: '#f0f0f0', // Fondo más claro
+      backgroundColor: '#f0f0f0',
       options3d: {
         enabled: true,
-        alpha: 45, // Ángulo de inclinación
+        alpha: 45,
         beta: 0
       }
     },
     title: {
-      text: '', // Título del gráfico
+      text: 'Distribución de Pueblos Originarios',
       style: {
         color: '#333333',
         fontSize: '16px'
@@ -37,14 +68,14 @@ export class IndigenousPeoplesDashboardComponent {
     },
     plotOptions: {
       pie: {
-        innerSize: '50%', // Convierte el gráfico de pastel en donut
-        depth: 45,        // Profundidad 3D
+        innerSize: '50%',
+        depth: 45,
         allowPointSelect: true,
         cursor: 'pointer',
         dataLabels: {
           enabled: true,
-          format: '{point.name} {point.percentage:.1f}%', // Formato de leyenda como en la imagen
-          distance: 15, // Distancia de la etiqueta del borde
+          format: '{point.name} {point.percentage:.1f}%',
+          distance: 15,
           style: {
             color: '#333333',
             fontWeight: 'bold'
@@ -58,117 +89,373 @@ export class IndigenousPeoplesDashboardComponent {
     series: [{
       type: 'pie',
       name: '% de niños y niñas',
-      data: [
-        { name: 'Mapuche', y: 79.4, color: '#1E90FF' },
-        { name: 'Aymará', y: 9.4, color: '#4B0082' },
-        { name: 'Diaguita', y: 4.6, color: '#FF4500' },
-        { name: 'Colla', y: 0.7, color: '#FF6347' }
-        // Puedes agregar más datos si es necesario
-      ]
+      data: []
     }]
   };
 
-  // Opciones de gráfico para Frecuencia Geográfica en 3D con fondo claro
   geographicChartOptions: Highcharts.Options = {
     chart: {
       type: 'column',
-      backgroundColor: '#f5f5f5', // Fondo claro
-      options3d: {
-        enabled: true,
-        alpha: 15,
-        beta: 15,
-        depth: 50,
-        viewDistance: 25
-      }
+      backgroundColor: '#ffffff',
     },
     title: {
-      text: 'Frecuencia Geográfica de Pueblos Originarios',
+      text: 'Frecuencia Geográfica',
+      align: 'center',
       style: {
-        color: '#333333',
-        fontSize: '18px'
+        fontSize: '16px',
+        fontWeight: 'bold'
+      }
+    },
+    subtitle: {
+      text: 'Frecuencia niñas y niños Pueblos Originarios por división geográfica',
+      align: 'center',
+      style: {
+        color: '#666666',
+        fontSize: '14px'
       }
     },
     xAxis: {
-      categories: [
-        'Algarrobo', 'Alhué', 'Alto del Carmen', 'Alto Hospicio', 'Ancud', 'Andacollo', 
-        'Antofagasta', 'Arauco', 'Arica', 'Aysén', 'Bulnes', 'Cabildo', 'Cabo de Hornos', 
-        'Calama', 'Caldera', 'Calera de Tango', 'Cañete', 'Canela', 'Carahue', 'Cartagena', 
-        'Casablanca', 'Catemu', 'Cerrillos', 'Cerro Navia', 'Chaitén', 'Chanco', 'Chañaral', 
-        'Chépica', 'Chiguayante', 'Chillán Viejo', 'Chillán', 'Chimbarongo', 'Cholchol', 'Cisnes', 
-        'Cobquecura', 'Cochamó', 'Codegua', 'Coelemu', 'Coihueco', 'Coinco', 'Colbún', 'Colina', 
-        'Coltauco', 'Combarbalá', 'Concepción', 'Conchalí', 'Concon', 'Contulmo', 'Copiapó'
-        // Añade más comunas aquí si es necesario
-      ],
+      categories: [],
       labels: {
-        rotation: -45, // Rotación de las etiquetas para mejor visualización
         style: {
-          color: '#333333',
-          fontSize: '10px'
+          fontSize: '12px'
         }
       }
     },
     yAxis: {
       title: {
-        text: 'Cantidad',
+        text: 'Cantidad de niños',
         style: {
-          color: '#333333'
+          fontSize: '12px'
         }
       },
-      labels: {
+      stackLabels: {
+        enabled: true,
+        formatter: function(this: any): string {
+          return this.total > 0 ? this.total.toString() : '';
+        },
         style: {
-          color: '#333333'
+          fontWeight: 'bold',
+          color: '#000000'
         }
       }
     },
     plotOptions: {
       column: {
-        depth: 25,
-        stacking: 'normal' // Apilado para mostrar todas las categorías en cada comuna
+        stacking: 'normal',
+        pointWidth: 50,
+        dataLabels: {
+          enabled: true,
+          color: '#000000',
+          style: {
+            fontSize: '10px'
+          }
+        }
       }
     },
     legend: {
       align: 'center',
+      verticalAlign: 'top',
       layout: 'horizontal',
       itemStyle: {
-        fontSize: '10px'
+        fontSize: '12px'
       }
     },
-    tooltip: {
-      pointFormat: '{series.name}: <b>{point.y}</b>'
-    },
-    series: [
-      {
-        type: 'column',
-        name: 'Atacameño',
-        data: [4, 13, 46, 18, 10, 2, 60, 2, 184, 362, 1, 9, 4, 27, 7, 4, 7, 4, 7, 4, 7, 7, 64, 12, 3, 1, 13, 7, 29, 3, 1, 1, 0, 1, 1, 12, 2, 5, 3, 4, 15, 6, 4, 38, 29, 5, 6, 3, 7, 6],
-        color: '#8a2be2' // Color para Atacameño
-      },
-      {
-        type: 'column',
-        name: 'Aymará',
-        data: [5, 8, 24, 17, 3, 1, 18, 3, 52, 136, 2, 6, 4, 22, 5, 2, 5, 3, 6, 3, 6, 5, 46, 9, 2, 1, 10, 5, 20, 2, 1, 1, 0, 1, 1, 10, 1, 3, 2, 3, 12, 5, 3, 28, 24, 4, 5, 2, 5, 4],
-        color: '#d2691e' // Color para Aymará
-      },
-      {
-        type: 'column',
-        name: 'Colla',
-        data: [3, 7, 21, 12, 8, 1, 36, 1, 29, 83, 1, 3, 2, 14, 4, 2, 4, 2, 4, 2, 4, 4, 41, 8, 1, 0, 9, 4, 16, 2, 0, 1, 0, 1, 0, 9, 1, 2, 2, 2, 10, 4, 2, 23, 18, 3, 3, 1, 4, 3],
-        color: '#ff6347' // Color para Colla
-      },
-      {
-        type: 'column',
-        name: 'Diaguita',
-        data: [2, 6, 20, 10, 6, 1, 33, 1, 26, 79, 1, 2, 1, 12, 3, 2, 3, 2, 3, 2, 3, 3, 35, 7, 1, 0, 8, 3, 13, 1, 0, 1, 0, 1, 0, 7, 1, 1, 1, 2, 9, 3, 2, 20, 16, 2, 3, 1, 3, 3],
-        color: '#ffa500' // Color para Diaguita
-      },
-      {
-        type: 'column',
-        name: 'Mapuche',
-        data: [10, 23, 60, 29, 17, 3, 84, 4, 131, 361, 4, 12, 5, 45, 10, 4, 11, 6, 12, 6, 12, 10, 120, 22, 6, 2, 23, 11, 50, 6, 2, 3, 0, 3, 2, 23, 3, 8, 5, 7, 31, 13, 7, 83, 64, 12, 8, 4, 14, 13],
-        color: '#1e90ff' // Color para Mapuche
-      }
-      // Añade más series para otros pueblos originarios aquí
-    ]
-  };
+    colors: [
+      '#000080', // Atacameño
+      '#FFA500', // Aymará
+      '#800080', // Colla
+      '#FF0000', // Diaguita
+      '#0000FF', // Mapuche
+      '#008000', // Quechua
+      '#FFD700'  // Rapa Nui
+    ],
+    series: []
+};
+
+  constructor(
+    private dashboardService: DashboardService,
+    private dashboardState: DashboardStateService
+  ) {
+    this.vistaNacional = this.dashboardState.vistaNacional;
+    this.selectedRegion = this.dashboardState.selectedRegion;
+    console.log('Estado inicial del dashboard 1:', {
+      vistaNacional: this.vistaNacional,
+      selectedRegion: this.selectedRegion,
+    });
+  }
+
+  ngOnInit() {
+    console.log('Estado inicial del dashboard 2:', {
+      vistaNacional: this.vistaNacional,
+      selectedRegion: this.selectedRegion,
+      
+    });
+    
+    // Suscribirse a cambios en el estado
+    this.dashboardState.vistaNacional$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(isNacional => {
+      console.log('Cambio en vista nacional:', isNacional);
+      this.vistaNacional = isNacional;
+      this.loadData();
+    });
+
+    this.dashboardState.region$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(region => {
+      console.log('Cambio en región:', region);
+      this.selectedRegion = region;
+      this.loadData();
+    });
+    this.loadData();
+  }
+
+  onRegionChange(region: number) {
+    this.selectedRegion = region;
+    this.loadData();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadData() {
+    console.log('Cargando datos para región:', this.selectedRegion);
+    
+    // Cargar estadísticas totales
+    this.dashboardService.getEstadisticasTotalesPO(this.selectedRegion).subscribe((stats: EstadisticasTotales) => {
+        this.estadisticasTotales = stats;
+        console.log('Estadísticas totales:', stats);
+    });
+
+    // Cargar datos para el gráfico de torta
+    this.dashboardService.getPueblosOriginarios().subscribe((data: PuebloOriginarioStats[]) => {
+        this.pueblosOriginarios = data;
+        console.log('Datos pueblos originarios:', data);
+        this.updateNationalChart();
+    });
+
+    // Cargar datos para el gráfico geográfico
+    this.dashboardService.getEstadisticasPorRegion(this.selectedRegion).subscribe((data: RegionStats[]) => {
+        console.log('Datos geográficos recibidos:', data);
+        this.estadisticasRegion = data;
+        this.updateGeographicChart();
+    });
+}
+
+  private updateNationalChart() {
+    const chartData = this.pueblosOriginarios.map(pueblo => ({
+      name: pueblo.nombre,
+      y: pueblo.porcentaje,
+      color: pueblo.color
+    }));
+
+    this.nationalChartOptions = {
+      ...this.nationalChartOptions,
+      series: [{
+        type: 'pie',
+        name: '% de niños y niñas',
+        data: chartData
+      }]
+    };
+  }
+
+  private updateGeographicChart() {
+    if (!this.estadisticasRegion || this.estadisticasRegion.length === 0) {
+        console.warn('No hay datos para mostrar');
+        return;
+    }
+
+    // Configuración de pueblos originarios en el orden correcto
+    const pueblosConfig = [
+        { id: 'Atacameño', color: '#000080' }, // Azul oscuro
+        { id: 'Aymará', color: '#FFA500' },    // Naranja
+        { id: 'Colla', color: '#800080' },     // Púrpura
+        { id: 'Diaguita', color: '#FF0000' },  // Rojo
+        { id: 'Mapuche', color: '#0000FF' },   // Azul
+        { id: 'Quechua', color: '#008000' },   // Verde
+        { id: 'Rapa Nui', color: '#FFD700' }   // Amarillo
+    ];
+
+    // Obtener comunas ordenadas
+    const comunas = this.estadisticasRegion.map(stat => stat.comuna);
+
+    // Crear series con los datos
+    const series = pueblosConfig.map(pueblo => {
+      const data = comunas.map(comuna => {
+          const comunaData = this.estadisticasRegion.find(stat => stat.comuna === comuna);
+          const value = comunaData?.stats[pueblo.id] || 0;  // Usar operador opcional
   
+          return {
+              y: value,
+              dataLabels: {
+                  enabled: value > 0,
+                  formatter: function(this: any): string {
+                      if (!this?.y) return '';
+                      return this.y > 0 ? this.y.toString() : '';
+                  }
+              }
+          };
+      });
+  
+      return {
+          name: pueblo.id,
+          type: 'column' as const,
+          color: pueblo.color,
+          data
+      };
+  });
+
+    // Calcular totales por comuna
+    const totales = comunas.map(comuna => {
+        const comunaData = this.estadisticasRegion.find(stat => stat.comuna === comuna);
+        if (!comunaData) return 0;
+        return Object.values(comunaData.stats).reduce((sum, val) => sum + (val || 0), 0);
+    });
+
+    this.geographicChartOptions = {
+        chart: {
+            type: 'column',
+            backgroundColor: '#ffffff',
+            height: 400
+        },
+        title: {
+            text: 'Frecuencia Geográfica',
+            align: 'center',
+            style: { 
+                color: '#666666',
+                fontSize: '16px'
+            }
+        },
+        subtitle: {
+            text: 'Frecuencia niñas y niños Pueblos Originarios por división geográfica',
+            align: 'center',
+            style: { 
+                color: '#95a5a6',
+                fontSize: '14px'
+            }
+        },
+        xAxis: {
+            categories: comunas,
+            labels: {
+                rotation: 0,
+                style: { 
+                    fontSize: '12px',
+                    fontWeight: 'bold'
+                }
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Cantidad de niños',
+                style: {
+                    fontSize: '12px'
+                }
+            },
+            stackLabels: {
+                enabled: true,
+                formatter: function(this: any): string {
+                    const total = totales[this.x];
+                    return total > 0 ? total.toString() : '';
+                },
+                style: {
+                    fontWeight: 'bold',
+                    color: 'black',
+                    textOutline: 'none'
+                }
+            }
+        },
+        plotOptions: {
+          column: {
+              stacking: 'normal',
+              pointWidth: 70,
+              borderWidth: 0,
+              dataLabels: {
+                  enabled: true,
+                  color: '#000000',
+                  style: {
+                      fontSize: '11px',
+                      fontWeight: 'bold',
+                      textOutline: 'none'
+                  },
+                  formatter: function(this: Highcharts.PointLabelObject): string {
+                      return this.y && this.y > 0 ? this.y.toString() : '';
+                  }
+              }
+          }
+      },
+        legend: {
+            enabled: true,
+            align: 'center',
+            verticalAlign: 'top',
+            layout: 'horizontal',
+            itemStyle: {
+                fontSize: '12px',
+                fontWeight: 'normal'
+            },
+            symbolRadius: 6
+        },
+        credits: {
+            enabled: false
+        },
+        colors: pueblosConfig.map(p => p.color),
+        series: series
+    } as Highcharts.Options;
+
+    // Agregar los totales encima de cada barra
+    const totalesSeries: Highcharts.SeriesOptionsType = {
+      name: 'Totales',
+      type: 'line',
+      data: totales.map((total, index) => ({
+          x: index,
+          y: Math.max(...series.map(s => s.data.reduce((sum, point) => sum + (point.y || 0), 0))),
+          dataLabels: {
+              enabled: true,
+              format: '{point.total}',
+              verticalAlign: 'top',
+              y: -20,
+              style: {
+                  fontSize: '14px',
+                  fontWeight: 'bold'
+              }
+          }
+      })),
+      showInLegend: false,
+      enableMouseTracking: false,
+      dataLabels: {
+          enabled: true,
+          formatter: function() {
+              return totales[this.point.x].toString();
+          }
+      }
+  };
+
+    // Asegurar que las series incluyan los totales
+    this.geographicChartOptions = {
+      ...this.geographicChartOptions,
+      series: [...series, totalesSeries] as Highcharts.SeriesOptionsType[]
+  };
+    // Debug
+    console.log('Chart data:', {
+        comunas,
+        series,
+        totales,
+        options: this.geographicChartOptions
+    });
+}
+  private getColorForPueblo(pueblo: string): string {
+    const colores: {[key: string]: string} = {
+      'Atacameño': '#000080',
+      'Aymará': '#FFA500',
+      'Colla': '#800080',
+      'Diaguita': '#FF0000',
+      'Mapuche': '#0000FF',
+      'Quechua': '#008000',
+      'Rapa Nui': '#FFD700'
+    };
+    return colores[pueblo] || '#808080';
+  }
 }

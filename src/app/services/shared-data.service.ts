@@ -134,7 +134,7 @@ export class SharedDataService {
     const jardinesPorRegionYComuna: JardinesPorRegionYComuna = {};
     
     data.forEach((item, index) => {
-      console.log(`Procesando elemento ${index}:`, item);
+      //console.log(`Procesando elemento ${index}:`, item);
   
       // Verificar y asignar propiedades, adaptándose a los nombres específicos en los datos
       const region = item.Region ? this.normalizeRegionName(item.Region) : null;
@@ -148,27 +148,27 @@ export class SharedDataService {
       }
   
       // Verificación en consola de los valores procesados
-      console.log(`Región normalizada: ${region}, Comuna: ${comuna}, Código: ${codigoComuna}`);
+      //console.log(`Región normalizada: ${region}, Comuna: ${comuna}, Código: ${codigoComuna}`);
   
       // Inicializar la región si no existe en el objeto
       if (!jardinesPorRegionYComuna[region]) {
         jardinesPorRegionYComuna[region] = {};
-        console.log(`Nueva región agregada: ${region}`);
+        //console.log(`Nueva región agregada: ${region}`);
       }
   
       // Inicializar la comuna dentro de la región si no existe
       if (!jardinesPorRegionYComuna[region][comuna]) {
         jardinesPorRegionYComuna[region][comuna] = { codigo: codigoComuna, cantidad: 0 };
-        console.log(`Nueva comuna agregada en ${region}: ${comuna} con código ${codigoComuna}`);
+        //console.log(`Nueva comuna agregada en ${region}: ${comuna} con código ${codigoComuna}`);
       }
   
       // Incrementar el contador de jardines para la comuna
       jardinesPorRegionYComuna[region][comuna].cantidad += 1;
-      console.log(`Cantidad actualizada para ${comuna}, ${region}:`, jardinesPorRegionYComuna[region][comuna].cantidad);
+      //console.log(`Cantidad actualizada para ${comuna}, ${region}:`, jardinesPorRegionYComuna[region][comuna].cantidad);
     });
   
     // Ver el resultado final antes de actualizar el BehaviorSubject
-    console.log('Estructura final de jardinesPorRegionYComuna:', jardinesPorRegionYComuna);
+    //console.log('Estructura final de jardinesPorRegionYComuna:', jardinesPorRegionYComuna);
   
     // Actualizar el BehaviorSubject
     this.jardinesPorRegionYComunaSubject.next(jardinesPorRegionYComuna);
@@ -252,6 +252,6 @@ export class SharedDataService {
       }
     }
     
-    console.log('Región seleccionada actualizada:', region);
+    //console.log('Región seleccionada actualizada:', region);
   }
 }

@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WsJarlisService {
-  // Cambia la URL al proxy configurado en Angular en vez de usar la URL directa
-  private apiUrl = '/api/web/services/WS_JARLISService/WS_JARLIS';
+  // URL del servicio a través del proxy configurado en Angular
+  private api = '/api/jarlis';
 
   constructor(private http: HttpClient) {}
 
   getData(pcomuna: string, pdireem: string, pjardin: string, pmasreg: string): Observable<string> {
-    // SOAP Envelope con estructura basada en el WSDL proporcionado
+    // Cuerpo de la solicitud SOAP
     const soapEnvelope = `
       <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws_jarlis.wsbeans.iseries/">
         <soapenv:Header/>
@@ -29,16 +29,24 @@ export class WsJarlisService {
         </soapenv:Body>
       </soapenv:Envelope>`;
 
-    // Headers de la solicitud SOAP
+    // Configuración de encabezados HTTP
     const headers = new HttpHeaders({
-      'Content-Type': 'text/xml',       // Tipo de contenido para SOAP
-      'SOAPAction': ''                  // SOAPAction puede ser vacío si no se especifica
+      'Content-Type': 'text/xml',
+      'SOAPAction': ''
     });
 
-    return this.http.post(this.apiUrl, soapEnvelope, { headers, responseType: 'text' }).pipe(
-      catchError(error => {
-        console.error('Error fetching data:', error);
-        return throwError(error);
+    // Realizamos la solicitud POST con el cuerpo SOAP y los encabezados
+    return this.http.post(this.api, soapEnvelope, {
+      headers,
+      responseType: 'text'  // Necesitamos la respuesta como texto plano para procesar el XML
+    }).pipe(
+      tap((response: string) => {
+        // Lógica adicional en caso de necesitar procesar la respuesta
+        //console.log('Respuesta recibida del servicio WS_JARLIS:', response);
+      }),
+      catchError((error) => {
+        //console.error('Error al obtener datos del servicio WS_JARLIS:', error);
+        return throwError(() => new Error('Error en la llamada SOAP: ' + error.message));
       })
     );
   }

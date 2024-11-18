@@ -8,6 +8,20 @@ import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';  // FontAwesome import
 import { HighchartsChartModule } from 'highcharts-angular';
 import { TestDataComponent } from './components/test-data/test-data.component';
+import { IndicadoresDashboardComponent } from './components/indicadores-dashboard/indicadores-dashboard.component';
+import { NutritionDashboardComponent } from './components/nutrition-dashboard/nutrition-dashboard.component';
+import { IndigenousPeoplesDashboardComponent } from './components/indigenous-peoples-dashboard/indigenous-peoples-dashboard.component';
+import { MigrantsDashboardComponent } from './components/migrants-dashboard-component/migrants-dashboard-component.component';
+import { NeeDashboardComponent } from './components/nee-dashboard-component/nee-dashboard-component.component';
+import { FamilySurveyDashboardComponent } from './components/family-survey-dashboard-component/family-survey-dashboard-component.component';
+import { DashboardAccidentesComponent} from './components/dashboard-accidentes/dashboard-accidentes.component';
+import { DashboardReconocimientoComponent} from './components/dashboard-reconocimiento/dashboard-reconocimiento.component';
+import { DashboardSelloVerdeComponent} from './components/dashboard-sello-verde/dashboard-sello-verde.component';
+
+import { DashboardPortadaIndicadoresComponent} from './components/dashboard-portada-indicadores/dashboard-portada-indicadores.component';
+import { DashboardService } from '../app/core/services/dashboard.services';
+import { DataSourceService } from '../app/core/services/data-source.service';
+
 //import { CardsModule } from './components/cards/cards-module';
 // Routes
 import { routes } from './app.route';
@@ -64,6 +78,7 @@ import { HeaderComponent } from './layouts/header';
 import { FooterComponent } from './layouts/footer';
 import { SidebarComponent } from './layouts/sidebar';
 import { ThemeCustomizerComponent } from './layouts/theme-customizer';
+import { MapColorsService } from './services/map-colors.service';
 
 @NgModule({
     imports: [
@@ -84,7 +99,7 @@ import { ThemeCustomizerComponent } from './layouts/theme-customizer';
         StoreModule.forRoot({ index: indexReducer }),
         SharedModule.forRoot(),
         FontAwesomeModule,
-        
+        HttpClientModule,
         HighchartsChartModule,  
     ],
     declarations: [
@@ -107,11 +122,21 @@ import { ThemeCustomizerComponent } from './layouts/theme-customizer';
         KnowledgeBaseComponent,
         FaqComponent,
         TestDataComponent,
+        IndicadoresDashboardComponent,
+        NutritionDashboardComponent,
+        IndigenousPeoplesDashboardComponent,
+        MigrantsDashboardComponent,
+        NeeDashboardComponent,
+        FamilySurveyDashboardComponent,
+        DashboardAccidentesComponent,
+        DashboardReconocimientoComponent,
+        DashboardSelloVerdeComponent,
+        DashboardPortadaIndicadoresComponent
         //CustomDashboardComponent,  // Asegúrate de incluir este componente
         //CustomDashboardInicialComponent // Asegúrate de incluir este componente
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    providers: [Title, SharedDataService],
+    providers: [Title, SharedDataService, MapColorsService,DashboardService,DataSourceService],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

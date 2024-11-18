@@ -32,10 +32,23 @@ if (typeof Highcharts === 'object') {
     templateUrl: './indicadores-dashboard.component.html'
 })
 export class IndicadoresDashboardComponent implements OnInit {
-exportPDF() {
-throw new Error('Method not implemented.');
+applyFilter() {
+  this.showPortadaIndicadores = this.selectedSegments.includes('PORTADA');
+  this.showNutritionDashboard = this.selectedSegments.includes('ALIMENTACION Y SALUD');
+  this.showIndigenousPeoplesDashboard = this.selectedSegments.includes('DPGR');
+  
+  this.showMigrantsDashboard = this.selectedSegments.includes('DPGR');
+  this.showNeeDashboard = this.selectedSegments.includes('DPGR');
+  this.showFamilySurveyDashboard = this.selectedSegments.includes('DIRECCION EJECUTIVA');
+  this.showDashboardAccidentes = this.selectedSegments.includes('ACCIDENTES');
+  this.showDashboardReconocimiento = this.selectedSegments.includes('DPGR');
+  this.showDashboardSelloVerde = this.selectedSegments.includes('SELLO VERDE');
+  // Cierra el menú desplegable
+  this.isDropdownOpen = false;
+  this.updateCharts();
 }
-    // Variables para controlar la visibilidad de cada panel
+
+    // Variables de control de paneles
     showPortadaIndicadores: boolean = false;
     showNutritionDashboard: boolean = false;
     showIndigenousPeoplesDashboard: boolean = false;
@@ -46,18 +59,17 @@ throw new Error('Method not implemented.');
     showDashboardReconocimiento: boolean = false;
     showDashboardSelloVerde: boolean = false;
 
-    // Highcharts properties
+    // Propiedades de Highcharts
     Highcharts: typeof Highcharts = Highcharts;
     chartConstructor = 'chart';
     updateFlag = false;
 
-    // Dashboard data
+    // Filtros y datos
     selectedYear: number = 2024;
     selectedRegion: string = 'Gran Santiago Nor Poniente';
     startDate: string = '2024-09-09';
     endDate: string = '2024-10-10';
 
-    // Indicadores
     indicators = {
         establishments: 116,
         kindergartenAndNursery: 80,
@@ -66,76 +78,69 @@ throw new Error('Method not implemented.');
         nonConventional: 80,
         wheelsKindergarten: 8
     };
-    // Opciones seleccionadas en el menú desplegable
+
     selectedOptions: string[] = [];
-    
-    selectedSegments: string[] = []; // Segmentos seleccionados
-    isDropdownOpen: boolean = false; // Estado del menú desplegable de segmentos
-    
-    // Filtros
+    selectedSegments: string[] = [];
+    isDropdownOpen: boolean = false;
+
     years: number[] = [2021, 2022, 2023, 2024];
     segments: string[] = [
         'PORTADA',
+        'ALIMENTACION Y SALUD',
         'EQUIDAD E INCLUSIÓN',
-        'VÍNCULO CON LA FAMILIA',
+        'DIRECCION EJECUTIVA',
         'INFRAESTRUCTURA',
         'SEGURIDAD',
-        'EDUCACIÓN'
+        'EDUCACIÓN',
+        'DPGR'
     ];
 
-    
-    showFilterBar: boolean = true; // Control para mostrar/ocultar la barra de filtros
 
+
+    showFilterBar: boolean = true;
     dataSteward: string = 'XXXXXXXXXXXXXXXX';
 
     constructor() {}
 
-    ngOnInit() {
-        // Inicializar datos o cargar configuraciones iniciales
-    }
+    ngOnInit() {}
 
-    // Método para aplicar los filtros y actualizar los gráficos
+    // Método para aplicar filtros
     applyFilters() {
         console.log('Applying filters:', {
             year: this.selectedYear,
             region: this.selectedRegion,
             segments: this.selectedSegments,
             dateRange: [this.startDate, this.endDate]
+            
         });
-        this.updateCharts();
+        
     }
 
-    // Método para exportar a PDF
     exportToPDF() {
         console.log('Exporting to PDF...');
-        // Aquí puedes agregar la lógica para exportar a PDF si se requiere
     }
 
-    // Método para actualizar los gráficos
     private updateCharts() {
         this.updateFlag = true;
     }
 
-    // Manejar cambio de año
     onYearChange(year: number) {
         this.selectedYear = year;
         this.applyFilters();
     }
 
-    // Manejar cambio de región
     onRegionChange(region: string) {
         this.selectedRegion = region;
         this.applyFilters();
     }
 
-    // Manejar cambio en el rango de fechas
     onDateRangeChange(startDate: string, endDate: string) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.applyFilters();
     }
 
-    // Alternar selección de segmento
+    // Alternar selección de segmento individual
     toggleSegment(segment: string) {
         const index = this.selectedSegments.indexOf(segment);
         if (index === -1) {
@@ -146,69 +151,74 @@ throw new Error('Method not implemented.');
         this.applyFilters();
     }
 
-    // Verificar si un segmento está seleccionado
     isSelected(segment: string): boolean {
         return this.selectedSegments.includes(segment);
     }
 
-    // Método para alternar la visibilidad de la barra de filtros
+    // Verificar si todos los segmentos están seleccionados
+    allSegmentsSelected(): boolean {
+        return this.selectedSegments.length === this.segments.length;
+    }
+
+    // Seleccionar o deseleccionar todos los segmentos
+    toggleAllSegments(event: Event) {
+        const isChecked = (event.target as HTMLInputElement).checked;
+        if (isChecked) {
+            this.selectedSegments = [...this.segments];
+        } else {
+            this.selectedSegments = [];
+        }
+        this.applyFilters();
+    }
+
     toggleFilterBar() {
         this.showFilterBar = !this.showFilterBar;
     }
-    // Método para manejar el botón "FILTRAR"
-  filtrar() {
-    // Reinicia todas las variables a false
-    this.resetPanels();
 
-    // Activa los paneles según las opciones seleccionadas
-    this.selectedOptions.forEach(option => {
-      switch (option) {
-        case 'PORTADA':
-          this.showPortadaIndicadores = true;
-          break;
-        case 'EQUIDAD E INCLUSIÓN':
-          this.showNutritionDashboard = true;
-          break;
-        case 'VÍNCULO CON LA FAMILIA':
-          this.showFamilySurveyDashboard = true;
-          break;
-        case 'INFRAESTRUCTURA':
-          this.showIndigenousPeoplesDashboard = true;
-          break;
-        case 'SEGURIDAD':
-          this.showDashboardAccidentes = true;
-          break;
-        case 'EDUCACIÓN':
-          this.showNeeDashboard = true;
-          break;
-        // Agrega otros casos según las opciones
-        default:
-          break;
-      }
-    });
-  }
+    filtrar() {
+        this.resetPanels();
+        this.selectedOptions.forEach(option => {
+            switch (option) {
+                case 'PORTADA':
+                    this.showPortadaIndicadores = true;
+                    break;
+                case 'ALIMENTACION Y SALUD':
+                    this.showNutritionDashboard = true;
+                    break;
+                case 'DIRECCION EJECUTIVA':
+                    this.showFamilySurveyDashboard = true;
+                    break;
+                case 'DPGR':
+                    this.showIndigenousPeoplesDashboard = true;
+                    this.showNeeDashboard = true;
+                    this.showMigrantsDashboard=true;
+                    this.showDashboardReconocimiento=true;
+                    this.showDashboardSelloVerde=true;
+                    break;
+                case 'SEGURIDAD':
+                    this.showDashboardAccidentes = true;
+                    break;
+                case 'EDUCACIÓN':
+                    this.showNeeDashboard = true;
+                    break;
+            }
+        });
+    }
 
-  // Método para reiniciar todos los paneles a false
-  resetPanels() {
-    this.showPortadaIndicadores = false;
-    this.showNutritionDashboard = false;
-    this.showIndigenousPeoplesDashboard = false;
-    this.showMigrantsDashboard = false;
-    this.showNeeDashboard = false;
-    this.showFamilySurveyDashboard = false;
-    this.showDashboardAccidentes = false;
-    this.showDashboardReconocimiento = false;
-    this.showDashboardSelloVerde = false;
-  }
-  // Método para alternar el estado del menú desplegable de segmentos
-  toggleDropdown() {
-    this.isDropdownOpen = !this.isDropdownOpen;
-  }
+    resetPanels() {
+        this.showPortadaIndicadores = false;
+        this.showNutritionDashboard = false;
+        this.showIndigenousPeoplesDashboard = false;
+        this.showMigrantsDashboard = false;
+        this.showNeeDashboard = false;
+        this.showFamilySurveyDashboard = false;
+        this.showDashboardAccidentes = false;
+        this.showDashboardReconocimiento = false;
+        this.showDashboardSelloVerde = false;
+ 
+    }
 
-  
-
-  // Método para seleccionar el año
-  selectYear(year: number) {
-    this.selectedYear = year;
-  }
+    toggleDropdown() {
+        this.isDropdownOpen = !this.isDropdownOpen;
+    }
 }

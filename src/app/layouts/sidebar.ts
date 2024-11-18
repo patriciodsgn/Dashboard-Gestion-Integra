@@ -6,15 +6,35 @@ import { slideDownUp } from '../shared/animations';
 import { faBriefcase } from '@fortawesome/free-solid-svg-icons';
 
 import { faClipboard } from '@fortawesome/free-solid-svg-icons';
-import { faBook } from '@fortawesome/free-solid-svg-icons';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
+
+
 import { faGavel } from '@fortawesome/free-solid-svg-icons';
 import { faLaptopCode } from '@fortawesome/free-solid-svg-icons';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
 import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
-import { faBuilding } from '@fortawesome/free-solid-svg-icons';
+
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { RegionService } from '../region.service'; // Importar el servicio
+
+import { faChild, faBed, faBaby, faPeopleRoof, 
+    faCloudSun, faMapMarkedAlt, faBus, 
+    faChartLine, faSchool, faUsers, faShieldAlt, 
+    faBuilding, faTree, faBabyCarriage, faCalendar, 
+    faChalkboardTeacher, faDesktop, faGlobe, 
+    faPeopleArrows, faGraduationCap, 
+    faDollarSign,
+    faChartPie,
+    faCheckCircle,
+    faRotate,
+    faBox,
+    faHeart,
+    faCog,
+    faBook,
+    faCalendarDays,
+    faHome,
+    faShoppingCart
+
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'sidebar',
@@ -36,6 +56,8 @@ export class SidebarComponent {
     faFileAlt = faFileAlt;
     faBuilding = faBuilding;
     faCircle = faCircle;
+    faSchool = faSchool;    
+
 
     constructor(
         public translate: TranslateService,

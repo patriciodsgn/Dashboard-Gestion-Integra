@@ -10,8 +10,9 @@
         <!-- Panel Porcentaje Pueblos Originarios -->
         <div class="bg-blue-200 p-6 rounded-lg shadow-md text-center">
             <h2 class="text-xl font-semibold mb-2">% Pueblos Originarios</h2>
-            <div class="text-5xl font-bold">12,2%</div>
+            <div class="text-5xl font-bold">{{estadisticasTotales.porcentaje  | number:'1.1-1'}}%</div>
             <p class="mt-2">% Niños y niñas Pueblos Originarios</p>
+            <p class="text-sm mt-1 text-gray-600">Total: {{estadisticasTotales.ninosOriginarios}} de {{estadisticasTotales.totalNinos}} niños</p>
         </div>
 
         <!-- Panel Central con Imagen -->
@@ -22,7 +23,7 @@
         <!-- Panel Total Niños -->
         <div class="bg-blue-200 p-6 rounded-lg shadow-md text-center">
             <h2 class="text-xl font-semibold mb-2">Total Niños</h2>
-            <div class="text-5xl font-bold">10 mil</div>
+            <div class="text-5xl font-bold">{{estadisticasTotales.ninosOriginarios}}</div>
             <p class="mt-2">Nº Niñas y niños Pueblos Originarios</p>
         </div>
     </div>
@@ -42,8 +43,6 @@
 
         <!-- Gráfico Frecuencia Geográfica -->
         <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-semibold text-center">Frecuencia Geográfica</h3>
-            <h4 class="text-teal-600 text-center mb-4">Frecuencia niñas y niños Pueblos Originarios por división geográfica</h4>
             <highcharts-chart
                 [Highcharts]="Highcharts"
                 [options]="geographicChartOptions"

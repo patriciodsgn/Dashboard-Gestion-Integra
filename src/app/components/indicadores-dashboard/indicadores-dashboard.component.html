@@ -1,4 +1,4 @@
-<div class="w-full">
+
     <!-- Encabezado y tarjetas principales -->
     <div class="header-container sticky top-0 z-50 bg-[#F8ECFE] p-4 shadow-md mb-4 rounded-lg">
         <div class="w-full px-2 py-2">
@@ -96,58 +96,69 @@
                 <option>Gran Santiago Nor Poniente</option>
             </select>
 
-            <div class="form-select dropdown-multiple">
-                <div class="dropdown-button" (click)="isDropdownOpen = !isDropdownOpen">
-                    <span>{{ selectedSegments.length ? selectedSegments.join(', ') : 'SEGMENTO' }}</span>
-                    <span>▼</span>
+            <div class="form-select dropdown-multiple relative">
+                <!-- Botón de selección -->
+                <div class="dropdown-button flex justify-between items-center cursor-pointer p-2 border border-gray-300 rounded" (click)="toggleDropdown()">
+                    <span>{{ selectedSegments.length ? 'Opciones seleccionadas' : 'Seleccionar opciones' }}</span>
                 </div>
-                <div class="dropdown-options" *ngIf="isDropdownOpen">
-                    <label *ngFor="let segment of segments">
-                        <input type="checkbox" [checked]="isSelected(segment)" (change)="toggleSegment(segment)">
+                <!-- Menú desplegable -->
+                <div *ngIf="isDropdownOpen" class="dropdown-options absolute top-full left-0 mt-1 w-full bg-white border border-gray-300 rounded shadow-lg max-h-48 overflow-y-auto z-10">
+                    <label class="flex items-center p-2 hover:bg-gray-100 font-semibold">
+                        <input type="checkbox" class="mr-2" [checked]="allSegmentsSelected()" (change)="toggleAllSegments($event)">
+                        Seleccionar todo
+                    </label>
+                    <hr class="my-1">
+                    <label *ngFor="let segment of segments" class="flex items-center p-2 hover:bg-gray-100">
+                        <input type="checkbox" class="mr-2" [checked]="isSelected(segment)" (change)="toggleSegment(segment)">
                         {{ segment }}
                     </label>
                 </div>
             </div>
-
+            
+            
+            
+            
             <!-- Fechas de Inicio y Fin -->
             <input type="date" class="form-input" value="2024-09-09" />
             <input type="date" class="form-input" value="2024-10-10" />
 
             <!-- Botones de Acción -->
-            <button class="btn btn-primary px-3 py-1">FILTRAR</button>
-            <button class="btn btn-danger px-3 py-1">PDF</button>
+            <button (click)="applyFilter()" class="btn btn-primary px-3 py-1 bg-blue-500 text-white">FILTRAR</button>
+            <button class="btn btn-danger px-3 py-1 bg-red-500 text-white">PDF</button>
         </div>
     </div>
     </div>
 
     
 
-    <!-- Paneles adicionales de dashboard -->
-    <div class="w-full mt-4">
-        <app-dashboard-portada-indicadores></app-dashboard-portada-indicadores>
-    </div>
-    <div class="w-full mt-4">
-        <app-nutrition-dashboard></app-nutrition-dashboard>
-    </div>
-    <div class="w-full mt-4">
-        <app-indigenous-peoples-dashboard></app-indigenous-peoples-dashboard>
-    </div>
-    <div class="w-full mt-4">
-        <app-migrants-dashboard></app-migrants-dashboard>
-    </div>
-    <div class="w-full mt-4">
-        <app-nee-dashboard></app-nee-dashboard>
-    </div>
-    <div class="w-full mt-4">
-        <app-family-survey-dashboard></app-family-survey-dashboard>
-    </div>
-    <div class="w-full mt-4">
-        <app-dashboard-accidentes></app-dashboard-accidentes>
-    </div>
-    <div class="w-full mt-4">
-        <app-dashboard-reconocimiento></app-dashboard-reconocimiento>
-    </div>
-    <div class="w-full mt-4">
-        <app-dashboard-sello-verde></app-dashboard-sello-verde>
-    </div>
+     <!-- Paneles adicionales de dashboard -->
+<div *ngIf="showPortadaIndicadores" class="w-full mt-4">
+    <app-dashboard-portada-indicadores></app-dashboard-portada-indicadores>
 </div>
+<div *ngIf="showNutritionDashboard" class="w-full mt-4">
+    <app-nutrition-dashboard></app-nutrition-dashboard>
+</div>
+<div *ngIf="showIndigenousPeoplesDashboard" class="w-full mt-4">
+    <app-indigenous-peoples-dashboard></app-indigenous-peoples-dashboard>
+</div>
+<div *ngIf="showMigrantsDashboard" class="w-full mt-4">
+    <app-migrants-dashboard></app-migrants-dashboard>
+</div>
+<div *ngIf="showNeeDashboard" class="w-full mt-4">
+    <app-nee-dashboard></app-nee-dashboard>
+</div>
+<div *ngIf="showFamilySurveyDashboard" class="w-full mt-4">
+    <app-family-survey-dashboard></app-family-survey-dashboard>
+</div>
+<div *ngIf="showDashboardAccidentes" class="w-full mt-4">
+    <app-dashboard-accidentes></app-dashboard-accidentes>
+</div>
+<div *ngIf="showDashboardReconocimiento" class="w-full mt-4">
+    <app-dashboard-reconocimiento></app-dashboard-reconocimiento>
+</div>
+<div *ngIf="showDashboardSelloVerde" class="w-full mt-4">
+    <app-dashboard-sello-verde></app-dashboard-sello-verde>
+</div>
+    
+    
+    
