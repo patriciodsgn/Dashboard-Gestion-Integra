@@ -1,0 +1,13 @@
+<div class="grid grid-cols-4 gap-4 p-4 dev1">
+
+  <div *ngFor="let button of buttons">
+    <app-elem-button 
+      [icon]="button.icon" 
+      [title]="button.title" 
+      [description]="button.description"
+      [active]="button.active">
+    </app-elem-button>
+  </div>
+  
+
+</div>
