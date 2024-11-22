@@ -3,38 +3,9 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { slideDownUp } from '../shared/animations';
-import { faBriefcase } from '@fortawesome/free-solid-svg-icons';
-
-import { faClipboard } from '@fortawesome/free-solid-svg-icons';
-
-
-import { faGavel } from '@fortawesome/free-solid-svg-icons';
-import { faLaptopCode } from '@fortawesome/free-solid-svg-icons';
-import { faCogs } from '@fortawesome/free-solid-svg-icons';
-import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
-
-import { faCircle } from '@fortawesome/free-solid-svg-icons';
-import { RegionService } from '../region.service'; // Importar el servicio
-
-import { faChild, faBed, faBaby, faPeopleRoof, 
-    faCloudSun, faMapMarkedAlt, faBus, 
-    faChartLine, faSchool, faUsers, faShieldAlt, 
-    faBuilding, faTree, faBabyCarriage, faCalendar, 
-    faChalkboardTeacher, faDesktop, faGlobe, 
-    faPeopleArrows, faGraduationCap, 
-    faDollarSign,
-    faChartPie,
-    faCheckCircle,
-    faRotate,
-    faBox,
-    faHeart,
-    faCog,
-    faBook,
-    faCalendarDays,
-    faHome,
-    faShoppingCart
-
-} from '@fortawesome/free-solid-svg-icons';
+import { faBriefcase, faClipboard, faGavel, faLaptopCode, faCogs, faFileAlt, faCircle, faBook, faUsers, faSchool, faBuilding } from '@fortawesome/free-solid-svg-icons';
+import { RegionService } from '../services/region.service'; // Importar el servicio
+import { Region } from '../models/region-data.model';
 
 @Component({
     selector: 'sidebar',
@@ -57,14 +28,13 @@ export class SidebarComponent {
     faBuilding = faBuilding;
     faCircle = faCircle;
     faSchool = faSchool;    
-
+    regions: Region[] = [];
 
     constructor(
         public translate: TranslateService,
         public storeData: Store<any>,
         public router: Router,
-        private regionService: RegionService // Inyectar el servicio
-        
+        private regionService: RegionService // Inyectar el servicio de regiones
     ) {
         this.initStore();
     }
@@ -79,6 +49,7 @@ export class SidebarComponent {
 
     ngOnInit() {
         this.setActiveDropdown();
+        this.loadRegions();
     }
 
     setActiveDropdown() {
@@ -98,6 +69,26 @@ export class SidebarComponent {
         }
     }
 
+    // Método para cargar regiones desde la API
+    loadRegions() {
+        this.regionService.getRegions().subscribe({
+            next: (regions: any[]) => {
+                console.log('Regiones obtenidas:', regions);
+                
+                // Verifica si los nombres de las propiedades de las regiones son correctos
+                this.regions = regions.map((region) => ({
+                    nombreRegion: region.NombreRegion, // Verifica que este nombre coincide con el de la respuesta de la API
+                    codigoRegion: region.CodigoRegion  // Verifica que este nombre coincide con el de la respuesta de la API
+                }));
+
+                console.log('Regiones procesadas:', this.regions);
+            },
+            error: (err) => {
+                console.error('Error al obtener regiones:', err);
+            }
+        });
+    }
+
     toggleMobileMenu() {
         if (window.innerWidth < 1024) {
             this.storeData.dispatch({ type: 'toggleSidebar' });
@@ -114,11 +105,7 @@ export class SidebarComponent {
 
     updateMap(regionId: number) {
         // Aquí debes implementar la lógica para actualizar el mapa según la región seleccionada.
-        // Puedes comunicarte con el componente del mapa a través de un servicio compartido o
-        // actualizando el estado de la aplicación con NgRx.
         this.regionService.setRegion(regionId);
         console.log(`Mapa actualizado para la región: ${regionId}`);
-        // Implementa la lógica aquí para comunicar el cambio al componente que muestra el mapa.
-        // Esto podría involucrar el uso de un servicio o la actualización de un estado compartido.
     }
 }

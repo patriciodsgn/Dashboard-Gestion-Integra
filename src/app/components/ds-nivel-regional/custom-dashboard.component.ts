@@ -137,6 +137,9 @@ FullScreenModule(Highcharts);
   styleUrls: ['./custom-dashboard.component.css']
 })
 export class CustomDashboardComponent implements OnInit, OnDestroy {
+getRegionTextColor(arg0: string) {
+throw new Error('Method not implemented.');
+}
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
   public backgroundColor: string = '#F5F5F5'; // Color predeterminado
   public cardColor: string = '#9E9E9E';       // Color predeterminado para las tarjetas
@@ -236,7 +239,7 @@ establecimientosColor: any;
     if (this.updateTimeout) {
       clearTimeout(this.updateTimeout);
     }
-    console.log('Estado limpiado');
+    //console.log('Estado limpiado');
   }
   
 
@@ -248,7 +251,7 @@ establecimientosColor: any;
     this.clearState();
 
     // Logging inicial
-    console.log('Iniciando componente Dashboard');
+    //console.log('Iniciando componente Dashboard');
 
     // Suscribirse a los cambios de navegación
     this.router.events.pipe(
@@ -257,8 +260,8 @@ establecimientosColor: any;
     ).subscribe(() => {
         const regionId = Number(this.route.snapshot.paramMap.get('regionId'));
         
-        console.group('Cambio de Navegación Detectado');
-        console.log('Region ID:', regionId);
+        //console.group('Cambio de Navegación Detectado');
+        //console.log('Region ID:', regionId);
         
         // Actualizar el estado con la región seleccionada y vista nacional en falso
         this.dashboardState.setRegionalView(regionId);
@@ -276,7 +279,7 @@ establecimientosColor: any;
     // Obtener región inicial
     const initialRegionId = Number(this.route.snapshot.paramMap.get('regionId'));
     if (!isNaN(initialRegionId)) {
-        console.log('Carga inicial - región:', initialRegionId);
+        //console.log('Carga inicial - región:', initialRegionId);
         this.loadRegionDataFromSidebar(initialRegionId);
         
         // Establecer estado inicial
@@ -292,7 +295,7 @@ private async fetchMapData(url: string): Promise<any> {
     }
     return await response.json();
   } catch (error) {
-    console.error('Error obteniendo datos del mapa:', error);
+    //console.error('Error obteniendo datos del mapa:', error);
     return null;
   }
 }
@@ -301,7 +304,7 @@ updateRegionColors(): void {
   if (this.RegionSeleccionada) {
     this.headerColor = this.mapColorsService.getRegionLightColor(this.RegionSeleccionada);
     this.cardColor = this.mapColorsService.getRegionDarkColor(this.RegionSeleccionada);
-    console.log(`Colores para ${this.RegionSeleccionada}: Encabezado - ${this.headerColor}, Tarjetas - ${this.cardColor}`);
+    //console.log(`Colores para ${this.RegionSeleccionada}: Encabezado - ${this.headerColor}, Tarjetas - ${this.cardColor}`);
   }
 }
 // Método para manejar el cambio de selección de la región
@@ -321,8 +324,8 @@ setRegionColors() {
   this.backgroundColor = this.mapColorsService.getRegionLightColor(this.RegionSeleccionada);
   this.cardColor = this.mapColorsService.getRegionDarkColor(this.RegionSeleccionada);
   
-  console.log('Background color:', this.backgroundColor);
-  console.log('Card color:', this.cardColor);
+  //console.log('Background color:', this.backgroundColor);
+  //console.log('Card color:', this.cardColor);
 }
 private setupJardinesObserver(): void {
   // Configurar un observador para los cambios en JardinesporRegion
@@ -391,7 +394,15 @@ private createMapOptions(mapData: any, seriesData: any[]): Highcharts.Options {
       animation: {
         duration: 1000
       },
+      
       events: {
+        fullscreenOpen: function(this: Highcharts.Chart) {
+          const chartDiv = this.container.parentNode as HTMLElement;
+          if (chartDiv) {
+            chartDiv.style.maxHeight = '500px';
+            chartDiv.style.height = '500px';
+          }
+        },
         load: function() {
           try {
             const chart = this as any;
@@ -614,7 +625,7 @@ private createMapOptions(mapData: any, seriesData: any[]): Highcharts.Options {
 
 
   private processJardinesPoints(): any[] {
-    console.log('Procesando jardines:', this.JardinesporRegion.length);
+    //console.log('Procesando jardines:', this.JardinesporRegion.length);
   
   const points = this.JardinesporRegion
     .filter(jardin => {
@@ -676,8 +687,8 @@ private createMapOptions(mapData: any, seriesData: any[]): Highcharts.Options {
       .filter(point => point !== null);
   
     // Log final de resultados
-    console.log('Puntos procesados exitosamente:', points.length);
-    console.log('Muestra de puntos:', points.slice(0, 3));
+    //console.log('Puntos procesados exitosamente:', points.length);
+    //console.log('Muestra de puntos:', points.slice(0, 3));
   
     return points;
   }
@@ -917,12 +928,12 @@ private loadData(region: string, offset: string = ''): void {
         });
 
         if (solmas && solmas !== '') {
-          console.log(`Cargando más datos con offset: ${solmas}`);
+          //console.log(`Cargando más datos con offset: ${solmas}`);
           this.loadData(region, solmas);
         } else {
-          console.log('Carga completa. Actualizando JardinesporRegion');
+          //console.log('Carga completa. Actualizando JardinesporRegion');
           this.JardinesporRegion = [...this.jardinesAcumulados];
-          console.log('Jardines totales:', this.JardinesporRegion.length);
+          //console.log('Jardines totales:', this.JardinesporRegion.length);
         }
 
       } catch (error) {
@@ -975,13 +986,13 @@ private async loadRegionData(regionId: number): Promise<void> {
       }
 
       const mapData = await response.json();
-      console.log('✅ Datos del mapa cargados con éxito.');
+      //console.log('✅ Datos del mapa cargados con éxito.');
 
       // Procesar y renderizar el mapa
       const seriesData = this.processMapData(mapData);
-      console.log('Procesando y renderizando el mapa...');
+      //console.log('Procesando y renderizando el mapa...');
       await this.renderMap(mapData, seriesData);
-      console.log('✅ Mapa renderizado exitosamente para la región:', this.RegionSeleccionada);
+      //console.log('✅ Mapa renderizado exitosamente para la región:', this.RegionSeleccionada);
 
   } catch (error) {
       console.error('❌ Error al cargar los datos de la región:', error);
@@ -1465,6 +1476,13 @@ private logCoordinateStatus(): void {
             type: 'xy'
           },
           events: {
+            fullscreenOpen: function(this: Highcharts.Chart) {
+              const chartDiv = this.container.parentNode as HTMLElement;
+              if (chartDiv) {
+                chartDiv.style.maxHeight = '500px';
+                chartDiv.style.height = '500px';
+              }
+            },
             load: function() {
               setTimeout(() => {
                 try {
@@ -1802,6 +1820,7 @@ private logCoordinateStatus(): void {
 
 // Añade estos métodos a tu clase CustomDashboardComponent
 getTipoEstablecimiento(modalidad: string): string {
+    console.log("*****modalidad", modalidad );
     const modalidadUpper = modalidad?.toUpperCase() || '';
     if (modalidadUpper.includes('SALA CUNA')) return 'SC';
     if (modalidadUpper.includes('JARDIN INFANTIL')) return 'JI';
@@ -1858,6 +1877,8 @@ getJardinesAgrupadosEnColumnas(): ComunaGroup[] {
 sortEstablecimientos(establecimientos: Jardin[]): Jardin[] {
     // Primero los ordena por tipo y luego por nombre
     return establecimientos.sort((a, b) => {
+        console.log("sortEstablecimientos  a", a.modalidad);
+        console.log("sortEstablecimientos  b", b.modalidad);
         const tipoA = this.getTipoEstablecimiento(a.modalidad);
         const tipoB = this.getTipoEstablecimiento(b.modalidad);
         if (tipoA !== tipoB) {
@@ -1889,19 +1910,28 @@ getJardinesAgrupados(jardines: Jardin[]): Map<string, Jardin[]> {
 
 // También puedes agregar este método helper si necesitas formatear la modalidad
 getModalidadAbreviada(modalidad: string): string {
-    if (!modalidad) return 'OT';
-    
-    const modalidadUpper = modalidad.toUpperCase();
-    if (modalidadUpper.includes('JARDIN INFANTIL')) return 'JI';
-    if (modalidadUpper.includes('SALA CUNA')) return 'SC';
-    if (modalidadUpper.includes('FAMILIAR')) return 'PF';
-    if (modalidadUpper.includes('LABORAL')) return 'PL';
-    if (modalidadUpper.includes('PMI')) return 'PMI';
-    if (modalidadUpper.includes('ALTERNATIVO')) return 'PA';
-    if (modalidadUpper.includes('COMUNICACIONAL')) return 'PC';
-    return 'OT';
-}
-  getGeoJsonUrl(regionId: number): string {
+  // Validar que modalidad no sea null o undefined
+  if (!modalidad) return 'OT';
+  
+  // Normalizar el texto: remover acentos y convertir a mayúsculas
+  const modalidadNormalizada = modalidad
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase();
+  
+  console.log("Modalidad normalizada:", modalidadNormalizada);
+
+  // Hacer las comparaciones con texto sin acentos
+  if (modalidadNormalizada.includes('JARDIN INFANTIL')) return 'JI';
+  if (modalidadNormalizada.includes('SALA CUNA')) return 'SC';
+  if (modalidadNormalizada.includes('FAMILIAR')) return 'PF';
+  if (modalidadNormalizada.includes('LABORAL')) return 'PL';
+  if (modalidadNormalizada.includes('PMI')) return 'PMI';
+  if (modalidadNormalizada.includes('ALTERNATIVO')) return 'PA';
+  if (modalidadNormalizada.includes('COMUNICACIONAL')) return 'PC';
+
+  return 'OT';
+}  getGeoJsonUrl(regionId: number): string {
     const regionGeoJsonUrls: { [key: number]: string } = {
       1: '/assets/map/clta.geo.json',
       2: '/assets/map/clan.geo.json',
@@ -1911,16 +1941,16 @@ getModalidadAbreviada(modalidad: string): string {
       601: '/assets/map/clrm_nor_oriente.geo.json',
       602:'/assets/map/clrm_ruralnor_poniente.geo.json',
       603:'/assets/map/clrm_sur_oriente.geo.json',
-      7:'/assets/map/clog.geo.json',
-      8:'/assets/map/clml.geo.json',
-      9:'/assets/map/clbi.geo.json',
-      10:'/assets/map/clar.geo.json',
-      14:'/assets/map/cllr.geo.json',
+      6:'/assets/map/clog.geo.json',
+      7:'/assets/map/clml.geo.json',
+      8:'/assets/map/clbi.geo.json',
+      9:'/assets/map/clar.geo.json',
+      10:'/assets/map/cllr.geo.json',
       11:'/assets/map/clll.geo.json',
       12:'/assets/map/clay.geo.json',
       13:'/assets/map/clma.geo.json',
-      15:'/assets/map/clap.geo.json',
-      16:'/assets/map/clnu.geo.json'
+      14:'/assets/map/clap.geo.json',
+      15:'/assets/map/clnu.geo.json'
     };
 
     return regionGeoJsonUrls[regionId] || '/assets/map/cl-all.geo.json';
@@ -1949,10 +1979,10 @@ getModalidadAbreviada(modalidad: string): string {
       601: 'NorPoniente',
       602: 'Rural Norponiente',
       603:'Sur Oriente',
-      7:'O’ higgins',
-      8:'Maule',
-      9:'Biobio',
-      10:'Araucania',
+      6:'Ohiggins',
+      7:'Maule',
+      8:'Biobio',
+      9:'Araucania',
       11:'Los Lagos',
       12:'Aysén',
       13:'Magallanes',

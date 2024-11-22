@@ -12,6 +12,11 @@ export const environment = {
       delayMs: 500
   }
 };
+export const environmentdb = {
+  production: false,
+  apidb: 'http://localhost:3000/api' // URL base para desarrollo
+};
+
 
 // environments/environment.prod.ts
 export const environmentp = {

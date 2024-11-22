@@ -1,26 +1,25 @@
 <!-- Contenedor flex para alinear los paneles con responsividad -->
-<div class="flex flex-col lg:flex-row gap-2 w-full transition-all duration-300">
-  <!-- Contenedor principal del encabezado y las tarjetas con sombra Tailwind -->
-  <div class="p-2 rounded-xl flex-1 border border-gray-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),_0_2px_4px_-2px_rgba(0,0,0,0.1)]" 
-       [style.backgroundColor]="headerColor">
-    
+<div class="w-full mb-4">
+  <!-- Panel para el título con fondo transparente y borde para visualizar -->
+  <div class="bg-transparent">
     <!-- Título de región y fecha -->
-    <div class="mb-2">
-      <h3 class="text-sm font-medium flex items-center">
-        <fa-icon [icon]="faCalendar" class="text-sm mr-1"></fa-icon>
+    <div class="text-left">
+      <h3 class="text-lg font-semibold flex items-center">
+        <fa-icon [icon]="faCalendar" class="text-lg mr-2"></fa-icon>
         {{ RegionSeleccionada }} / {{ fechaActual }}
       </h3>
-      <h6 class="text-xs text-gray-600">Gestión de Datos Estratégicos / Casa Central</h6>
+      <h6 class="text-sm text-gray-600">Gestión de Datos Estratégicos / Casa Central</h6>
     </div>
-
+  </div>
+</div>
+<div class="flex flex-col lg:flex-row gap-2 w-full transition-all duration-300 items-start">
+  <!-- Contenedor principal del encabezado y las tarjetas con sombra Tailwind -->
+  <div class="p-2 rounded-xl flex-1 border border-gray-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),_0_2px_4px_-2px_rgba(0,0,0,0.1)]" [style.backgroundColor]="headerColor" style="height: 100%;">
     <!-- Contenedor flex para tarjetas con scroll horizontal en móvil -->
     <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
       <!-- Tarjeta de "Establecimientos" plana con imagen más grande -->
       <div class="flex items-center p-2 min-w-[200px] flex-shrink-0" [style.backgroundColor]="headerColor">
-        <img src="assets/images/Mesa de trabajo 51.png" 
-             alt="Establecimientos Icono" 
-             class="w-12 h-12 mr-3"
-             [ngStyle]="{'filter': mapColorsService.getRegionImageFilter(RegionSeleccionada)}" />
+        <img src="assets/images/Mesa de trabajo 51.png" alt="Establecimientos Icono" class="w-12 h-12 mr-3" [ngStyle]="{'filter': mapColorsService.getRegionImageFilter(RegionSeleccionada)}" />
         <div>
           <div class="text-xl font-bold">{{ tarjetasSuperiores[0].valor }}</div>
           <div class="text-sm font-semibold">{{ tarjetasSuperiores[0].titulo }}</div>
@@ -28,9 +27,11 @@
       </div>
 
       <!-- Tarjetas de datos -->
-      <div *ngFor="let tarjeta of tarjetasSuperiores.slice(1, 5)"
-           class="flex flex-col items-center justify-center shadow-sm rounded p-2 border border-gray-200 min-w-[200px] h-[80px] flex-shrink-0"
-           [style.backgroundColor]="cardColor">
+      <!-- Data cards -->
+        <div *ngFor="let tarjeta of tarjetasSuperiores.slice(1, 5)" 
+          class="flex flex-col items-center justify-center shadow-sm rounded p-2 border border-gray-200 min-w-[200px] h-[80px] flex-shrink-0" 
+          [style.backgroundColor]="cardColor"
+          [style.color]="mapColorsService.getRegionTextColor(RegionSeleccionada)">
         <fa-icon [icon]="tarjeta.icon" class="text-lg mb-1"></fa-icon>
         <div class="text-lg font-bold">{{ tarjeta.valor }}</div>
         <div class="text-xs font-semibold text-center">{{ tarjeta.titulo }}</div>
@@ -38,15 +39,16 @@
     </div>
   </div>
 
-  <!-- Panel para Jardín Sobre Ruedas -->
-  <div class="flex justify-center lg:mt-4">
-    <div class="text-white flex flex-col items-center justify-center shadow-sm rounded p-2 border border-gray-200 min-w-[200px] h-[80px]"
-         [style.backgroundColor]="cardColor">
-      <fa-icon [icon]="faBus" class="text-lg mb-1"></fa-icon>
-      <div class="text-lg font-bold">{{ tarjetasSuperiores[5].valor }}</div>
-      <div class="text-xs font-semibold text-center">{{ tarjetasSuperiores[5].titulo }}</div>
-    </div>
+<!-- Panel para Jardín Sobre Ruedas -->
+<div class="p-2 rounded-xl flex justify-center items-start lg:mt-0 border border-gray-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),_0_2px_4px_-2px_rgba(0,0,0,0.1)]" style="height: 100%;">
+  <div class="flex flex-col items-center justify-center shadow-sm rounded p-2 border border-gray-200 min-w-[200px] h-full"
+       [style.backgroundColor]="cardColor"
+       [style.color]="mapColorsService.getRegionTextColor(RegionSeleccionada)">
+    <fa-icon [icon]="faBus" class="text-lg mb-1"></fa-icon>
+    <div class="text-lg font-bold">{{ tarjetasSuperiores[5].valor }}</div>
+    <div class="text-xs font-semibold text-center">{{ tarjetasSuperiores[5].titulo }}</div>
   </div>
+</div>
 </div>
 
 <!-- Contenedor de Mapa y Datos responsivo -->
@@ -59,7 +61,6 @@
   <!-- Panel de Información Adicional -->
   <div class="h-[350px] border border-gray-200 rounded-lg p-1 bg-white overflow-hidden">
     <h4 class="text-xs font-semibold mb-0.5 text-gray-700">Datos Adicionales</h4>
-    
     <div class="h-[325px] rounded bg-white overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
       <!-- Contenedor para las columnas de comunas y establecimientos -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
@@ -88,18 +89,20 @@
 
 <!-- Panel de Tarjetas Inferiores responsivo -->
 <div class="mt-4">
-  <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2">
-    <div *ngFor="let tarjeta of tarjetasInferiores; let i = index"
-         class="text-black flex items-center justify-center p-2 border border-gray-200 rounded hover:scale-105 transition-transform duration-300 h-[60px]"
-         [ngClass]="{
-           'bg-purple-400': i < 4, 
-           'bg-blue-400': i >= 4 && i < 8,
-           'bg-green-400': i >= 8 && i < 12, 
-           'bg-indigo-400': i >= 12
-         }">
-      <div class="text-xs font-semibold flex items-center gap-1">
-        <fa-icon *ngIf="tarjeta.icon" [icon]="tarjeta.icon" class="text-lg"></fa-icon>
-        <span>{{ tarjeta.titulo }}</span>
+  <div class="p-2 rounded-xl border border-gray-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),_0_2px_4px_-2px_rgba(0,0,0,0.1)]">
+    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2">
+      <div *ngFor="let tarjeta of tarjetasInferiores; let i = index" 
+           class="text-black flex items-center justify-center p-2 border border-gray-200 rounded hover:scale-105 transition-transform duration-300 h-[60px]" 
+           [ngClass]="{
+             'bg-purple-400': i < 4, 
+             'bg-blue-400': i >= 4 && i < 8,
+             'bg-green-400': i >= 8 && i < 12, 
+             'bg-indigo-400': i >= 12
+           }">
+        <div class="text-xs font-semibold flex items-center gap-1">
+          <fa-icon *ngIf="tarjeta.icon" [icon]="tarjeta.icon" class="text-lg"></fa-icon>
+          <span>{{ tarjeta.titulo }}</span>
+        </div>
       </div>
     </div>
   </div>

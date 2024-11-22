@@ -33,122 +33,18 @@
                                 <icon-caret-down />
                             </div>
                         </button>
-                        <div *ngIf="activeDropdown.includes('regiones')" class="accordion-content">
-                            <ul class="sub-menu text-gray-500 space-y-1 list-none pl-0" style="border-left: none;">
-                                <li class="leading-6">
-                                    <a routerLink="/region/1" routerLinkActive="active"
-                                        (click)="updateMap(1); toggleMobileMenu()">
-                                        (I) Tarapacá
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/2" routerLinkActive="active"
-                                        (click)="updateMap(2); toggleMobileMenu()">
-                                        (II) Antofagasta
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/3" routerLinkActive="active"
-                                        (click)="updateMap(3); toggleMobileMenu()">
-                                        (III) Atacama
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/4" routerLinkActive="active"
-                                        (click)="updateMap(4); toggleMobileMenu()">
-                                        (IV) Coquimbo
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/5" routerLinkActive="active"
-                                        (click)="updateMap(5); toggleMobileMenu()">
-                                        (V) Valparaíso
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/6" routerLinkActive="active" (click)="toggleMobileMenu()">
-                                        (RM) Metropolitana
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/601" routerLinkActive="active">
-                                        Nor Poniente
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/602" routerLinkActive="active">
-                                        Rural Nor Poniente
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/603" routerLinkActive="active">
-                                        Sur Oriente
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/7" routerLinkActive="active"
-                                        (click)="updateMap(7); toggleMobileMenu()">
-                                        (VI) O'Higgins
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/8" routerLinkActive="active"
-                                        (click)="updateMap(8); toggleMobileMenu()">
-                                        (VII) Maule
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/9" routerLinkActive="active"
-                                        (click)="updateMap(9); toggleMobileMenu()">
-                                        (VIII) Biobio
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/10" routerLinkActive="active"
-                                        (click)="updateMap(10); toggleMobileMenu()">
-                                        (IX) Araucania
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/11" routerLinkActive="active"
-                                        (click)="updateMap(11); toggleMobileMenu()">
-                                        (X) Los Lagos
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/12" routerLinkActive="active"
-                                        (click)="updateMap(12); toggleMobileMenu()">
-                                        (XI) Aysen
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/13" routerLinkActive="active"
-                                        (click)="updateMap(13); toggleMobileMenu()">
-                                        (XII) Magallanes
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/14" routerLinkActive="active"
-                                        (click)="updateMap(14); toggleMobileMenu()">
-                                        (XIV) Los Ríos
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/15" routerLinkActive="active"
-                                        (click)="updateMap(15); toggleMobileMenu()">
-                                        (XV) Arica y Parinacota
-                                    </a>
-                                </li>
-                                <li class="leading-6">
-                                    <a routerLink="/region/16" routerLinkActive="active"
-                                        (click)="updateMap(16); toggleMobileMenu()">
-                                        (XVI) Ñuble
-                                    </a>
-                                </li>
+                        <div *ngIf="activeDropdown.includes('regiones')" class="accordion-content max-h-[calc(100vh-200px)] overflow-y-auto">
+                            <ul class="sub-menu text-gray-500 list-none pl-0">
+                              <li *ngFor="let region of regions" class="h-8"> <!-- Ajustamos altura fija -->
+                                <a [routerLink]="'/region/' + region.codigoRegion" 
+                                   routerLinkActive="active" 
+                                   (click)="updateMap(region.codigoRegion); toggleMobileMenu()"
+                                   class="text-xs hover:bg-gray-100 hover:text-blue-600 transition-colors duration-200 h-full flex items-center px-3 truncate">
+                                  {{ region.nombreRegion }}
+                                </a>
+                              </li>
                             </ul>
-                        </div>
-                    </li>
-                    <!-- Menú de Direcciones -->
+                          </div>                    <!-- Menú de Direcciones -->
                     <li class="accordion menu nav-item">
                         <button type="button" class="nav-link group w-full"
                             [ngClass]="{ active: activeDropdown.includes('direcciones') }"
