@@ -4,3 +4,13 @@ export interface RegionData {
   kpiData: any[];
   chartData: any[];
 }
+
+export interface Region {
+  nombreRegion: string;
+  codigoRegion: number;
+}
+
+export interface RegionIntegra {
+  codigoRegion: number;
+  nombreRegion: string;
+}

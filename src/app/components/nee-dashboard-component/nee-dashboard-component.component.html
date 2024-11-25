@@ -4,28 +4,36 @@
     <p class="text-sm text-gray-600 text-center mb-4">*Correspondiente a medición 2023</p>
 
     <!-- Contenedor Principal en Grid para las Tarjetas de Métricas -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <!-- Tarjeta % NEE Permanente -->
-        <div class="bg-blue-200 rounded-lg shadow-lg p-6 flex flex-col justify-center items-center">
-            <h2 class="text-xl font-semibold">% NEE Permanente</h2>
-            <div class="text-5xl font-bold my-4">2,9 %</div>
-            <p class="text-center">% Niños y niñas con Necesidad Educativa Especial Permanente</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <!-- Tarjeta % NEE Permanente -->
+    <div class="bg-blue-200 rounded-lg shadow-lg p-6 flex flex-col justify-center items-center">
+        <h2 class="text-xl font-semibold">% NEE Permanente</h2>
+        <div class="text-5xl font-bold my-4">
+            {{ resumenNecesidades.permanente }}%
         </div>
-
-        <!-- Tarjeta Total NEE -->
-        <div class="bg-blue-200 rounded-lg shadow-lg p-6 flex flex-col justify-center items-center">
-            <h2 class="text-xl font-semibold">Total NEE</h2>
-            <div class="text-5xl font-bold my-4">0,8 %</div>
-            <p class="text-center">% Niños y niñas con Necesidad Educativa Especial Transitoria</p>
-        </div>
-
-        <!-- Tarjeta NEE por Año -->
-        <div class="bg-blue-200 rounded-lg shadow-lg p-6 flex flex-col justify-center items-center">
-            <h2 class="text-xl font-semibold">NEE por Año</h2>
-            <div class="text-5xl font-bold my-4">0,9 %</div>
-            <p class="text-center">% Niños y niñas con Necesidad Educativa Especial de Rezago</p>
-        </div>
+        <p class="text-center">% Niños y niñas con Necesidad Educativa Especial Permanente</p>
     </div>
+
+    <!-- Tarjeta Total NEE -->
+    <div class="bg-blue-200 rounded-lg shadow-lg p-6 flex flex-col justify-center items-center">
+        <h2 class="text-xl font-semibold">Total NEE</h2>
+        <div class="text-5xl font-bold my-4">
+            {{ resumenNecesidades.transitoria }}%
+        </div>
+        <p class="text-center">% Niños y niñas con Necesidad Educativa Especial Transitoria</p>
+    </div>
+
+    <!-- Tarjeta NEE por Año -->
+    <div class="bg-blue-200 rounded-lg shadow-lg p-6 flex flex-col justify-center items-center">
+        <h2 class="text-xl font-semibold">NEE por Año</h2>
+        <div class="text-5xl font-bold my-4">
+            {{ resumenNecesidades.rezago }}%
+        </div>
+        <p class="text-center">% Niños y niñas con Necesidad Educativa Especial de Rezago</p>
+    </div>
+</div>
+
+<!-- Resto de tu template para los gráficos -->
 
     <!-- Contenedor para los Gráficos -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

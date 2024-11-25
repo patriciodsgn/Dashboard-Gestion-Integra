@@ -79,6 +79,7 @@ import { FooterComponent } from './layouts/footer';
 import { SidebarComponent } from './layouts/sidebar';
 import { ThemeCustomizerComponent } from './layouts/theme-customizer';
 import { MapColorsService } from './services/map-colors.service';
+import { RegionService } from '../services/region.service';
 
 @NgModule({
     imports: [
@@ -136,7 +137,7 @@ import { MapColorsService } from './services/map-colors.service';
         //CustomDashboardInicialComponent // Asegúrate de incluir este componente
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    providers: [Title, SharedDataService, MapColorsService,DashboardService,DataSourceService],
+    providers: [Title, SharedDataService, MapColorsService,DashboardService,DataSourceService, RegionService],
     bootstrap: [AppComponent],
 })
 export class AppModule {}
