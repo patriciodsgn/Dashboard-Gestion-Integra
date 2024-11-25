@@ -18,5 +18,5 @@ interface ButtonData {
 })
 
 export class ElemButtonGridComponent {
-  @Input() buttons: ButtonData[] = [];
+  @Input() button_data: ButtonData[] = [];
 }

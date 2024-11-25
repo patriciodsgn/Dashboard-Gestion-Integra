@@ -14,5 +14,4 @@ export class ElemButtonComponent {
   @Input() description: string = 'Ejemplo';
   @Input() active: boolean = true;
   @Input() link: string = '#';
-  
 }

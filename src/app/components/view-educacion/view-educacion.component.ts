@@ -23,27 +23,27 @@ interface ButtonData {
   templateUrl: './view-educacion.component.html',
   styleUrl: './view-educacion.component.css'
 })
+
 export class ViewEducacionComponent {
-  htitle: string = 'Dashboard de Datos';
-  hsubtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
+  htitle: string = 'Educación: Dashboard de Datos';
+  hsubtitle: string = 'Gestión Estratégica de Datos / Casa Central';
+  hbgcolor: string = '#4CAF50'; // Color verde (coherente con el diseño de ejemplo)
+  htxtcolor: string = '#FFFFFF'; // Texto blanco para contraste
 
-  note: string = '';
+  note: string = 'Estas tarjetas se irán habilitando progresivamente a medida que se implemente el Gobierno de Datos.';
 
-  title: string = 'Dashboard de Datos';
-  subtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
+  title: string = 'Dashboard de Educación';
+  subtitle: string = 'Datos Estratégicos / Dirección Central';
 
   buttons: ButtonData[] = [
-    { icon: 'favorite', title: 'Educación Primaria', description: 'Descripción detallada.', active: true },
-    { icon: 'favorite', title: 'Educación Secundaria', description: 'Descripción detallada.', active: true },
-    { icon: 'person', title: 'ATET', description: 'Ejemplo', active: false },
-    { icon: 'person', title: 'ATET', description: "Ejemplo", active: false },
-    { icon: 'person', title: 'Indicador 1', description: "Ejemplo", active: false },
-    { icon: 'business', title: 'Indicador 1', description: "Ejemplo", active: false },
-    { icon: 'school', title: 'Indicador 1', description: "Ejemplo", active: false },
-    { icon: 'attach_money', title: 'Indicador 1', description: "Ejemplo", active: false },
-    { icon: 'attach_money', title: 'Indicador 1', description: "Ejemplo", active: false },
-    { icon: 'attach_money', title: 'Indicador 1', description: "Ejemplo", active: false },
-    { icon: 'attach_money', title: 'Indicador 1', description: "Ejemplo", active: false },
-    { icon: 'attach_money', title: 'Indicador 1', description: "Ejemplo", active: false }
+    { icon: 'school', title: 'NEE', description: 'Ejemplo', active: true },
+    { icon: 'person', title: 'ATET', description: 'Ejemplo', active: true },
+    { icon: 'family_restroom', title: 'Familias', description: 'Data disponible 2025', active: false },
+    { icon: 'analytics', title: 'Indicador 1', description: 'Gobierno de datos - En desarrollo', active: false },
+    { icon: 'analytics', title: 'Indicador 2', description: 'Gobierno de datos - En desarrollo', active: false },
+    { icon: 'business', title: 'Indicador 3', description: 'Gobierno de datos - En desarrollo', active: false },
+    { icon: 'insights', title: 'Indicador 4', description: 'Gobierno de datos - En desarrollo', active: false },
+    { icon: 'bar_chart', title: 'Indicador 5', description: 'Gobierno de datos - En desarrollo', active: false },
+    { icon: 'insert_chart', title: 'Indicador 6', description: 'Gobierno de datos - En desarrollo', active: false }
   ];
 }
