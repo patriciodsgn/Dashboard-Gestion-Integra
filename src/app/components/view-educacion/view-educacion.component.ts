@@ -4,6 +4,12 @@ import { ElemNote1Component } from '../elem-note1/elem-note1.component';
 import { ElemBar1Component } from '../elem-bar1/elem-bar1.component';
 import { ElemButtonGridComponent } from '../elem-button-grid/elem-button-grid.component';
 
+import { ElemDraw01Component } from '../elem-draw-01/elem-draw-01.component';
+import { ElemDraw02Component } from '../elem-draw-02/elem-draw-02.component';
+import { ElemDraw03Component } from '../elem-draw-03/elem-draw-03.component';
+import { ElemDraw04Component } from '../elem-draw-04/elem-draw-04.component';
+import { ElemDraw05Component } from '../elem-draw-05/elem-draw-05.component';
+
 interface ButtonData {
   icon: string;
   title: string;
@@ -18,7 +24,12 @@ interface ButtonData {
     ElemHeaderComponent,
     ElemNote1Component,
     ElemBar1Component,
-    ElemButtonGridComponent
+    ElemButtonGridComponent,
+    ElemDraw01Component,
+    ElemDraw02Component,
+    ElemDraw03Component,
+    ElemDraw04Component,
+    ElemDraw05Component
   ],
   templateUrl: './view-educacion.component.html',
   styleUrl: './view-educacion.component.css'
