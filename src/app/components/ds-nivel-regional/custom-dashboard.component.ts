@@ -1006,7 +1006,12 @@ private processMapData(mapData: any) {
     console.warn('Datos del mapa no válidos');
     return [];
   }
-
+  console.log('Debug O\'Higgins:', {
+    regionSeleccionada: this.RegionSeleccionada,
+    normalizedRegion: this.RegionSeleccionada.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+    totalFeatures: mapData.features.length,
+    primeraComuna: mapData.features[0]?.properties?.['Comuna']
+  });
   console.log('Procesando región:', this.RegionSeleccionada);
   this.mapColorsService.logRegionInfo(this.RegionSeleccionada);
 
@@ -1919,7 +1924,7 @@ getModalidadAbreviada(modalidad: string): string {
       .replace(/[\u0300-\u036f]/g, '')
       .toUpperCase();
   
-  console.log("Modalidad normalizada:", modalidadNormalizada);
+  //console.log("Modalidad normalizada:", modalidadNormalizada);
 
   // Hacer las comparaciones con texto sin acentos
   if (modalidadNormalizada.includes('JARDIN INFANTIL')) return 'JI';
@@ -1945,12 +1950,13 @@ getModalidadAbreviada(modalidad: string): string {
       7:'/assets/map/clml.geo.json',
       8:'/assets/map/clbi.geo.json',
       9:'/assets/map/clar.geo.json',
-      10:'/assets/map/cllr.geo.json',
-      11:'/assets/map/clll.geo.json',
+      11:'/assets/map/cllr.geo.json',
+      10:'/assets/map/clll.geo.json',
       12:'/assets/map/clay.geo.json',
       13:'/assets/map/clma.geo.json',
-      14:'/assets/map/clap.geo.json',
-      15:'/assets/map/clnu.geo.json'
+      15:'/assets/map/clap.geo.json',
+      14:'/assets/map/cldr.geo.json',
+      16:'/assets/map/clnu.geo.json'
     };
 
     return regionGeoJsonUrls[regionId] || '/assets/map/cl-all.geo.json';

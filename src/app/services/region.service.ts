@@ -10,7 +10,7 @@ import { Region } from '../models/region-data.model'; // Importa el modelo
   providedIn: 'root',
 })
 export class RegionService {
-  private apiUrl = `${environmentdb.apidb}/tbRegion`;
+  private apiUrl = `${environmentdb.apidb}/regiones/tbRegion`;
 
   constructor(private http: HttpClient) {}
 
@@ -23,7 +23,7 @@ export class RegionService {
   }
 }
 export class RegionIntegraService {
-    private apiUrl = `${environmentdb.apidb}/tbRegionIntegra`;
+    private apiUrl = `${environmentdb.apidb}/regiones/tbRegionIntegra`;
   
     constructor(private http: HttpClient) {}
   

@@ -69,18 +69,22 @@ export class SidebarComponent {
         }
     }
 
-    // Método para cargar regiones desde la API
     loadRegions() {
         this.regionService.getRegions().subscribe({
-            next: (regions: any[]) => {
-                console.log('Regiones obtenidas:', regions);
-                
-                // Verifica si los nombres de las propiedades de las regiones son correctos
-                this.regions = regions.map((region) => ({
-                    nombreRegion: region.NombreRegion, // Verifica que este nombre coincide con el de la respuesta de la API
-                    codigoRegion: region.CodigoRegion  // Verifica que este nombre coincide con el de la respuesta de la API
-                }));
-
+            next: (response: any) => {
+                console.log('Respuesta completa de la API:', response);
+    
+                // Verifica si existe el campo `data` en la respuesta
+                if (response && response.data) {
+                    this.regions = response.data.map((region: any) => ({
+                        nombreRegion: region.NombreRegion, // Cambia según el nombre correcto de las propiedades
+                        codigoRegion: region.CodigoRegion
+                    }));
+                } else {
+                    console.error('El campo "data" no está presente en la respuesta.');
+                    this.regions = []; // Inicializar vacío en caso de error
+                }
+    
                 console.log('Regiones procesadas:', this.regions);
             },
             error: (err) => {
@@ -88,7 +92,8 @@ export class SidebarComponent {
             }
         });
     }
-
+    
+    
     toggleMobileMenu() {
         if (window.innerWidth < 1024) {
             this.storeData.dispatch({ type: 'toggleSidebar' });

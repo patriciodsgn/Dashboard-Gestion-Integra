@@ -20,6 +20,7 @@ import Exporting from 'highcharts/modules/exporting';
 import Highcharts3D from 'highcharts/highcharts-3d';
 import { DataService } from 'src/app/services/data.service';
 import { DashboardStateService } from '../../core/services/dashboard-state.service';
+import { SeriesOptionsType } from 'highcharts';
 MapModule(Highcharts);
 HighchartsMore(Highcharts);
 Exporting(Highcharts);
@@ -271,215 +272,175 @@ export class CustomDashboardInicialComponent implements OnInit, OnDestroy {
     const maxValue = Math.max(
       ...this.ejecucionData.map((item: any) => item.total_Vigente),
       ...this.ejecucionData.map((item: any) => item.total_ejecutado)
-  );
+    );
   
-  this.chartOptionsBar = {
-    chart: {
-        type: 'bar', // Cambia a 'bar' para barras horizontales
-        backgroundColor: '#f9f9f9',
-        options3d: {
-            enabled: true,
-            alpha: 10, // Ángulo de inclinación
-            beta: 15,  // Ángulo de rotación
-            depth: 50,
-            viewDistance: 25
-        }
-    },
-    title: { text: 'Presupuesto Vigente vs Presupuesto Ejecutado' },
-    xAxis: { 
-        //categories: this.ejecucionData.map((item: any) => item.DireccionGestora),
-        //title: { text: 'Direcciones' },
-        labels: { 
-            style: { fontSize: '10px', color: '#333' },
-            align: 'right'
-        }
-    },
-    yAxis: { 
-        min: 0,
-        //title: { text: 'Cantidad' },
-        labels: { 
-            format: '{value}', 
-            style: { fontSize: '12px', color: '#333' } 
-        }
-    },
-    legend: {
-        enabled: false // Desactiva la leyenda
-    },
-    tooltip: {
-        enabled: false // Desactiva el tooltip para que no muestre valores
-    },
-    plotOptions: {
-        bar: { // Ajustes específicos para el tipo 'bar'
-            grouping: false, // Desactiva el agrupamiento para mantener las barras separadas
-            shadow: false,
-            borderWidth: 0,
-            depth: 20 // Profundidad para efecto 3D
-        },
-        series: {
-            dataLabels: {
-                enabled: false // Desactiva las etiquetas de datos en las barras
-            }
-        }
-    },
-    series: [
-        { 
-            type: 'bar', 
-            name: 'Presupuesto Vigente', 
-            color: 'rgba(70,130,180,1)', 
-            data: this.ejecucionData.map(() => 0) // Coloca valores de 0 en todos los datos para que no se muestren valores
-        },
-        { 
-            type: 'bar', 
-            name: 'Presupuesto Ejecutado', 
-            color: 'rgba(30,144,255,1)', 
-            data: this.ejecucionData.map(() => 0) // Coloca valores de 0 en todos los datos
-        }
-    ],
-    credits: { enabled: false },
-    exporting: {
-        enabled: true,
-        buttons: {
-            contextButton: {
-                menuItems: ["viewFullscreen", "printChart", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG"]
-            }
-        }
-    }
-};
-
-  
-  
-  this.chartOptionsBar = {
+    // Configuración del gráfico de barras
+    this.chartOptionsBar = {
       chart: {
-          type: 'bar', // Cambia a 'bar' para barras horizontales
-          backgroundColor: '#f9f9f9',
-          options3d: {
-              enabled: true,
-              alpha: 10, // Ángulo de inclinación
-              beta: 15,  // Ángulo de rotación
-              depth: 50,
-              viewDistance: 25
-          }
+        type: 'bar',
+        height: 500,
+        backgroundColor: '#ffffff'
       },
-      title: { text: 'Presupuesto Vigente vs Presupuesto Ejecutado' },
-      xAxis: { 
-          categories: this.ejecucionData.map((item: any) => item.DireccionGestora),
-          //title: { text: 'Direcciones' },
-          labels: { 
-              style: { fontSize: '10px', color: '#333' },
-              align: 'right'
-          }
+      title: {
+        text: 'Presupuesto por Dirección',
+        style: { fontSize: '16px', fontWeight: 'bold' }
       },
-      yAxis: { 
-          min: 0,
-          max: maxValue,
-          //title: { text: 'Cantidad' },
-          labels: { 
-              format: '{value}', 
-              style: { fontSize: '12px', color: '#333' } 
+      xAxis: {
+        title: { text: 'Monto en Millones ($)' },
+        labels: {
+          formatter: function(this: Highcharts.AxisLabelsFormatterContextObject): string {
+            const value = typeof this.value === 'number' ? this.value : 0;
+            return 'M$ ' + Highcharts.numberFormat(value, 0, ',', '.');
           }
+        }
+      },
+      yAxis: {
+        categories: this.ejecucionData.map((item: any) => this.formatDireccion(item.DireccionGestora)),
+        title: { text: null },
+        labels: {
+          style: {
+            fontSize: '11px',
+            fontFamily: 'Arial'
+          },
+          reserveSpace: true,
+          align: 'right'
+        }
       },
       legend: {
-          enabled: false // Desactiva la leyenda
-      },
-      tooltip: {
-          shared: true
+        align: 'center',
+        verticalAlign: 'bottom',
+        layout: 'horizontal'
       },
       plotOptions: {
-          bar: { // Ajustes específicos para el tipo 'bar'
-              grouping: true, // Desactiva el agrupamiento para mantener las barras separadas
-              shadow: false,
-              borderWidth: 0,
-              depth: 20 // Profundidad para efecto 3D
+        bar: {
+          dataLabels: {
+            enabled: true,
+            formatter: function(this: Highcharts.PointLabelObject): string {
+              const value = typeof this.y === 'number' ? this.y : 0;
+              return 'M$ ' + Highcharts.numberFormat(value, 0, ',', '.');
+            },
+            style: { fontSize: '11px' }
           },
-          series: {
-              dataLabels: {
-                  enabled: true,
-                  format: '{y}',
-                  style: { color: '#333' }
-              }
-          }
+          groupPadding: 0.15,
+          pointPadding: 0.05
+        }
       },
       series: [
-          { 
-              type: 'bar', 
-              name: 'Presupuesto Vigente', 
-              color: 'rgba(70,130,180,1)', 
-              data: this.ejecucionData.map((item: any) => item.total_Vigente),
-              pointPadding: 0.3,
-              pointPlacement: -0.2
-          },
-          { 
-              type: 'bar', 
-              name: 'Presupuesto Ejecutado', 
-              color: 'rgba(30,144,255,1)', 
-              data: this.ejecucionData.map((item: any) => item.total_ejecutado),
-              pointPadding: 0.3,
-              pointPlacement: 0.2
-          }
-      ],
-      credits: { enabled: false },
-      exporting: {
-          enabled: true,
-          buttons: {
-              contextButton: {
-                  menuItems: ["viewFullscreen", "printChart", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG"]
-              }
-          }
-      }
-  };
-  
-  
-  
-  
-  
-  
-  
+        {
+          type: 'bar',
+          name: 'Presupuesto Vigente',
+          color: '#2196F3',
+          data: this.ejecucionData.map(item => ({
+            y: Number(item.total_Vigente),
+            name: this.formatDireccion(item.DireccionGestora)
+          }))
+        },
+        {
+          type: 'bar',
+          name: 'Presupuesto Ejecutado',
+          color: '#4CAF50',
+          data: this.ejecucionData.map(item => ({
+            y: Number(item.total_ejecutado),
+            name: this.formatDireccion(item.DireccionGestora)
+          }))
+        }
+      ] as Array<Highcharts.SeriesOptionsType>,
+      tooltip: {
+        shared: true,
+        formatter: function(this: Highcharts.TooltipFormatterContextObject): string {
+          if (!this.points) return '';
+          
+          let tooltip = `<b>${this.points[0].point.name}</b><br/>`;
+          this.points.forEach(point => {
+            if (point.y !== undefined) {
+              //tooltip += `${point.series.name}: M$ ${Highcharts.numberFormat(point.y, 0, ',', '.')}<br/>`;
+            }
+          });
+          return tooltip;
+        }
+      },
+      credits: { enabled: false }
+    } as Highcharts.Options;
+    
+    
     // Configuración del gráfico de torta
     this.chartOptionsPie = {
       chart: {
         type: 'pie',
-        backgroundColor: '#f9f9f9',
+        backgroundColor: '#ffffff',
+        height: 400
       },
-      title: { text: 'Distribución de Gastos Ejecutados vs Saldo por Gastar' },
+      title: { 
+        text: 'Distribución de Gastos Ejecutados vs Saldo por Gastar',
+        style: {
+          fontSize: '16px',
+          fontWeight: 'bold'
+        }
+      },
       series: [{
         type: 'pie',
         name: 'Presupuesto',
         data: [
-          { name: 'Gastos Ejecutados', y: this.gastosEjecutados, color: '#007bff' },
-          { name: 'Saldo por Gastar', y: this.saldoPorGastar, color: '#6c757d' }
+          { name: 'Gastos Ejecutados', y: this.gastosEjecutados, color: '#2196F3' },
+          { name: 'Saldo por Gastar', y: this.saldoPorGastar, color: '#4CAF50' }
         ],
         dataLabels: {
           enabled: true,
-          format: '{point.name}: {point.y:.1f}',
-          style: { color: '#333' }
+          format: '{point.name}: {point.percentage:.1f}%',
+          style: {
+            fontSize: '12px',
+            textOutline: 'none',
+            color: '#333333'
+          }
         }
       }],
       legend: {
+        enabled: true,
         layout: 'horizontal',
         align: 'center',
-        verticalAlign: 'bottom'
+        verticalAlign: 'bottom',
+        itemStyle: {
+          fontSize: '12px'
+        }
+      },
+      tooltip: {
+        pointFormat: '{series.name}: <b>${point.y:,.0f}</b>'
       },
       plotOptions: {
         pie: {
           allowPointSelect: true,
           cursor: 'pointer',
-          dataLabels: {
-            enabled: true,
-            format: '{point.name}: {point.percentage:.1f} %',
-            style: { color: '#333' }
-          }
+          depth: 35,
+          showInLegend: true
         }
       },
-      credits: { enabled: false }
+      credits: { 
+        enabled: false 
+      }
     };
   
-    // Renderizar gráficos en los contenedores
+    // Renderizar gráficos
     Highcharts.chart('chart-bar-container', this.chartOptionsBar);
     Highcharts.chart('chart-pie-container', this.chartOptionsPie);
   }
   
-  
-  initializeMap() {
+  // Función helper para formatear nombres de direcciones
+  private formatDireccion(direccion: string): string {
+    if (!direccion) return '';
+    
+    let formattedName = direccion.replace('DIRECCION_', '').replace(/_/g, ' ');
+    
+    formattedName = formattedName.toLowerCase().split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    
+    if (formattedName.length > 30) {
+      formattedName = formattedName.substring(0, 27) + '...';
+    }
+    
+    return formattedName;
+  }
+    initializeMap() {
     if (!this.mapContainer || !this.mapContainer.nativeElement) return;
 
     if (Highcharts.charts[0]) {

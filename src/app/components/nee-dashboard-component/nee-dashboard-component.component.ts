@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import Highcharts3D from 'highcharts/highcharts-3d';
 import HighchartsExporting from 'highcharts/modules/exporting';
+import { EducacionService } from '../../services/educacion.services';
+import { ResumenNecesidades } from '../../models/educacion-data.models';
 
-// Inicializar módulos
 Highcharts3D(Highcharts);
 HighchartsExporting(Highcharts);
 
@@ -12,9 +13,65 @@ HighchartsExporting(Highcharts);
   templateUrl: './nee-dashboard-component.component.html',
   styleUrls: ['./nee-dashboard-component.component.css']
 })
-export class NeeDashboardComponent {
+export class NeeDashboardComponent implements OnInit {
   Highcharts = Highcharts;
+  resumenNecesidades: ResumenNecesidades = {
+    permanente: 0,
+    transitoria: 0,
+    rezago: 0
+  };
 
+  constructor(private educacionService: EducacionService) {
+    console.log('NeeDashboardComponent constructor iniciado');
+  }
+
+  ngOnInit() {
+    console.log('NeeDashboardComponent ngOnInit iniciado');
+    this.cargarDatos();
+  }
+
+  cargarDatos() {
+    //const anoActual = new Date().getFullYear();
+    const anoActual=2023;
+    console.log('Iniciando carga de datos para el año:', anoActual);
+
+    this.educacionService.getResumenNecesidades(anoActual)
+      .subscribe({
+        next: (data) => {
+          console.log('Datos recibidos del servicio:', data);
+          this.resumenNecesidades = data;
+          console.log('Estado actualizado de resumenNecesidades:', this.resumenNecesidades);
+          this.actualizarGraficos();
+        },
+        error: (error) => {
+          console.error('Error al cargar datos:', error);
+          console.error('Error completo:', {
+            message: error.message,
+            status: error.status,
+            statusText: error.statusText,
+            url: error.url
+          });
+        },
+        complete: () => {
+          console.log('Solicitud completada');
+        }
+      });
+  }
+
+  actualizarGraficos() {
+    console.log('Actualizando gráficos con datos:', this.resumenNecesidades);
+    
+    this.neeTypesChartOptions.series = [{
+      type: 'pie',
+      name: '% de NEE',
+      data: [
+        { name: 'Permanente', y: this.resumenNecesidades.permanente, color: '#1E90FF' },
+        { name: 'Transitoria', y: this.resumenNecesidades.transitoria, color: '#FFA500' },
+        { name: 'Rezago', y: this.resumenNecesidades.rezago, color: '#FF6347' }
+      ]
+    }];
+    console.log('Gráficos actualizados');
+  }
   // Opciones de Gráfico de Tipos de NEE (Pastel 3D)
   neeTypesChartOptions: Highcharts.Options = {
     chart: {

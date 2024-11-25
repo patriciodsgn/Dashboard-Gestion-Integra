@@ -192,7 +192,7 @@ export class MapColorsService {
           'Pelluhue': '#E8D0D8',
           'Chanco': '#EECDD6'
         },
-        'O\'Higgins': {
+        'ohiggins': {
           'Rancagua': '#7fc4d4',
           'Graneros': '#80b0a8',
           'Mostazal': '#7aa2b2',
@@ -420,18 +420,20 @@ getRegionDarkColor(regionName: string): string {
   }
 
   private normalizeText(text: string): string {
-    return text.normalize("NFD")
-               .replace(/[\u0300-\u036f]/g, "")  // Eliminar tildes
-               .toLowerCase()
-               .trim();
-  }
+    return text
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/['']/g, '') // Remover apóstrofes
+        .trim();
+}
 
   getRegionColors(regionName: string): { [key: string]: string } {
     const normalizedRegionName = this.normalizeText(regionName);
-    console.log("Region normalizada", normalizedRegionName);
+    console.log("**** Region normalizada *** ", normalizedRegionName);
     
     const predefinedRegions = ['tarapaca', 'arica y parinacota', 'antofagasta', 'atacama', 'coquimbo'];
-    const blueRegions = ['valparaiso', 'nuble', 'o higgins', 'maule', 'biobio'];
+    const blueRegions = ['valparaiso', 'nuble', 'ohiggins', 'maule', 'biobio'];
     
     if (predefinedRegions.includes(normalizedRegionName)) {
       return { 'default': '#fbe4a6' };
@@ -457,13 +459,42 @@ getRegionDarkColor(regionName: string): string {
       return '#E6F3FF';
     }
 
+    // Normalizar los nombres
     const normalizedRegionName = this.normalizeText(regionName);
     const normalizedCommuneName = this.normalizeText(communeName);
+   
+    console.log('Region original:' , regionName);
+    console.log('Region normallizada:' , normalizedRegionName);
+    
+    console.log('Comuna original:' , communeName);
+    console.log('Comuna normallizada:' , normalizedCommuneName);
 
-    // Buscar en todas las variantes de la región
+
+    // Debug info
+    console.log('Buscando color para:', {
+      regionOriginal: regionName,
+      regionNormalizada: normalizedRegionName,
+      comunaOriginal: communeName,
+      comunaNormalizada: normalizedCommuneName
+    });
+
+    // Manejo especial para O'Higgins
+    if (normalizedRegionName.includes('ohiggins')) {
+      // Buscar en la clave 'O\'Higgins'
+      const ohigginsColors = this.regionColors["O'Higgins"];
+      if (ohigginsColors) {
+        for (const [comuna, color] of Object.entries(ohigginsColors)) {
+          if (this.normalizeText(comuna) === normalizedCommuneName) {
+            return color;
+          }
+        }
+      }
+    }
+
+    // Búsqueda normal para otras regiones
     for (const [key, colors] of Object.entries(this.regionColors)) {
-      if (this.normalizeText(key) === normalizedRegionName) {
-        // Buscar la comuna normalizada
+      const normalizedKey = this.normalizeText(key);
+      if (normalizedKey === normalizedRegionName) {
         for (const [comuna, color] of Object.entries(colors)) {
           if (this.normalizeText(comuna) === normalizedCommuneName) {
             return color;
@@ -472,9 +503,10 @@ getRegionDarkColor(regionName: string): string {
       }
     }
 
+    // Si no se encuentra, usar el color por defecto
     console.warn(`No se encontró color para ${regionName}/${communeName}`);
     return '#E6F3FF';
-  }
+}
 
   hasRegion(regionName: string): boolean {
     const normalizedRegionName = this.normalizeText(regionName);
