@@ -7,9 +7,10 @@ import { Component, Input } from '@angular/core';
   templateUrl: './elem-header.component.html',
   styleUrl: './elem-header.component.css'
 })
+
 export class ElemHeaderComponent {
-  @Input() htitle: string = '';
-  @Input() hsubtitle: string = '';
+  @Input() htitle: string = 'Titulo';
+  @Input() hsubtitle: string = 'Subtitulo';
+  @Input() hbgcolor: string = '#b2b2b2';
+  @Input() htxtcolor: string = '#ffffff';
 }
-
-
