@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { ElemHeaderComponent } from '../elem-header/elem-header.component';
 import { ElemCardGrid1Component } from '../elem-card-grid1/elem-card-grid1.component';
+import { ElemCardGrid2Component } from '../elem-card-grid2/elem-card-grid2.component';
+import { ElemCardGrid3Component } from '../elem-card-grid3/elem-card-grid3.component';
+import { ElemButtonComponent } from '../elem-button/elem-button.component';
 import { Router } from '@angular/router';
 
 @Component({
@@ -8,14 +11,16 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [
     ElemHeaderComponent,
-    ElemCardGrid1Component
+    ElemButtonComponent,
+    ElemCardGrid1Component,
+    ElemCardGrid2Component,
+    ElemCardGrid3Component,
   ],
   templateUrl: './view-home.component.html',
   styleUrl: './view-home.component.css'
 })
 export class ViewHomeComponent {
-  htitle: string = 'htitle';
-  hsubtitle: string = 'hsubtitle';
+
   constructor(private router: Router) {}
 
   // Navegación programática
@@ -23,6 +28,9 @@ export class ViewHomeComponent {
     this.router.navigate([`/${path}`]);
   }
 }
+
+
+
 
 
 
