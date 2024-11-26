@@ -10,7 +10,6 @@ interface ButtonData {
   description: string;
   active: boolean;
 }
-
 @Component({
   selector: 'app-view-dppi',
   standalone: true,
@@ -21,27 +20,43 @@ interface ButtonData {
     ElemButtonGridComponent
   ],
   templateUrl: './view-dppi.component.html',
-  styleUrls: ['./view-dppi.component.css']
+  styleUrl: './view-dppi.component.css'
 })
 
 export class ViewDppiComponent {
-  htitle: string = 'DPPI';
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  htitle: string = 'Dashboard de Datos';
   hsubtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
-
-  note: string = 'Estas tarjetas se irán habilitando progresivamente a medida que se implemente el Gobierno de Datos.';
-
+  
+  note: string = '';
+  
   title: string = 'Dashboard de Datos';
-  subtitle: string = 'Gobierno de Datos Estratégicos / Casa Central';
-
+  subtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
+  
   buttons: ButtonData[] = [
-    { icon: 'favorite', title: 'Accidentes', description: 'Datos disponibles', active: true },
-    { icon: 'people', title: 'Situación Nutricional', description: 'Datos disponibles', active: true },
-    { icon: 'analytics', title: 'Indicador 1', description: 'Gobierno de datos - En desarrollo', active: false },
-    { icon: 'bar_chart', title: 'Indicador 2', description: 'Gobierno de datos - En desarrollo', active: false },
-    { icon: 'insert_chart', title: 'Indicador 3', description: 'Gobierno de datos - En desarrollo', active: false },
-    { icon: 'business', title: 'Indicador 4', description: 'Gobierno de datos - En desarrollo', active: false },
-    { icon: 'assessment', title: 'Indicador 5', description: 'Gobierno de datos - En desarrollo', active: false },
-    { icon: 'trending_up', title: 'Indicador 6', description: 'Gobierno de datos - En desarrollo', active: false },
-    { icon: 'pie_chart', title: 'Indicador 7', description: 'Gobierno de datos - En desarrollo', active: false }
+    { icon: 'favorite', title: 'Educación Primaria', description: 'Descripción detallada.', active: true },
+    { icon: 'favorite', title: 'Educación Secundaria', description: 'Descripción detallada.', active: true },
+    { icon: 'person', title: 'ATET', description: 'Ejemplo', active: false },
+    { icon: 'person', title: 'ATET', description: "Ejemplo", active: false },
+    { icon: 'person', title: 'Indicador 1', description: "Ejemplo", active: false },
+    { icon: 'business', title: 'Indicador 1', description: "Ejemplo", active: false },
+    { icon: 'school', title: 'Indicador 1', description: "Ejemplo", active: false },
+    { icon: 'attach_money', title: 'Indicador 1', description: "Ejemplo", active: false },
+    { icon: 'attach_money', title: 'Indicador 1', description: "Ejemplo", active: false },
+    { icon: 'attach_money', title: 'Indicador 1', description: "Ejemplo", active: false },
+    { icon: 'attach_money', title: 'Indicador 1', description: "Ejemplo", active: false },
+    { icon: 'attach_money', title: 'Indicador 1', description: "Ejemplo", active: false }
   ];
 }

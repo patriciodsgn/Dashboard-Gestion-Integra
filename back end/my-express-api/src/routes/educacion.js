@@ -137,5 +137,174 @@ router.get('/porcentajePermanente', async (req, res) => {
         });
     }
 });
+// Endpoint para obtener el porcentaje de NEE por categoría (nuevo procedimiento)
+router.get('/graficoNEE', async (req, res) => {
+    try {
+        const { ano, codigoRegion } = req.query;
+        const params = validateParams(ano, codigoRegion);
+        const result = await executeSP('sp_EducacionGenerarDatosGraficoNEE', params);
 
+        if (!result.recordset || result.recordset.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: MESSAGES.NO_DATA
+            });
+        }
+
+        return res.json({
+            success: true,
+            data: result.recordset,
+            count: result.recordset.length
+        });
+
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: MESSAGES.DB_ERROR,
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+// Endpoints
+router.get('/porcentajeRezago', async (req, res) => {
+    try {
+        const { ano, codigoRegion } = req.query;
+        const params = validateParams(ano, codigoRegion);
+        const result = await executeSP('sp_EducacionObtenerPorcentajeRezago', params);
+
+        if (!result.recordset || result.recordset.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: MESSAGES.NO_DATA
+            });
+        }
+
+        return res.json({
+            success: true,
+            data: result.recordset,
+            count: result.recordset.length
+        });
+
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: MESSAGES.DB_ERROR,
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
+// Nuevo endpoint: Porcentaje ATET (sp_GenerarGraficoATET)
+router.get('/porcentajeATET', async (req, res) => {
+    try {
+        const { ano, codigoRegion } = req.query;
+        const params = validateParams(ano, codigoRegion);
+        const result = await executeSP('sp_GenerarGraficoATET', params);
+
+        if (!result.recordset || result.recordset.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: MESSAGES.NO_DATA
+            });
+        }
+
+        // Responder con los datos obtenidos
+        return res.json({
+            success: true,
+            data: result.recordset,
+            count: result.recordset.length
+        });
+
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: MESSAGES.DB_ERROR,
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+router.get('/promedioSatisfaccion', async (req, res) => {
+    try {
+        const { ano, codigoRegion } = req.query;
+        const params = validateParams(ano, codigoRegion);
+        const result = await executeSP('sp_ObtenerPromedioSatisfaccionATT', params);
+
+        if (!result.recordset || result.recordset.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: MESSAGES.NO_DATA
+            });
+        }
+
+        // Responder con el promedio de satisfacción
+        return res.json({
+            success: true,
+            data: {
+                promedioSatisfaccion: result.recordset[0].PromedioSatisfaccion
+            }
+        });
+
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: MESSAGES.DB_ERROR,
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
+router.get('/satisfaccionGeografica', async (req, res) => {
+    try {
+        const { ano, codigoRegion } = req.query;
+        const params = {
+            ano: parseInt(ano, 10) || new Date().getFullYear(),
+            codigoRegion: parseInt(codigoRegion, 10) || 0
+        };
+
+        const result = await executeSP('sp_ObtenerSatisfaccionGeografica', params);
+
+        if (!result.recordset || result.recordset.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: MESSAGES.NO_DATA
+            });
+        }
+
+        // Procesamos los datos para el gráfico
+        const data = result.recordset.map(item => ({
+            region: item.Region,
+            promedioSatisfaccion: item.PromedioSatisfaccion,
+            totalJardines: item.TotalJardines
+        }));
+
+        // Calculamos el promedio nacional solo si estamos mostrando todas las regiones
+        const summary = params.codigoRegion === 0 ? {
+            promedioNacional: Number((data.reduce((acc, curr) => acc + curr.promedioSatisfaccion * curr.totalJardines, 0) / 
+                              data.reduce((acc, curr) => acc + curr.totalJardines, 0)).toFixed(1))
+        } : null;
+
+        return res.json({
+            success: true,
+            data: data,
+            count: result.recordset.length,
+            summary,
+            params: {
+                ano: params.ano,
+                codigoRegion: params.codigoRegion
+            }
+        });
+
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: MESSAGES.DB_ERROR,
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
 module.exports = router;

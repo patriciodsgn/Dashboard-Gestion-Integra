@@ -3,7 +3,7 @@ import * as Highcharts from 'highcharts';
 import Highcharts3D from 'highcharts/highcharts-3d';
 import HighchartsExporting from 'highcharts/modules/exporting';
 import { EducacionService } from '../../services/educacion.services';
-import { ResumenNecesidades } from '../../models/educacion-data.models';
+import { ResumenNecesidades } from '../../models/educacion-data.model';
 
 Highcharts3D(Highcharts);
 HighchartsExporting(Highcharts);

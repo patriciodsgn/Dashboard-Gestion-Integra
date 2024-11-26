@@ -7,7 +7,7 @@ import {
     NecesidadesPorComunaResponse,
     PorcentajePermanenteResponse,
     ResumenNecesidades
-} from '../models/educacion-data.models';
+} from '../models/educacion-data.model';
 
 @Injectable({
     providedIn: 'root'
@@ -97,4 +97,89 @@ export class EducacionService {
         console.log(`Calculando porcentaje: ${valor}/${total} = ${porcentaje.toFixed(1)}%`);
         return Number(porcentaje.toFixed(1));
     }
+
+    getGraficoNEE(ano: number, codigoRegion: number = 0): Observable<any> {
+        const url = `${this.baseUrl}/graficoNEE`;
+    
+        return this.http.get<any>(url, {
+            params: {
+                ano: ano.toString(),
+                codigoRegion: codigoRegion.toString()
+            }
+        }).pipe(
+            tap(response => console.log('Respuesta gráfico NEE:', response)),
+            catchError(error => {
+                console.error('Error en getGraficoNEE:', error);
+                throw error;
+            })
+        );
+    }
+    
+    getPorcentajeRezago(ano: number, codigoRegion: number = 0): Observable<any> {
+        const url = `${this.baseUrl}/porcentajeRezago`;
+    
+        return this.http.get<any>(url, {
+            params: {
+                ano: ano.toString(),
+                codigoRegion: codigoRegion.toString()
+            }
+        }).pipe(
+            tap(response => console.log('Respuesta porcentaje rezago:', response)),
+            catchError(error => {
+                console.error('Error en getPorcentajeRezago:', error);
+                throw error;
+            })
+        );
+    }
+    
+// Nuevo método para consumir el endpoint porcentajeATET
+getPorcentajeATET(ano: number, codigoRegion: number = 0): Observable<any> {
+    const url = `${this.baseUrl}/porcentajeATET`;
+
+    return this.http.get<any>(url, {
+        params: {
+            ano: ano.toString(),
+            codigoRegion: codigoRegion.toString()
+        }
+    }).pipe(
+        tap(response => console.log('Respuesta porcentaje ATET:', response)),
+        catchError(error => {
+            console.error('Error en getPorcentajeATET:', error);
+            throw error;
+        })
+    );
+}
+getPromedioSatisfaccionATET(ano: number, codigoRegion: number = 0): Observable<any> {
+    const url = `${this.baseUrl}/promedioSatisfaccion`;
+
+    return this.http.get<any>(url, {
+        params: {
+            ano: ano.toString(),
+            codigoRegion: codigoRegion.toString()
+        }
+    }).pipe(
+        tap(response => console.log('Respuesta promedio satisfacción ATET:', response)),
+        catchError(error => {
+            console.error('Error en getPromedioSatisfaccionATET:', error);
+            throw error;
+        })
+    );
+}
+
+getSatisfaccionGeografica(ano: number, codigoRegion: number = 0): Observable<any> {
+    const url = `${this.baseUrl}/satisfaccionGeografica`;
+
+    return this.http.get<any>(url, {
+        params: {
+            ano: ano.toString(),
+            codigoRegion: codigoRegion.toString()
+        }
+    }).pipe(
+        tap(response => console.log('Respuesta satisfacción geográfica:', response)),
+        catchError(error => {
+            console.error('Error en getSatisfaccionGeografica:', error);
+            throw error;
+        })
+    );
+}
 }

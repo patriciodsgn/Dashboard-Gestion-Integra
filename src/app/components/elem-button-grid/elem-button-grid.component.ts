@@ -3,13 +3,10 @@ import { ElemButtonComponent } from '../elem-button/elem-button.component';
 import { CommonModule } from '@angular/common';
 
 interface ButtonData {
-  eb_icon: string;
-  eb_title: string;
-  eb_subtitle: string;
-  eb_disable: boolean;
-  eb_bg_color: string;
-  eb_text_color: string;
-  eb_link: string;
+  icon: string;
+  title: string;
+  description: string;
+  active: boolean;
 }
 
 @Component({
@@ -21,5 +18,5 @@ interface ButtonData {
 })
 
 export class ElemButtonGridComponent {
-  @Input() button_data: ButtonData[] = [];
+  @Input() buttons: ButtonData[] = [];
 }

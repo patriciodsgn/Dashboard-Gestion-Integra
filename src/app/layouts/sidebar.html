@@ -7,7 +7,7 @@
                     <img class="ml-0 w-[50px] md:w-[70px] lg:w-[150px] h-auto flex-none" src="/assets/images/logo.svg"
                         alt="Logo Integra" />
                     <span
-                        class="align-middle text-xl md:text-2xl font-semibold dark:text-white-light ltr:ml-1.5 rtl:mr-1.5 hidden lg:block"></span>
+                        class="align-middle text-xl md:text-2xl font-semibold dark:text-white-light lg:inline ltr:ml-1.5 rtl:mr-1.5 hidden lg:block"></span>
                 </a>
                 <a href="javascript:;"
                     class="collapse-icon flex h-8 w-8 items-center rounded-full transition duration-300 hover:bg-gray-500/10 hover:text-primary dark:text-white-light dark:hover:bg-dark-light/10 rtl:rotate-180"
@@ -62,8 +62,7 @@
                             <ul class="sub-menu text-gray-500 space-y-1 list-none pl-0 border-l-0 ">
 
                                 <li class="leading-6">
-                                    
-                                    <a routerLink="/ejecutiva" routerLinkActive="active" (click)="toggleMobileMenu()" class="flex items-cente">
+                                    <a routerLink="/ejecutiva" routerLinkActive="active" (click)="toggleMobileMenu()" class="flex items-center">
                                         <span class="material-icons shrink-0 group-hover:text-primary">business_center</span>
                                         <span class="ml-2">Ejecutiva</span>
                                     </a>
@@ -101,7 +100,7 @@
                                 <li class="leading-6">
                                     <a routerLink="/costos" routerLinkActive="active" (click)="toggleMobileMenu()" class="flex items-center">
                                         <span class="material-icons shrink-0 group-hover:text-primary">attach_money</span>
-                                        <span class="ml-2 text-red-500">Costos</span>
+                                        <span class="ml-2">Costos</span>
                                     </a>
                                 </li>
 
@@ -109,6 +108,92 @@
                         </div>
                     </li>
 
+
+<!-- 
+                                <li class="leading-6">
+                                    <a routerLink="/direccion/daft" routerLinkActive="active"
+                                        (click)="toggleMobileMenu()">
+                                        <fa-icon [icon]="faBriefcase" class="shrink-0 group-hover:!text-primary" />
+                                        DAFT
+                                    </a>
+                                </li>
+                                <li class="leading-6">
+                                    <a [routerLink]="['/indicadores-dashboard', 'DPGR']" routerLinkActive="active"
+                                    (click)="toggleMobileMenu()">
+                                        <fa-icon [icon]="faFileAlt" class="shrink-0 group-hover:!text-primary" />
+                                        DPGR
+                                    </a>
+                                </li>
+                                <li class="leading-6">
+                                    <a routerLink="/direccion/dppi" routerLinkActive="active"
+                                        (click)="toggleMobileMenu()">
+                                        <fa-icon [icon]="faClipboard" class="shrink-0 group-hover:!text-primary" />
+                                        DPPI
+                                    </a>
+                                </li>
+                                <li class="leading-6">
+                                    <a routerLink="/educacion/data" routerLinkActive="active"
+                                        (click)="toggleMobileMenu()">
+                                        <fa-icon [icon]="faSchool" class="shrink-0 group-hover:!text-primary" /> D.
+                                        Educación
+                                    </a>
+                                </li>
+                                <li class="leading-6">
+                                    <a routerLink="/personas/menu" routerLinkActive="active"
+                                        (click)="toggleMobileMenu()">
+                                        <fa-icon [icon]="faUsers" class="shrink-0 group-hover:!text-primary" /> D.
+                                        Personas
+                                    </a>
+                                </li>
+                                <li class="leading-6">
+                                    <a routerLink="/direccion/juridico" routerLinkActive="active"
+                                        (click)="toggleMobileMenu()">
+                                        <fa-icon [icon]="faGavel" class="shrink-0 group-hover:!text-primary" /> D.
+                                        Jurídico
+                                    </a>
+                                </li>
+                                <li class="leading-6">
+                                    <a routerLink="/direccion/subdireccion-ti" routerLinkActive="active"
+                                        (click)="toggleMobileMenu()">
+                                        <fa-icon [icon]="faLaptopCode" class="shrink-0 group-hover:!text-primary" /> D.
+                                        Subdirección TI
+                                    </a>
+                                </li>
+                                <li class="leading-6">
+                                    <a [routerLink]="['/indicadores-dashboard', 'DIRECCION EJECUTIVA']"
+                                        routerLinkActive="active" (click)="toggleMobileMenu()">
+                                        <fa-icon [icon]="faCircle" class="text-purple-500 shrink-0 group-hover:!text-primary" />
+                                        Dirección Ejecutiva
+                                    </a>
+                                </li>
+                                <li class="leading-6">
+                                    <a routerLink="/direccion/contraloria" routerLinkActive="active"
+                                        (click)="toggleMobileMenu()">
+                                        <fa-icon [icon]="faCircle" class="text-purple-500 shrink-0 group-hover:!text-primary" />
+                                        Contraloría
+                                    </a>
+                                </li>
+                                <li class="leading-6">
+                                    <a routerLink="/direccion/comunicaciones" routerLinkActive="active"
+                                        (click)="toggleMobileMenu()">
+                                        <fa-icon [icon]="faCircle" class="text-purple-500 shrink-0 group-hover:!text-primary" />
+                                        Comunicaciones
+                                    </a>
+                                </li> -->
+                                <!-- <ul class="bg-red-100">
+                                    <li class="leading-6"><a routerLink="/educacion/data">educacion/data</a></li>
+                                    <li class="leading-6"><a routerLink="/educacion/nee">educacion/nee</a></li>
+                                    <li class="leading-6"><a routerLink="/educacion/atet1">educacion/atet1</a></li>
+                                    <li class="leading-6"><a routerLink="/educacion/atet2">educacion/atet2</a></li>
+                                    <hr>
+                                    <li class="leading-6"><a routerLink="/personas/menu">personas/menu</a></li>
+                                    <li class="leading-6"><a routerLink="/personas/data1">personas/data1</a></li>
+                                    <li class="leading-6"><a routerLink="/personas/data2">personas/data2</a></li>
+                                    <hr>
+                                    <li class="leading-6"><a routerLink="/presupuesto/daft">presupuesto/daft</a></li>
+                                    <li class="leading-6"><a routerLink="/presupuesto/ejecucion1">presupuesto/ejecucion1</a></li>
+                                    <li class="leading-6"><a routerLink="/presupuesto/ejecucion2">presupuesto/ejecucion2</a></li>
+                                </ul> -->
 
 
                     <!-- Menú de Reportes (comportamiento de acordeón) -->

@@ -25,8 +25,6 @@ import { DsPresupuestoEjecucion2Component } from './components/ds-presupuesto-ej
 
 
 
-import { PanelEducationNeeComponent } from './components/panel-education-nee/panel-education-nee.component';
-
 
 import { ViewLoginComponent } from './components/view-login/view-login.component';
 import { ViewHomeComponent } from './components/view-home/view-home.component';
@@ -68,17 +66,6 @@ export const routes: Routes = [
         path: '',
         component: AppLayout,
         children: [
-
-
-            // {
-            //     path: 'educacion',
-            //     component: ViewEducacionComponent,
-            //     children: [
-            //       { path: 'panel-educacion-nee', component: PanelEducationNeeComponent }, // Quitar '/'
-            //     ],
-            //   },
-            { path: 'educacion', component: ViewEducacionComponent },
-
             // dashboard
             //{ path: '', component: IndexComponent, data: { title: 'Sales Admin' } },
             { path: 'analytics', component: AnalyticsComponent, data: { title: 'Analytics Admin' } },
@@ -86,7 +73,7 @@ export const routes: Routes = [
             { path: 'crypto', component: CryptoComponent, data: { title: 'Crypto Admin' } },
             { path: 'custom-dashboard', component: CustomDashboardComponent, data: { title: 'Integra' } },
             { path: 'region/:regionId', component: CustomDashboardComponent, data: { title: 'Region Dashboard' } },
-            { path: 'ejecutiva', component: CustomDashboardInicialComponent, data: { title: 'Vista Estrategica Nacional' }},
+            { path: 'custom-dashboard-inicial', component: CustomDashboardInicialComponent, data: { title: 'Vista Estrategica Nacional' }},
             { path: 'indicadores-dashboard/:segment', component: IndicadoresDashboardComponent },
 
 
@@ -115,6 +102,7 @@ export const routes: Routes = [
             
 
             // vistas de cada direccion
+            { path: 'login', component: ViewLoginComponent },
             { path: 'home', component: ViewHomeComponent },
             
             { path: 'ejecutiva', component: ViewEjecutivaComponent },
@@ -177,9 +165,4 @@ export const routes: Routes = [
             { path: 'auth', loadChildren: () => import('./auth/auth.module').then((d) => d.AuthModule) },
         ],
     },
-    {
-        // vistas temporal login
-        path: 'login',
-        component: ViewLoginComponent
-    }
 ];
