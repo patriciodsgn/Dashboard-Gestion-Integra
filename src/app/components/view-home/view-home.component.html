@@ -1,27 +1,46 @@
-<!-- Header -->
 <app-elem-header
-  [htitle]="'Titulo header HOME'"
-  [hsubtitle]="'SUB Titulo header'">
-</app-elem-header>
+  [eh_title]="'Home'"
+  [eh_subtitle]="'Gestión de Datos Estratégicos'"
+  [eh_bg_color]="'#aac1bb'"
+  [eh_text_color]="'#ffffff'"
+></app-elem-header>
 
-<!-- Card Grid -->
+
+
 <app-elem-card-grid1></app-elem-card-grid1>
+<app-elem-card-grid2></app-elem-card-grid2>
+<app-elem-card-grid3></app-elem-card-grid3>
 
-<!-- Menu -->
-<div class="grid grid-cols-3 justify-center gap-4 py-6">
-  <button 
-    (click)="navigateTo('ejecutiva')" 
-    class="p-6 bg-teal-500 hover:bg-teal-600 active:bg-teal-400 rounded-lg text-white font-bold focus:outline-none focus:ring-2 focus:ring-teal-400 transition">
-    DATOS <br /> ESTRATÉGICOS
-  </button>
-  <button 
-    (click)="navigateTo('datos-operativos')" 
-    class="p-6 bg-gray-200 hover:bg-gray-300 active:bg-gray-400 rounded-lg text-black font-bold focus:outline-none focus:ring-2 focus:ring-gray-400 transition">
-    DATOS <br /> OPERATIVOS
-  </button>
-  <button 
-    (click)="navigateTo('datos-tecnicos')" 
-    class="p-6 bg-gray-200 hover:bg-gray-300 active:bg-gray-400 rounded-lg text-black font-bold focus:outline-none focus:ring-2 focus:ring-gray-400 transition">
-    DATOS <br /> TÉCNICOS
-  </button>
+<div class="grid grid-cols-3 justify-center gap-4 py-6 m-4">
+
+  <app-elem-button 
+  [eb_icon]="'person'"
+  [eb_title]="'DATOS ESTRATÉGICOS'"
+  [eb_subtitle]="'...'"
+  [eb_disable]=false
+  [eb_bg_color]="'#2dd4bf'"
+  [eb_text_color]="'#042f2e'"
+  [eb_link]="'/ejecutiva'"
+  ></app-elem-button>
+  
+  <app-elem-button 
+  [eb_icon]="'person'"
+  [eb_title]="'DATOS OPERATIVOS'"
+  [eb_subtitle]="'...'"
+  [eb_disable]=true
+  [eb_bg_color]="'#2dd4bf'"
+  [eb_text_color]="'#042f2e'"
+  [eb_link]="'/ejecutiva'"
+  ></app-elem-button>
+
+  <app-elem-button 
+  [eb_icon]="'person'"
+  [eb_title]="'DATOS TÉCNICOS'"
+  [eb_subtitle]="'...'"
+  [eb_disable]=true
+  [eb_bg_color]="'#2dd4bf'"
+  [eb_text_color]="'#042f2e'"
+  [eb_link]="'/ejecutiva'"
+  ></app-elem-button>
+
 </div>
