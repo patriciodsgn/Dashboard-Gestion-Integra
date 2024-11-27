@@ -57,9 +57,9 @@ export class PanelEducacionNeeComponent implements OnInit {
     const ano = 2023;
     const codigoRegion = 0;
 
-    this.educacionService.getGraficoNEE(ano, codigoRegion).subscribe({
+    this.educacionService.getPorcentajeRezago(ano, codigoRegion).subscribe({
       next: (res) => {
-        console.log('\x1b[34m%s\x1b[0m', 'NUM-Permanente-Transitoria-Rezago');
+        console.log('\x1b[34m%s\x1b[0m', '------------------');
         console.log(res);
         console.log('\x1b[34m%s\x1b[0m', '-----------');
 
