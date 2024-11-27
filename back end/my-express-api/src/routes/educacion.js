@@ -307,4 +307,33 @@ router.get('/satisfaccionGeografica', async (req, res) => {
         });
     }
 });
+router.get('/cantidadTotal', async (req, res) => {
+    try {
+        const { ano, codigoRegion } = req.query;
+        const params = validateParams(ano, codigoRegion);
+        const result = await executeSP('sp_EducacionObtenerCantidadTotal', params);
+
+        if (!result.recordset || result.recordset.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: MESSAGES.NO_DATA
+            });
+        }
+
+        return res.json({
+            success: true,
+            data: {
+                cantidadTotal: result.recordset[0].CantidadTotal
+            }
+        });
+
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: MESSAGES.DB_ERROR,
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
 module.exports = router;

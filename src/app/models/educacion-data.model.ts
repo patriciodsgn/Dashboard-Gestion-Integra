@@ -117,6 +117,14 @@ export interface DashboardData {
     satisfaccionGeografica: SatisfaccionGeograficaResponse;
 }
 
+// Interface for the cantidadTotal response
+export interface CantidadTotalResponse {
+    success: boolean;
+    data: {
+        cantidadTotal: number;
+    };
+}
+
 // Extender EducacionParams para casos donde no se requiere región
 export interface EducacionParamsOptionalRegion {
     ano: number;

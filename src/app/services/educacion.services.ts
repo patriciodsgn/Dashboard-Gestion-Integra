@@ -6,7 +6,9 @@ import {
     NecesidadesResponse,
     NecesidadesPorComunaResponse,
     PorcentajePermanenteResponse,
-    ResumenNecesidades
+    ResumenNecesidades,
+    CantidadTotalResponse
+    
 } from '../models/educacion-data.model';
 
 @Injectable({
@@ -178,6 +180,22 @@ getSatisfaccionGeografica(ano: number, codigoRegion: number = 0): Observable<any
         tap(response => console.log('Respuesta satisfacción geográfica:', response)),
         catchError(error => {
             console.error('Error en getSatisfaccionGeografica:', error);
+            throw error;
+        })
+    );
+}
+getCantidadTotal(ano: number, codigoRegion: number = 0): Observable<CantidadTotalResponse> {
+    const url = `${this.baseUrl}/cantidadTotal`;
+
+    return this.http.get<CantidadTotalResponse>(url, {
+        params: {
+            ano: ano.toString(),
+            codigoRegion: codigoRegion.toString()
+        }
+    }).pipe(
+        tap(response => console.log('Respuesta cantidad total:', response)),
+        catchError(error => {
+            console.error('Error en getCantidadTotal:', error);
             throw error;
         })
     );
