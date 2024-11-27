@@ -5,7 +5,7 @@ import { ButtonStateService } from '../../button-state.service';
 
 import { ElemHeaderComponent } from '../elem-header/elem-header.component';
 import { ElemButtonGridComponent } from '../elem-button-grid/elem-button-grid.component';
-import { ElemCardGrid1Component } from '../elem-card-grid1/elem-card-grid1.component';
+
 
 interface ButtonData {
   eb_icon: string;
@@ -24,7 +24,6 @@ interface ButtonData {
     RouterModule,
     ElemHeaderComponent,
     ElemButtonGridComponent,
-    ElemCardGrid1Component,
   ],
   templateUrl: './view-educacion.component.html',
   styleUrls: ['./view-educacion.component.css'],
@@ -40,30 +39,6 @@ export class ViewEducacionComponent {
   headerBgColor: string = '#fdba74'; // Color de fondo del header
   headerTextColor: string = '#ffffff'; // Color del texto del header
 
-  // Colores para app-elem-card-grid1
-  cardGridBgColor: string = '#fdba74'; // Color de fondo del grid
-  cardBgColor: string = '#ffffff'; // Color de fondo de las tarjetas
-  cardTextColor1: string = '#431407'; // Primer color de texto en las tarjetas
-  cardTextColor2: string = '#431407'; // Segundo color de texto en las tarjetas
-
-  // Valores y etiquetas para app-elem-card-grid1
-  cardValue1: string = '1.200';
-  cardLabel1: string = 'Jardines';
-
-  cardValue2: string = '80.000';
-  cardLabel2: string = 'Matrícula Nacional';
-
-  cardValue3: string = '10.000';
-  cardLabel3: string = '# de niñas y niños pertenecientes a pueblos originarios';
-
-  cardValue4: string = '5.297';
-  cardLabel4: string = '# de niñas y niños con nacionalidad extranjera';
-
-  cardValue5: string = '500';
-  cardLabel5: string = 'Establecimientos con Reconocimiento Oficial';
-
-  cardValue6: string = '400';
-  cardLabel6: string = 'Establecimientos con Sellos Verdes';
 
   buttons: ButtonData[] = [
     { eb_icon: 'school', eb_title: 'NEE', eb_subtitle: 'Ejemplo', eb_disable: true , eb_bg_color: '#5eead4', eb_text_color: '#115e59', eb_link: '/educacion/nee'},
