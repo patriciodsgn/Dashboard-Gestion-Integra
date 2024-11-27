@@ -5,10 +5,35 @@
   [eh_text_color]="'#ffffff'"
 ></app-elem-header>
 
+<app-elem-card-grid1
+  [ec_bg_card_grid_color]="'#fdba74'"
+  [ec_bg_card_color]="'#ffffff'"
+  [ec_text_card_color1]="'#431407'"
+  [ec_text_card_color2]="'#431407'"
+
+  [ec_value1]="'1.200'"
+  [ec_label1]="'Jardines'"
+
+  [ec_value2]="'80.000'"
+  [ec_label2]="'Matrícula Nacional'"
+
+  [ec_value3]="'10.000'"
+  [ec_label3]="'# de niñas y niños pertenecientes a pueblos originarios'"
+
+  [ec_value4]="'5.297'"
+  [ec_label4]="'# de niñas y niños con nacionalidad extranjera'"
+
+  [ec_value5]="'500'"
+  [ec_label5]="'Establecimientos con Reconocimiento Oficial'"
+
+  [ec_value6]="'400'"
+  [ec_label6]="'Establecimientos con Sellos Verdes'"
+></app-elem-card-grid1>
+
+<router-outlet></router-outlet>
+
 <app-elem-button-grid
   [button_data]="buttons"
   [activeIndex]="activeButtonIndex"
   (selectButton)="selectButton($event)"
 ></app-elem-button-grid>
-
-<router-outlet></router-outlet>

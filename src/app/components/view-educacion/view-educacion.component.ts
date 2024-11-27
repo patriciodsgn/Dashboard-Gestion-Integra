@@ -5,6 +5,7 @@ import { ButtonStateService } from '../../button-state.service';
 
 import { ElemHeaderComponent } from '../elem-header/elem-header.component';
 import { ElemButtonGridComponent } from '../elem-button-grid/elem-button-grid.component';
+import { ElemCardGrid1Component } from '../elem-card-grid1/elem-card-grid1.component';
 
 interface ButtonData {
   eb_icon: string;
@@ -23,6 +24,7 @@ interface ButtonData {
     RouterModule,
     ElemHeaderComponent,
     ElemButtonGridComponent,
+    ElemCardGrid1Component,
   ],
   templateUrl: './view-educacion.component.html',
   styleUrls: ['./view-educacion.component.css'],
