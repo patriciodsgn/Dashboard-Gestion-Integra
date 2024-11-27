@@ -19,6 +19,9 @@ import { ViewDpgrComponent } from './components/view-dpgr/view-dpgr.component';
 import { ViewDaftComponent } from './components/view-daft/view-daft.component';
 import { ViewPersonasComponent } from './components/view-personas/view-personas.component';
 import { ViewEducacionComponent } from './components/view-educacion/view-educacion.component';
+import { PanelEducacionNeeComponent } from './components/panel-educacion-nee/panel-educacion-nee.component';
+import { PanelEducacionAtetComponent } from './components/panel-educacion-atet/panel-educacion-atet.component';
+
 import { ViewCostosComponent } from './components/view-costos/view-costos.component';
 
 
@@ -66,12 +69,31 @@ export const routes: Routes = [
             
             { path: 'home', component: ViewHomeComponent },
             
+            {
+                path: 'educacion',
+                component: ViewEducacionComponent,
+                children: [
+                  {
+                    path: 'nee',
+                    loadComponent: () =>
+                      import('./components/panel-educacion-nee/panel-educacion-nee.component').then(
+                        (m) => m.PanelEducacionNeeComponent
+                      ),
+                  },{
+                    path: 'atet',
+                    loadComponent: () =>
+                      import('./components/panel-educacion-atet/panel-educacion-atet.component').then(
+                        (m) => m.PanelEducacionAtetComponent
+                      ),
+                  },
+                ],
+              },
+
             { path: 'ejecutiva', component: ViewEjecutivaComponent },
             { path: 'dppi', component: ViewDppiComponent },
             { path: 'dpgr', component: ViewDpgrComponent },
             { path: 'daft', component: ViewDaftComponent },
             { path: 'personas', component: ViewPersonasComponent },
-            { path: 'educacion', component: ViewEducacionComponent },
             { path: 'costos', component: ViewCostosComponent },
 
             // widgets

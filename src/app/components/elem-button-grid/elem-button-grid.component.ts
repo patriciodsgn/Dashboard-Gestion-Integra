@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ElemButtonComponent } from '../elem-button/elem-button.component';
 import { CommonModule } from '@angular/common';
 
@@ -17,9 +17,15 @@ interface ButtonData {
   standalone: true,
   imports: [ElemButtonComponent, CommonModule],
   templateUrl: './elem-button-grid.component.html',
-  styleUrls: ['./elem-button-grid.component.css'] // Corregido 'styleUrls'
+  styleUrls: ['./elem-button-grid.component.css'],
 })
-
 export class ElemButtonGridComponent {
   @Input() button_data: ButtonData[] = [];
+  @Input() activeIndex: number | null = null; // Índice del botón activo
+  @Output() selectButton = new EventEmitter<number>(); // Emitir eventos
+
+  // Método para manejar clics en botones
+  onButtonClick(index: number): void {
+    this.selectButton.emit(index);
+  }
 }
