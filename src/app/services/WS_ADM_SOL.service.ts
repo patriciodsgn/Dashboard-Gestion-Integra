@@ -7,12 +7,11 @@ import { catchError, tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class WS_ADM_SOLService {
-  private api = '/api/adm-sol';  // Actualiza el endpoint a la ruta de proxy configurada
+  private api = '/api/adm-sol';
 
   constructor(private http: HttpClient) {}
 
   getData(region: string, offset: string = ''): Observable<string> {
-    // Definimos el cuerpo de la solicitud SOAP
     const soapEnvelope = `
       <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws_adm_sol.wsbeans.iseries/">
         <soapenv:Header/>
@@ -27,24 +26,28 @@ export class WS_ADM_SOLService {
         </soapenv:Body>
       </soapenv:Envelope>`;
 
-    // Configuramos las cabeceras de la solicitud
     const headers = new HttpHeaders({
       'Content-Type': 'text/xml',
       'SOAPAction': ''
     });
 
-    // Realizamos la solicitud POST y aplicamos los operadores
     return this.http.post(this.api, soapEnvelope, {
       headers,
       responseType: 'text'
     }).pipe(
       tap((response: string) => {
-        // Aquí puedes añadir cualquier lógica adicional de procesamiento
-        //console.log('Respuesta recibida:', response);
+        console.log('SOAP Response:', response);
+        // Add additional logging to track SOLMAS values
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(response, 'text/xml');
+        const solmasElement = xmlDoc.getElementsByTagName('SOLMAS')[0];
+        if(solmasElement) {
+          console.log('SOLMAS value:', solmasElement.textContent);
+        }
       }),
       catchError((error) => {
-        console.error('Error al obtener los datos del servicio WSDL:', error);
-        return throwError(() => new Error('Error en la llamada SOAP: ' + error.message));
+        console.error('SOAP Error:', error);
+        return throwError(() => error);
       })
     );
   }

@@ -430,7 +430,7 @@ getRegionDarkColor(regionName: string): string {
 
   getRegionColors(regionName: string): { [key: string]: string } {
     const normalizedRegionName = this.normalizeText(regionName);
-    console.log("**** Region normalizada *** ", normalizedRegionName);
+    //console.log("**** Region normalizada *** ", normalizedRegionName);
     
     const predefinedRegions = ['tarapaca', 'arica y parinacota', 'antofagasta', 'atacama', 'coquimbo'];
     const blueRegions = ['valparaiso', 'nuble', 'ohiggins', 'maule', 'biobio'];
@@ -463,20 +463,20 @@ getRegionDarkColor(regionName: string): string {
     const normalizedRegionName = this.normalizeText(regionName);
     const normalizedCommuneName = this.normalizeText(communeName);
    
-    console.log('Region original:' , regionName);
-    console.log('Region normallizada:' , normalizedRegionName);
+    //console.log('Region original:' , regionName);
+    //console.log('Region normallizada:' , normalizedRegionName);
     
-    console.log('Comuna original:' , communeName);
-    console.log('Comuna normallizada:' , normalizedCommuneName);
+    //console.log('Comuna original:' , communeName);
+    //console.log('Comuna normallizada:' , normalizedCommuneName);
 
 
     // Debug info
-    console.log('Buscando color para:', {
-      regionOriginal: regionName,
-      regionNormalizada: normalizedRegionName,
-      comunaOriginal: communeName,
-      comunaNormalizada: normalizedCommuneName
-    });
+    //console.log('Buscando color para:', {
+    //  regionOriginal: regionName,
+    //  regionNormalizada: normalizedRegionName,
+    //  comunaOriginal: communeName,
+    //  comunaNormalizada: normalizedCommuneName
+    //});
 
     // Manejo especial para O'Higgins
     if (normalizedRegionName.includes('ohiggins')) {
