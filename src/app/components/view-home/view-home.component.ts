@@ -22,7 +22,6 @@ import { AuthService } from '../../services/login.services'; // Ajusta la ruta s
   styleUrl: './view-home.component.css'
 })
 
-
 export class ViewHomeComponent {
 
   constructor(private router: Router, private authService: AuthService) {}
