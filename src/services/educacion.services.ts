@@ -1,167 +1,203 @@
-import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map, tap, catchError } from 'rxjs';
+import { environmentdb } from 'src/environments/environment';
+import { 
+    NecesidadesResponse,
+    NecesidadesPorComunaResponse,
+    PorcentajePermanenteResponse,
+    ResumenNecesidades,
+    CantidadTotalResponse
+    
+} from '../models/educacion-data.model';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class EducacionService {
-  private apiUrlNEE = 'assets/tbNEE.json';
-  private apiUrlJardin = 'assets/tbJardin.json';
-  private apiUrlRegionIntegra = 'assets/tbRegionIntegra.json';
+    private baseUrl = `${environmentdb.apidb}/educacion`;
 
-  constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {
+        console.log('EducacionService inicializado con URL:', this.baseUrl);
+    }
 
-  educacionGetNecesidades(codigoRegion: number, ano: number): Observable<any[]> {
-    const query = `WITH Necesidades AS (
-      SELECT
-          n.DescripcionNEE,
-          n.CategoriaNEE,
-          r.NombreRegionIntegra AS DescripcionRegion,
-          COUNT(*) AS Cantidad
-      FROM
-          tbNEE n
-      INNER JOIN tbJardin j ON n.CodigoJardin = j.CodigoJardin
-      INNER JOIN tbRegionIntegra r ON j.CodigoRegion = r.CodigoRegionIntegra
-      WHERE
-          (0 = :CodigoRegion OR j.CodigoRegion = :CodigoRegion)
-          AND n.Ano = :ano
-      GROUP BY
-          n.DescripcionNEE,
-          n.CategoriaNEE,
-          r.NombreRegionIntegra
-    )
-    SELECT
-        DescripcionNEE,
-        CategoriaNEE,
-        DescripcionRegion,
-        Cantidad
-    FROM
-        Necesidades
-    ORDER BY
-        Cantidad DESC`;
+    getResumenNecesidades(ano: number, codigoRegion: number = 0): Observable<ResumenNecesidades> {
+        const url = `${this.baseUrl}/necesidades`;
+        
+        return this.http.get<NecesidadesResponse>(url, {
+            params: {
+                ano: ano.toString(),
+                codigoRegion: codigoRegion.toString()
+            }
+        }).pipe(
+            tap(response => {
+                console.log('Respuesta cruda del servidor:', response);
+            }),
+            map(response => {
+                // Extraemos los valores directamente del objeto categorías
+                const categorias = response.summary.necesidadesPorCategoria;
+                const total = response.summary.cantidadTotal;
+                
+                // Accedemos directamente a los valores numéricos
+                const permanente = Number(categorias['1. Permanente']) || 0;
+                const transitoria = Number(categorias['2. Transitoria']) || 0;
+                const rezago = Number(categorias['3. Rezago']) || 0;
 
-    return this.executeQuery(query, { CodigoRegion: codigoRegion, Ano: ano });
-  }
+                console.log('Valores extraídos:', {
+                    permanente,
+                    transitoria,
+                    rezago,
+                    total
+                });
 
-  educacionGetNecesidadesPorComuna(codigoRegion: number, ano: number): Observable<any[]> {
-    const query = `WITH Necesidades AS (
-      SELECT
-          n.DescripcionNEE,
-          n.CategoriaNEE,
-          r.NombreRegionIntegra AS DescripcionRegion,
-          j.Comuna,
-          COUNT(*) AS Cantidad
-      FROM
-          tbNEE n
-      INNER JOIN tbJardin j ON n.CodigoJardin = j.CodigoJardin
-      INNER JOIN tbRegionIntegra r ON j.CodigoRegion = r.CodigoRegionIntegra
-      WHERE
-          (0 = :CodigoRegion OR j.CodigoRegion = :CodigoRegion)
-          AND n.Ano = :Ano
-      GROUP BY
-          n.DescripcionNEE,
-          n.CategoriaNEE,
-          r.NombreRegionIntegra,
-          j.Comuna
-    )
-    SELECT
-        DescripcionNEE,
-        CategoriaNEE,
-        DescripcionRegion,
-        Comuna,
-        Cantidad
-    FROM
-        Necesidades
-    ORDER BY
-        Cantidad DESC`;
+                // Calculamos los porcentajes
+                const resumen = {
+                    permanente: this.calcularPorcentaje(permanente, total),
+                    transitoria: this.calcularPorcentaje(transitoria, total),
+                    rezago: this.calcularPorcentaje(rezago, total)
+                };
 
-    return this.executeQuery(query, { CodigoRegion: codigoRegion, Ano: ano });
-  }
+                console.log('Resumen calculado:', resumen);
+                return resumen;
+            }),
+            catchError(error => {
+                console.error('Error en getResumenNecesidades:', error);
+                throw error;
+            })
+        );
+    }
 
-  educacionGetTotalNecesidades(codigoRegion: number, ano: number): Observable<number> {
-    const query = `SELECT
-        COUNT(*) AS CantidadTotal
-    FROM
-        tbNEE n
-    INNER JOIN tbJardin j ON n.CodigoJardin = j.CodigoJardin
-    INNER JOIN tbRegionIntegra r ON j.CodigoRegion = r.CodigoRegionIntegra
-    WHERE
-        (0 = :CodigoRegion OR j.CodigoRegion = :CodigoRegion)
-        AND (n.Ano = :Ano)`;
+    getNecesidadesPorComuna(ano: number, codigoRegion: number = 0): Observable<NecesidadesPorComunaResponse> {
+        const url = `${this.baseUrl}/necesidades/comuna`;
+        
+        return this.http.get<NecesidadesPorComunaResponse>(url, {
+            params: {
+                ano: ano.toString(),
+                codigoRegion: codigoRegion.toString()
+            }
+        }).pipe(
+            tap(response => console.log('Respuesta necesidades por comuna:', response))
+        );
+    }
 
-    return this.executeQuery(query, { CodigoRegion: codigoRegion, Ano: ano }).pipe(
-      map(results => results.length ? results[0].CantidadTotal : 0)
-    );
-  }
+    getPorcentajePermanente(ano: number, codigoRegion: number = 0): Observable<PorcentajePermanenteResponse> {
+        const url = `${this.baseUrl}/porcentajePermanente`;
+        
+        return this.http.get<PorcentajePermanenteResponse>(url, {
+            params: {
+                ano: ano.toString(),
+                codigoRegion: codigoRegion.toString()
+            }
+        }).pipe(
+            tap(response => console.log('Respuesta porcentaje permanente:', response))
+        );
+    }
 
-  educacionGetPorcentajePermanente(codigoRegion: number, ano: number): Observable<any[]> {
-    const query = `WITH NecesidadesPermanentes AS (
-      SELECT
-          j.CodigoRegion,
-          r.NombreRegionIntegra AS DescripcionRegion,
-          j.Comuna,
-          COUNT(*) AS CantidadTotal,
-          SUM(CASE WHEN n.CategoriaNEE LIKE '%Transitoria' THEN 1 ELSE 0 END) AS CantidadPermanente
-      FROM
-          tbNEE n
-      INNER JOIN tbJardin j ON n.CodigoJardin = j.CodigoJardin
-      INNER JOIN tbRegionIntegra r ON j.CodigoRegion = r.CodigoRegionIntegra
-      WHERE
-          (0 = :CodigoRegion OR j.CodigoRegion = :CodigoRegion)
-          AND n.Ano = :Ano
-      GROUP BY
-          j.CodigoRegion,
-          r.NombreRegionIntegra,
-          j.Comuna
-    )
-    SELECT
-        DescripcionRegion,
-        Comuna,
-        (CAST(CantidadPermanente AS FLOAT) / CantidadTotal) * 100 AS PorcentajePermanente
-    FROM
-        NecesidadesPermanentes
-    ORDER BY
-        DescripcionRegion, Comuna`;
+    private calcularPorcentaje(valor: number, total: number): number {
+        if (!total) return 0;
+        const porcentaje = (valor / total) * 100;
+        console.log(`Calculando porcentaje: ${valor}/${total} = ${porcentaje.toFixed(1)}%`);
+        return Number(porcentaje.toFixed(1));
+    }
 
-    return this.executeQuery(query, { CodigoRegion: codigoRegion, Ano: ano });
-  }
-
-  private executeQuery(query: string, params: any = {}): Observable<any[]> {
-    if (environment.useMockData) {
-      return of(this.applySqlFilter([], params.CodigoRegion, params.Ano));
+    getGraficoNEE(ano: number, codigoRegion: number = 0): Observable<any> {
+        const url = `${this.baseUrl}/graficoNEE`;
+    
+        return this.http.get<any>(url, {
+            params: {
+                ano: ano.toString(),
+                codigoRegion: codigoRegion.toString()
+            }
+        }).pipe(
+            tap(response => console.log('Respuesta gráfico NEE:', response)),
+            catchError(error => {
+                console.error('Error en getGraficoNEE:', error);
+                throw error;
+            })
+        );
     }
     
-    try {
-      let httpParams = new HttpParams().set('sql', query);
-      Object.keys(params).forEach(key => {
-        httpParams = httpParams.set(key, params[key]);
-      });
-
-      return this.http.get<any[]>(`${environment.api}/query`, { params: httpParams })
-        .pipe(
-          catchError((error: HttpErrorResponse) => {
-            console.error('Error en executeQuery:', error);
-            return of([]);
-          })
+    getPorcentajeRezago(ano: number, codigoRegion: number = 0): Observable<any> {
+        const url = `${this.baseUrl}/porcentajeRezago`;
+    
+        return this.http.get<any>(url, {
+            params: {
+                ano: ano.toString(),
+                codigoRegion: codigoRegion.toString()
+            }
+        }).pipe(
+            tap(response => console.log('Respuesta porcentaje rezago:', response)),
+            catchError(error => {
+                console.error('Error en getPorcentajeRezago:', error);
+                throw error;
+            })
         );
-    } catch (error) {
-      console.error('Error en executeQuery:', error);
-      return of([]);
     }
-  }
+    
+// Nuevo método para consumir el endpoint porcentajeATET
+getPorcentajeATET(ano: number, codigoRegion: number = 0): Observable<any> {
+    const url = `${this.baseUrl}/porcentajeATET`;
 
-  applySqlFilter(data: any[], codigoRegion: number, ano: number): any[] {
-    return data.filter(item =>
-      (codigoRegion === 0 || item.CodigoRegion === codigoRegion) &&
-      (ano === 0 || item.Ano === ano)
+    return this.http.get<any>(url, {
+        params: {
+            ano: ano.toString(),
+            codigoRegion: codigoRegion.toString()
+        }
+    }).pipe(
+        tap(response => console.log('Respuesta porcentaje ATET:', response)),
+        catchError(error => {
+            console.error('Error en getPorcentajeATET:', error);
+            throw error;
+        })
     );
-  }
+}
+getPromedioSatisfaccionATET(ano: number, codigoRegion: number = 0): Observable<any> {
+    const url = `${this.baseUrl}/promedioSatisfaccion`;
+
+    return this.http.get<any>(url, {
+        params: {
+            ano: ano.toString(),
+            codigoRegion: codigoRegion.toString()
+        }
+    }).pipe(
+        tap(response => console.log('Respuesta promedio satisfacción ATET:', response)),
+        catchError(error => {
+            console.error('Error en getPromedioSatisfaccionATET:', error);
+            throw error;
+        })
+    );
 }
 
-// Uso en el componente
-// this.educacionService.educacionGetNecesidades(codigoRegion, ano).subscribe(data => {
-//   console.log(data);
-// });
+getSatisfaccionGeografica(ano: number, codigoRegion: number = 0): Observable<any> {
+    const url = `${this.baseUrl}/satisfaccionGeografica`;
+
+    return this.http.get<any>(url, {
+        params: {
+            ano: ano.toString(),
+            codigoRegion: codigoRegion.toString()
+        }
+    }).pipe(
+        tap(response => console.log('Respuesta satisfacción geográfica:', response)),
+        catchError(error => {
+            console.error('Error en getSatisfaccionGeografica:', error);
+            throw error;
+        })
+    );
+}
+getCantidadTotal(ano: number, codigoRegion: number = 0): Observable<CantidadTotalResponse> {
+    const url = `${this.baseUrl}/cantidadTotal`;
+
+    return this.http.get<CantidadTotalResponse>(url, {
+        params: {
+            ano: ano.toString(),
+            codigoRegion: codigoRegion.toString()
+        }
+    }).pipe(
+        tap(response => console.log('Respuesta cantidad total:', response)),
+        catchError(error => {
+            console.error('Error en getCantidadTotal:', error);
+            throw error;
+        })
+    );
+}
+}

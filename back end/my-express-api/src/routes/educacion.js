@@ -79,7 +79,7 @@ router.get('/necesidades', async (req, res) => {
     }
 });
 
-// Los otros endpoints siguen el mismo patrón
+
 router.get('/necesidades/comuna', async (req, res) => {
     try {
         const { ano, codigoRegion } = req.query;

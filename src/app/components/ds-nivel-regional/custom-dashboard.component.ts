@@ -45,6 +45,11 @@ import { DashboardStateService } from '../../core/services/dashboard-state.servi
 ExportingModule(Highcharts);
 OfflineExportingModule(Highcharts);
 
+interface ModalidadCount {
+  modalidad: string;
+  count: number;
+}
+
 interface MapFeatureData {
   'hc-key': string;
   name: string;
@@ -129,6 +134,8 @@ interface TarjetaSuperior {
   titulo: string;
   icon: IconProp;  // Cambia a IconDefinition si es necesario
 }
+
+
 ExportingModule(Highcharts);
 FullScreenModule(Highcharts);
 @Component({
@@ -933,8 +940,11 @@ private loadData(region: string, offset: string = ''): void {
         } else {
           //console.log('Carga completa. Actualizando JardinesporRegion');
           this.JardinesporRegion = [...this.jardinesAcumulados];
+          this.updateTarjetasSuperiores()
           //console.log('Jardines totales:', this.JardinesporRegion.length);
         }
+
+
 
       } catch (error) {
         console.error('Error procesando datos:', error);
@@ -1999,7 +2009,41 @@ getModalidadAbreviada(modalidad: string): string {
   
     return regionNames[regionId] || 'Desconocida';
   }
+  // Add above updateRegion() and below loadData()
+private countJardinesPorModalidad(): ModalidadCount[] {
+  const counts = new Map<string, number>();
   
+  this.JardinesporRegion.forEach(jardin => {
+    const modalidad = jardin.modalidad || 'Sin Modalidad';
+    counts.set(modalidad, (counts.get(modalidad) || 0) + 1);
+  });
+
+  return Array.from(counts.entries()).map(([modalidad, count]) => ({
+    modalidad,
+    count
+  }));
+}
+
+private updateTarjetasSuperiores(): void {
+  const modalidadCounts = this.countJardinesPorModalidad();
+  
+  this.tarjetasSuperiores = [
+    { valor: this.JardinesporRegion.length, titulo: 'Total Establecimientos', icon: faHome },
+    { valor: modalidadCounts.find(m => m.modalidad.includes('SALA CUNA Y JARDÍN'))?.count || 0, titulo: 'Salas Cuna y Jardines Infantiles', icon: faBaby },
+    { valor: modalidadCounts.find(m => m.modalidad === 'JARDÍN INFANTIL')?.count || 0, titulo: 'Jardines Infantiles', icon: faBed },
+    { valor: modalidadCounts.find(m => m.modalidad === 'SALA CUNA')?.count || 0, titulo: 'Sala Cuna', icon: faShoppingCart },
+    { valor: modalidadCounts.filter(m => 
+      m.modalidad.includes('ALTERNATIVO') || 
+      m.modalidad.includes('FAMILIAR') || 
+      m.modalidad.includes('LABORAL') ||
+      m.modalidad === 'CONVENIO')
+      .reduce((acc, curr) => acc + curr.count, 0), 
+      titulo: 'Modalidad No convencional', 
+      icon: faChild 
+    },
+    { valor: modalidadCounts.find(m => m.modalidad.includes('SOBRE RUEDAS'))?.count || 0, titulo: 'Jardín Sobre Ruedas', icon: faBus }
+  ];
+}
 
   ngOnDestroy(): void {
     this.destroy$.next();
