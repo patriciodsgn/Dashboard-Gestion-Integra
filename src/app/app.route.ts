@@ -10,6 +10,21 @@ import { CustomDashboardInicialComponent } from './components/ds-nivel-nacional/
 import { IndicadoresDashboardComponent } from './components/indicadores-dashboard/indicadores-dashboard.component';
 
 
+import { DsEducacionDataComponent } from './components/ds-educacion-data/ds-educacion-data.component';
+import { DsEducacionNeeComponent } from './components/ds-educacion-nee/ds-educacion-nee.component';
+import { DsEducacionAtet1Component } from './components/ds-educacion-atet1/ds-educacion-atet1.component';
+import { DsEducacionAtet2Component } from './components/ds-educacion-atet2/ds-educacion-atet2.component';
+
+import { DsPersonasMenuComponent } from './components/ds-personas-menu/ds-personas-menu.component';
+import { DsPersonasData1Component } from './components/ds-personas-data1/ds-personas-data1.component';
+import { DsPersonasData2Component } from './components/ds-personas-data2/ds-personas-data2.component';
+
+import { DsPresupuestoDaftComponent } from './components/ds-presupuesto-daft/ds-presupuesto-daft.component';
+import { DsPresupuestoEjecucion1Component } from './components/ds-presupuesto-ejecucion1/ds-presupuesto-ejecucion1.component';
+import { DsPresupuestoEjecucion2Component } from './components/ds-presupuesto-ejecucion2/ds-presupuesto-ejecucion2.component';
+
+
+
 
 import { ViewLoginComponent } from './components/view-login/view-login.component';
 import { ViewHomeComponent } from './components/view-home/view-home.component';
@@ -19,9 +34,6 @@ import { ViewDpgrComponent } from './components/view-dpgr/view-dpgr.component';
 import { ViewDaftComponent } from './components/view-daft/view-daft.component';
 import { ViewPersonasComponent } from './components/view-personas/view-personas.component';
 import { ViewEducacionComponent } from './components/view-educacion/view-educacion.component';
-import { PanelEducacionNeeComponent } from './components/panel-educacion-nee/panel-educacion-nee.component';
-import { PanelEducacionAtetComponent } from './components/panel-educacion-atet/panel-educacion-atet.component';
-
 import { ViewCostosComponent } from './components/view-costos/view-costos.component';
 
 
@@ -65,36 +77,45 @@ export const routes: Routes = [
             { path: 'indicadores-dashboard/:segment', component: IndicadoresDashboardComponent },
 
 
-            // vistas de cada direccion
+            /*
+                cachureo de desarrollo por no hacer user flow
+                al inicio y solo tener pantallazos
+                */
+            { path: 'educacion/data', component: DsEducacionDataComponent },
+            { path: 'educacion/data', component: DsEducacionDataComponent },
+            { path: 'educacion/data', component: DsEducacionDataComponent },
+            { path: 'educacion/data', component: DsEducacionDataComponent },
+            { path: 'educacion/data', component: DsEducacionDataComponent },
+
+            { path: 'educacion/data', component: DsEducacionDataComponent },
+            { path: 'educacion/nee', component: DsEducacionNeeComponent },
+            { path: 'educacion/atet1', component: DsEducacionAtet1Component },
+            { path: 'educacion/atet2', component: DsEducacionAtet2Component },
             
+            { path: 'personas/menu', component: DsPersonasMenuComponent },
+            { path: 'personas/data1', component: DsPersonasData1Component },
+            { path: 'personas/data2', component: DsPersonasData2Component },
+            
+            { path: 'presupuesto/daft', component: DsPresupuestoDaftComponent },
+            { path: 'presupuesto/ejecucion1', component: DsPresupuestoEjecucion1Component },
+            { path: 'presupuesto/ejecucion2', component: DsPresupuestoEjecucion2Component },
+            
+
+            // vistas de cada direccion
+            { path: 'login', component: ViewLoginComponent },
             { path: 'home', component: ViewHomeComponent },
             
-            {
-                path: 'educacion',
-                component: ViewEducacionComponent,
-                children: [
-                  {
-                    path: 'nee',
-                    loadComponent: () =>
-                      import('./components/panel-educacion-nee/panel-educacion-nee.component').then(
-                        (m) => m.PanelEducacionNeeComponent
-                      ),
-                  },{
-                    path: 'atet',
-                    loadComponent: () =>
-                      import('./components/panel-educacion-atet/panel-educacion-atet.component').then(
-                        (m) => m.PanelEducacionAtetComponent
-                      ),
-                  },
-                ],
-              },
-
             { path: 'ejecutiva', component: ViewEjecutivaComponent },
             { path: 'dppi', component: ViewDppiComponent },
             { path: 'dpgr', component: ViewDpgrComponent },
             { path: 'daft', component: ViewDaftComponent },
             { path: 'personas', component: ViewPersonasComponent },
+            { path: 'educacion', component: ViewEducacionComponent },
             { path: 'costos', component: ViewCostosComponent },
+            
+            
+
+            
 
             // widgets
             { path: 'widgets', component: WidgetsComponent, data: { title: 'Widgets' } },
@@ -137,7 +158,6 @@ export const routes: Routes = [
         path: '',
         component: AuthLayout,
         children: [
-            { path: 'login', component: ViewLoginComponent },
             // pages
             { path: 'pages', loadChildren: () => import('./pages/pages.module').then((d) => d.PagesModule) },
 
