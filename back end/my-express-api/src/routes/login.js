@@ -97,6 +97,39 @@ router.post('/', validateLoginParams, async (req, res) => {
     } catch (error) {
         return handleError(res, error);
     }
-});
 
+
+});
+router.post('/usuario', async (req, res) => {
+    try {
+        const { correo } = req.body;
+        
+        if (!correo) {
+            return res.status(400).json({
+                success: false,
+                message: 'El parámetro "correo" es obligatorio'
+            });
+        }
+
+        const request = new sql.Request();
+        const result = await request
+            .input('CorreoElectronico', sql.VarChar(100), correo)
+            .execute('sp_ObtenerUsuario');
+
+        if (!result.recordset || result.recordset.length === 0) {
+            return res.status(404).json({
+                success: false, 
+                message: MESSAGES.NO_DATA
+            });
+        }
+
+        res.json({
+            success: true,
+            data: result.recordset[0] 
+        });
+
+    } catch (error) {
+        return handleError(res, error);
+    }
+});
 module.exports = router;

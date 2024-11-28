@@ -1,74 +1,68 @@
-<!-- Contenedor principal -->
-<div class="container mx-auto">
-  <!-- Header con título -->
-  <div class="w-full p-4" [style.backgroundColor]="headerColor">
+<!-- Container principal -->
+<div class="container mx-auto p-4">
+  <!-- Header -->
+  <div class="w-full mb-6">
     <div class="bg-transparent">
-      <div class="text-left space-y-1">
+      <div class="text-left mb-2">
         <h3 class="text-xl md:text-2xl font-semibold flex items-center">
           <fa-icon [icon]="faCalendar" class="mr-2"></fa-icon>
           {{ RegionSeleccionada }} / {{ fechaActual }}
         </h3>
+      </div>
+      <div class="mb-2">
         <h6 class="text-sm text-gray-600">Gestión de Datos Estratégicos / Casa Central</h6>
       </div>
     </div>
   </div>
-
-
-
-  <!-- Tarjetas superiores -->
-  <div class="grid grid-cols-6 items-center justify-center flex-col gap-4 w-full p-4" [style.backgroundColor]="headerColor">
-    <!-- Contenedor principal de tarjetas -->
-    <div class="col-span-5 rounded-xl border border-gray-100 p-4"
-    [style.borderColor]="cardColor"
-    >
-      <!-- Scroll horizontal para móviles -->
-      <div class="flex flex-nowrap gap-4 overflow-x-auto px-2">
-        <!-- Tarjeta principal -->
-        <div class=" flex items-center justify-center flex-col p-3" [style.backgroundColor]="headerColor">
+ 
+  <!-- Tarjetas Container -->
+  <div class="flex flex-col lg:flex-row gap-4 w-full h-full">
+    <!-- Principal Container -->
+    <div class="p-4 rounded-xl flex-1 shadow-lg" [style.backgroundColor]="headerColor">
+      <div class="flex flex-row gap-4 overflow-x-auto h-full">
+        <!-- Primera Tarjeta -->
+        <div class="flex items-center p-4 min-w-[200px]" [style.backgroundColor]="headerColor">
           <img src="assets/images/Mesa de trabajo 51.png" alt="Establecimientos" 
-               class="w-12 mb-2" 
+               class="w-12 h-12 md:w-16 md:h-16 mr-4" 
                [ngStyle]="{'filter': mapColorsService.getRegionImageFilter(RegionSeleccionada)}" />
+          <div>
             <div class="text-2xl font-bold">{{ tarjetasSuperiores[0].valor }}</div>
-            <div class="text-sm font-semibold">{{ tarjetasSuperiores[0].titulo }}</div>
+            <div class="text-sm">{{ tarjetasSuperiores[0].titulo }}</div>
+          </div>
         </div>
-
-        <!-- Tarjetas de datos -->
-        <div class="grid grid-cols-4 gap-4">
-          <div *ngFor="let tarjeta of tarjetasSuperiores.slice(1, 5)" 
-              class="flex flex-col items-center justify-center p-4 rounded-lg shadow-sm" 
-              [style.backgroundColor]="cardColor"
-              [style.color]="mapColorsService.getRegionTextColor(RegionSeleccionada)">
-            <fa-icon [icon]="tarjeta.icon" class="text-xl mb-2"></fa-icon>
-            <div class="text-lg md:text-xl font-bold">{{ tarjeta.valor }}</div>
-            <div class="text-xs text-center">{{ tarjeta.titulo }}</div>
+ 
+        <!-- Otras Tarjetas -->
+        <div *ngFor="let tarjeta of tarjetasSuperiores.slice(1, 5)" 
+             class="flex-shrink-0 flex items-center p-4 min-w-[180px] rounded-xl border border-gray-400" 
+             [style.backgroundColor]="cardColor">
+          <div class="text-center w-full">
+            <fa-icon [icon]="tarjeta.icon" class="text-2xl mb-2"></fa-icon>
+            <div class="text-2xl font-bold">{{ tarjeta.valor }}</div>
+            <div class="text-xs">{{ tarjeta.titulo }}</div>
           </div>
         </div>
       </div>
     </div>
-
-    
-    <!-- Tarjeta Jardín Sobre Ruedas -->
-    <div class="col-span-1 p-4">
-      <div class="flex flex-col items-center justify-center p-4 rounded-lg h-full shadow-sm"
-           [style.backgroundColor]="cardColor"
-           [style.color]="mapColorsService.getRegionTextColor(RegionSeleccionada)">
+ 
+    <!-- Tarjeta Bus -->
+    <div class="lg:w-64 h-full">
+      <div class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-400 h-[130px] shadow-sm"
+           [style.backgroundColor]="cardColor">
         <fa-icon [icon]="faBus" class="text-2xl mb-2"></fa-icon>
         <div class="text-lg md:text-xl font-bold">{{ tarjetasSuperiores[5].valor }}</div>
         <div class="text-xs text-center">{{ tarjetasSuperiores[5].titulo }}</div>
       </div>
     </div>
   </div>
-
-
-
-  <!-- Mapa y Panel de Información -->
+ 
+  <!-- Resto del código igual... -->
+ 
+  <!-- Mapa y Panel -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
-    <!-- Mapa -->
     <div class="h-[400px] md:h-[500px] border border-gray-400 rounded-lg shadow-sm bg-white overflow-hidden">
       <div id="map-container" class="w-full h-full"></div>
     </div>
-
-    <!-- Panel de Información -->
+ 
     <div class="h-[400px] md:h-[500px] border border-gray-400 rounded-lg shadow-sm bg-white overflow-hidden">
       <h4 class="p-3 text-sm font-semibold border-b">Datos Adicionales</h4>
       <div class="h-[calc(100%-3rem)] overflow-y-auto p-3">
@@ -88,8 +82,8 @@
       </div>
     </div>
   </div>
-
-  <!-- Tarjetas inferiores -->
+ 
+  <!-- Tarjetas Inferiores -->
   <div class="mt-6">
     <div class="p-4 rounded-xl border border-gray-400 shadow-lg">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -109,4 +103,4 @@
       </div>
     </div>
   </div>
-</div>
+ </div>
