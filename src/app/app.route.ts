@@ -54,7 +54,7 @@ export const routes: Routes = [
         component: AppLayout,
         children: [
             // dashboard
-            //{ path: '', component: IndexComponent, data: { title: 'Sales Admin' } },
+            // { path: '', component: IndexComponent, data: { title: 'Sales Admin' } },
             { path: 'analytics', component: AnalyticsComponent, data: { title: 'Analytics Admin' } },
             { path: 'finance', component: FinanceComponent, data: { title: 'Finance Admin' } },
             { path: 'crypto', component: CryptoComponent, data: { title: 'Crypto Admin' } },
@@ -63,56 +63,56 @@ export const routes: Routes = [
             { path: 'custom-dashboard-inicial', component: CustomDashboardInicialComponent, data: { title: 'Vista Estrategica Nacional' }},
             { path: 'indicadores-dashboard/:segment', component: IndicadoresDashboardComponent },
 
-
-
-
-            // vistas de cada direccion
-            { path: 'login', component: ViewLoginComponent },
+            // vistas de cada direccion            
             { path: 'home', component: ViewHomeComponent },
+            {
+                path: 'educacion',
+                component: ViewEducacionComponent,
+                children: [
+                    {
+                        path: 'nee',
+                        loadComponent: () =>
+                            import('./components/panel-educacion-nee/panel-educacion-nee.component').then(
+                                (m) => m.PanelEducacionNeeComponent
+                            ),
+                    },{
+                        path: 'atet',
+                        loadComponent: () =>
+                            import('./components/panel-educacion-atet/panel-educacion-atet.component').then(
+                                (m) => m.PanelEducacionAtetComponent
+                            ),
+                    },
+                ],
+            },
             
             { path: 'ejecutiva', component: ViewEjecutivaComponent },
             { path: 'dppi', component: ViewDppiComponent },
             { path: 'dpgr', component: ViewDpgrComponent },
             { path: 'daft', component: ViewDaftComponent },
             { path: 'personas', component: ViewPersonasComponent },
-            { path: 'educacion', component: ViewEducacionComponent },
             { path: 'costos', component: ViewCostosComponent },
-            
-            
-
-            
 
             // widgets
             { path: 'widgets', component: WidgetsComponent, data: { title: 'Widgets' } },
-
             // font-icons
             { path: 'font-icons', component: FontIconsComponent, data: { title: 'Font Icons' } },
-
             // charts
             { path: 'charts', component: ChartsComponent, data: { title: 'Charts' } },
-
             // dragndrop
             { path: 'dragndrop', component: DragndropComponent, data: { title: 'Dragndrop' } },
-
             // pages
             { path: 'pages/knowledge-base', component: KnowledgeBaseComponent, data: { title: 'Knowledge Base' } },
             { path: 'pages/faq', component: FaqComponent, data: { title: 'FAQ' } },
-
             //apps
             { path: 'apps', loadChildren: () => import('./apps/apps.module').then((d) => d.AppsModule) },
-
             // components
             { path: 'components', loadChildren: () => import('./components/components.module').then((d) => d.ComponentsModule) },
-
             // elements
             { path: 'elements', loadChildren: () => import('./elements/elements.module').then((d) => d.ElementsModule) },
-
             // forms
             { path: 'forms', loadChildren: () => import('./forms/form.module').then((d) => d.FormModule) },
-
             // users
             { path: 'users', loadChildren: () => import('./users/user.module').then((d) => d.UsersModule) },
-
             // tables
             { path: 'tables', component: TablesComponent, data: { title: 'Tables' } },
             { path: 'datatables', loadChildren: () => import('./datatables/datatables.module').then((d) => d.DatatablesModule) },
@@ -123,9 +123,10 @@ export const routes: Routes = [
         path: '',
         component: AuthLayout,
         children: [
+            //login
+            { path: 'login', component: ViewLoginComponent },
             // pages
             { path: 'pages', loadChildren: () => import('./pages/pages.module').then((d) => d.PagesModule) },
-
             // auth
             { path: 'auth', loadChildren: () => import('./auth/auth.module').then((d) => d.AuthModule) },
         ],
