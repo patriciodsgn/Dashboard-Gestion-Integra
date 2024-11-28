@@ -31,6 +31,14 @@
     {
       "filePath": "back end/my-express-api/src/routes",
       "group": "Default"
+    },
+    {
+      "filePath": "src/app/app.route.ts",
+      "group": "Default"
+    },
+    {
+      "filePath": "src/app/components/view-home",
+      "group": "Default"
     }
   ]
 }
