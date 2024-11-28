@@ -25,14 +25,25 @@ interface ButtonData {
 
 export class ViewDppiComponent {
   
-  title: string = 'Dashboard DPPI';
-  subtitle: string = 'Datos Estratégicos / Dirección Central';
-  headerBgColor: string = '#fda4af';
-  headerTextColor: string = '#ffffff';
   
-
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   htitle: string = 'Dashboard de Datos';
   hsubtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
+  
+  note: string = '';
+  
+  title: string = 'Dashboard de Datos';
+  subtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
   
   buttons: ButtonData[] = [
     { icon: 'favorite', title: 'Educación Primaria', description: 'Descripción detallada.', active: true },

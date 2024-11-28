@@ -30,14 +30,20 @@ interface ButtonData {
 
 export class ViewDpgrComponent {
 
-  title: string = 'Dashboard DPGR';
-  subtitle: string = 'Datos Estratégicos / Dirección Central';
-  headerBgColor: string = '#67e8f9';
-  headerTextColor: string = '#ffffff';
-
+  
+  
+  
+  
+  
+  
+  
   htitle: string = 'Dashboard de Datos';
   hsubtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
   
+  note: string = '';
+  
+  title: string = 'Dashboard de Datos';
+  subtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
   
   buttons: ButtonData[] = [
     { icon: 'favorite', title: 'Educación Primaria', description: 'Descripción detallada.', active: true },

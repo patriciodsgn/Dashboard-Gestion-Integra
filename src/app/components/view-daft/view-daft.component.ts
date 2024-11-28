@@ -31,15 +31,19 @@ interface ButtonData {
 export class ViewDaftComponent {
   
   
-  title: string = 'Dashboard DAFT';
-  subtitle: string = 'Datos Estratégicos / Dirección Central';
-  headerBgColor: string = '#93c5fd';
-  headerTextColor: string = '#ffffff';
+  
+  
+  
   
   
   
   htitle: string = 'Dashboard de Datos';
   hsubtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
+  
+  note: string = '';
+  
+  title: string = 'Dashboard de Datos';
+  subtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
   
   buttons: ButtonData[] = [
     { icon: 'favorite', title: 'Educación Primaria', description: 'Descripción detallada.', active: true },
