@@ -103,7 +103,7 @@ router.post('/', validateLoginParams, async (req, res) => {
 router.post('/usuario', async (req, res) => {
     try {
         const { correo } = req.body;
-        
+
         if (!correo) {
             return res.status(400).json({
                 success: false,
@@ -119,17 +119,43 @@ router.post('/usuario', async (req, res) => {
         if (!result.recordset || result.recordset.length === 0) {
             return res.status(404).json({
                 success: false, 
-                message: MESSAGES.NO_DATA
+                message: 'No se encontraron datos para el correo proporcionado.'
             });
         }
 
+        // Procesar el resultado para devolver una estructura más detallada
+        const usuario = {
+            datosUsuario: {
+                CodigoUsuario: result.recordset[0].CodigoUsuario,
+                Nombre: result.recordset[0].Nombre,
+                CorreoElectronico: result.recordset[0].CorreoElectronico,
+                CodigoRol: result.recordset[0].CodigoRol,
+                // Agrega aquí otros campos relevantes de la tabla tbUsuario
+            },
+            permisos: result.recordset.map(record => ({
+                CodigoPermiso: record.CodigoPermiso || null,
+                NombrePermiso: record.NombrePermiso || null,
+                TipoCategoria: record.TipoCategoria || null,
+                ValorCategoria: record.ValorCategoria || null
+            })),
+            region: {
+                CodigoRegion: result.recordset[0].CodigoRegion || null,
+                NombreRegion: result.recordset[0].NombreRegion || null
+            }
+        };
+
         res.json({
             success: true,
-            data: result.recordset[0] 
+            data: usuario
         });
 
     } catch (error) {
-        return handleError(res, error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor',
+            error: error.message
+        });
     }
 });
+
 module.exports = router;

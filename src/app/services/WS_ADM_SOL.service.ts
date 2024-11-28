@@ -31,6 +31,8 @@ export class WS_ADM_SOLService {
       'SOAPAction': ''
     });
 
+console.log('SOAP Envelope:', soapEnvelope);
+console.log('Headers:', headers);
     return this.http.post(this.api, soapEnvelope, {
       headers,
       responseType: 'text'
