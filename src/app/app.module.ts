@@ -79,7 +79,7 @@ import { FooterComponent } from './layouts/footer';
 import { SidebarComponent } from './layouts/sidebar';
 import { ThemeCustomizerComponent } from './layouts/theme-customizer';
 import { MapColorsService } from './services/map-colors.service';
-import { RegionService } from '../services/region.service';
+import { RegionService } from '../app/services/region.service';
 
 @NgModule({
     imports: [
