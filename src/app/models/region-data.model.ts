@@ -13,4 +13,5 @@ export interface Region {
 export interface RegionIntegra {
   codigoRegion: number;
   nombreRegion: string;
+  
 }
