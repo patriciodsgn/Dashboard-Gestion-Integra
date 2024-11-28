@@ -57,42 +57,8 @@ export class PanelEducacionNeeComponent implements OnInit {
     const ano = 2023;
     const codigoRegion = 0;
 
-    this.educacionService.getPorcentajeRezago(ano, codigoRegion).subscribe({
-      next: (res) => {
-        console.log('\x1b[34m%s\x1b[0m', '------------------');
-        console.log(res);
-        console.log('\x1b[34m%s\x1b[0m', '-----------');
 
-      },
-      error: (err) => {
-        console.error('Error al cargar el resumen de necesidades:', err);
-      },
-    });
-
-
-
-
-
-    this.educacionService.getResumenNecesidades(ano, codigoRegion).subscribe({
-      next: (res) => {
-        console.log('\x1b[34m%s\x1b[0m', 'Texto en azul:', res);
-
-        this.chart5Value1 = res.permanente;
-        this.chart5Value2 = res.transitoria;
-        this.chart5Value3 = res.rezago;
-
-        console.log('Valores enviados al gráfico:', {
-          chart5Value1: this.chart5Value1,
-          chart5Value2: this.chart5Value2,
-          chart5Value3: this.chart5Value3,
-        });
-        
-      },
-      error: (err) => {
-        console.error('Error al cargar el resumen de necesidades:', err);
-      },
-    });
-
+    // cards
     this.educacionService.getCantidadTotal(ano, codigoRegion).subscribe({
       next: (res) => {
         this.cardValue1 = `${res.data.cantidadTotal}`;
@@ -101,5 +67,57 @@ export class PanelEducacionNeeComponent implements OnInit {
         console.error('Error al cargar el resumen de necesidades:', err);
       },
     });
+
+    // map
+    
+    // triangle
+
+    // bar h
+
+
+    // bar v
+
+
+    this.educacionService.getPorcentajeRezago(ano, codigoRegion).subscribe({
+      next: (res) => {
+        console.log('\x1b[34m%s\x1b[0m', '------------------');
+        console.log(res);
+        console.log('\x1b[34m%s\x1b[0m', '-----------');
+        
+      },
+      error: (err) => {
+        console.error('Error al cargar el resumen de necesidades:', err);
+      },
+    });
+    
+    
+    
+    
+    
+    // pie
+    this.educacionService.getPorcentajePermanente(ano, codigoRegion).subscribe({
+      next: (res) => {
+        console.log('VALOR:', res);
+      },
+      error: (err) => {
+        console.error('Error al cargar el resumen de necesidades:', err);
+      },
+    });
+
+    this.educacionService.getResumenNecesidades(ano, codigoRegion).subscribe({
+      next: (res) => {
+        // console.log('\x1b[34m%s\x1b[0m', 'Texto en azul:', res);
+
+        this.chart5Value1 = res.permanente;
+        this.chart5Value2 = res.transitoria;
+        this.chart5Value3 = res.rezago;
+        
+      },
+      error: (err) => {
+        console.error('Error al cargar el resumen de necesidades:', err);
+      },
+    });
+
+
   }
 }
