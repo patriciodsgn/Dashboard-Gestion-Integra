@@ -27,14 +27,16 @@ interface ButtonData {
 })
 export class ViewPersonasComponent {
 
+  title: string = 'Dashboard de Personas';
+  subtitle: string = 'Datos Estratégicos / Dirección Central';
+  headerBgColor: string = '#a5b4fc';
+  headerTextColor: string = '#ffffff';
+
+
   htitle: string = 'Dashboard de Datos';
   hsubtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
   
-  note: string = '';
-  
-  title: string = 'Dashboard de Datos';
-  subtitle: string = 'Gestión de Datos Estratégicos / Casa Central';
-  
+
   buttons: ButtonData[] = [
     { icon: 'favorite', title: 'Educación Primaria', description: 'Descripción detallada.', active: true },
     { icon: 'favorite', title: 'Educación Secundaria', description: 'Descripción detallada.', active: true },
