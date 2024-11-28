@@ -68,11 +68,12 @@ export class ElemDraw05Component implements OnInit, AfterViewInit, OnChanges {
         {
           type: 'pie', // Aseguramos que el tipo sea explícitamente 'pie'
           name: 'Porcentaje',
+
           colorByPoint: true,
           data: [
-            { name: 'Permanente', y: this.ed5_value1, color: '#4682B4' },
-            { name: 'Transitoria', y: this.ed5_value2, color: '#87CEEB' },
-            { name: 'Rezago', y: this.ed5_value3, color: '#B0E0E6' },
+            { name: 'Permanente', y: this.ed5_value1, color: '#5eead4' },
+            { name: 'Transitoria', y: this.ed5_value2, color: '#facc15' },
+            { name: 'Rezago', y: this.ed5_value3, color: '#fb7185' },
           ],
         } as Highcharts.SeriesOptionsType,
       ],
@@ -83,9 +84,9 @@ export class ElemDraw05Component implements OnInit, AfterViewInit, OnChanges {
     if (this.chart) {
       const series = this.chart.series[0] as Highcharts.Series;
       series.setData([
-        { name: 'Permanente', y: this.ed5_value1, color: '#4682B4' },
-        { name: 'Transitoria', y: this.ed5_value2, color: '#87CEEB' },
-        { name: 'Rezago', y: this.ed5_value3, color: '#B0E0E6' },
+        { name: 'Permanente', y: this.ed5_value1, color: '#5eead4' },
+        { name: 'Transitoria', y: this.ed5_value2, color: '#facc15' },
+        { name: 'Rezago', y: this.ed5_value3, color: '#fb7185' },
       ]);
     }
   }
