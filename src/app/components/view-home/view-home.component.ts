@@ -21,6 +21,7 @@ import { Router } from '@angular/router';
 })
 export class ViewHomeComponent {
 
+
   constructor(private router: Router) {}
 
   // Navegación programática
