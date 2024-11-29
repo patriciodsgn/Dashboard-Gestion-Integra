@@ -3,84 +3,93 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environmentdb } from 'src/environments/environment';
-interface UsuarioData {
+
+export interface UsuarioData {
   datosUsuario: {
     CodigoUsuario: number;
     Nombre: string;
     CorreoElectronico: string;
     CodigoRol: number;
-    nivelAcceso: number; // Nuevo campo agregado
+    nivelAcceso: string;
+    Rut: string;
   };
   permisos: Array<{
-    CodigoPermiso: number;
+    CodigoPermiso: string;
     NombrePermiso: string;
     TipoCategoria: string;
     ValorCategoria: string;
   }>;
   region: {
-    CodigoRegion: number;
-    NombreRegion: string;
+    CodigoRegion: number | null;
+    NombreRegion: string | null;
   };
 }
 
-interface UsuarioResponse {
+export interface UsuarioResponse {
   success: boolean;
   data: UsuarioData;
   message?: string;
 }
 
-interface LoginResponse {
+export interface LoginResponse {
   success: boolean;
   data?: any[];
   message?: string;
 }
 
-//interface UsuarioResponse {
-//  success: boolean;
-//  data: any;
-//}
-//export interface UsuarioResponse {
-//  success: boolean;
-//  data: any;
-//}
-
 @Injectable({
   providedIn: 'root',
 })
-
 export class AuthService {
   private apiUrl = `${environmentdb.apidb}/login`;
-  private isAuthenticated = false; // Estado local de autenticación
+  private isAuthenticated = false;
+  private usuarioSubject = new BehaviorSubject<UsuarioData | null>(null);
+  usuario$ = this.usuarioSubject.asObservable();
 
-  // BehaviorSubject para manejar los datos del usuario
-  private usuarioSubject = new BehaviorSubject<any>(null);
-  usuario$ = this.usuarioSubject.asObservable(); // Observable para los componentes
+  constructor(private http: HttpClient) {
+    // Intentar recuperar datos de usuario al iniciar el servicio
+    this.checkStoredUser();
+  }
 
-  constructor(private http: HttpClient) {}
+  private checkStoredUser(): void {
+    const storedUser = localStorage.getItem('userData');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        this.usuarioSubject.next(userData);
+        this.isAuthenticated = true;
+      } catch (error) {
+        console.error('Error parsing stored user data:', error);
+        this.clearUsuario();
+      }
+    }
+  }
 
-  /**
-   * Método para autenticar al usuario con la API.
-   * @param credentials Credenciales del usuario (CorreoElectronico y RUT)
-   * @returns Observable con la respuesta de la API
-   */
   login(credentials: { CorreoElectronico: string; RUT: number }): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}`, credentials);
+    console.log('Intentando login con:', credentials);
+    return this.http.post<LoginResponse>(`${this.apiUrl}`, credentials).pipe(
+      map(response => {
+        console.log('Respuesta de login:', response);
+        if (response.success) {
+          this.isAuthenticated = true;
+        }
+        return response;
+      }),
+      catchError(error => {
+        console.error('Error en login:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
-  getPrueba(correo: string): void {
-    console.log('holaaaaaaaa', correo); // Mensaje para verificar la ejecución
-  }
-
-  /**
-   * Método para obtener información del usuario autenticado desde la API.
-   * @param correo Correo del usuario
-   * @returns Observable con la información del usuario
-   */
   getUsuario(correo: string): Observable<UsuarioResponse> {
+    console.log('Obteniendo datos de usuario para:', correo);
+    console.log('URL:', `${this.apiUrl}/usuario`);
+
     return this.http.post<UsuarioResponse>(`${this.apiUrl}/usuario`, { correo }).pipe(
       map((response: any) => {
         console.log('Respuesta del servidor:', response);
-  
+
         if (response.success) {
           const userData: UsuarioData = {
             datosUsuario: {
@@ -89,6 +98,7 @@ export class AuthService {
               CorreoElectronico: response.data.datosUsuario.CorreoElectronico,
               CodigoRol: response.data.datosUsuario.CodigoRol,
               nivelAcceso: response.data.datosUsuario.nivelAcceso,
+              Rut: response.data.datosUsuario.Rut
             },
             permisos: response.data.permisos || [],
             region: {
@@ -96,83 +106,53 @@ export class AuthService {
               NombreRegion: response.data.region?.NombreRegion || null
             }
           };
-          
-          // Almacenar en localStorage y en el BehaviorSubject
+
           localStorage.setItem('userData', JSON.stringify(userData));
           this.usuarioSubject.next(userData);
-          console.log('Datos almacenados en localStorage:', userData);
-          
+          console.log('Datos de usuario almacenados:', userData);
+
           return {
             success: true,
-            data: userData,
+            data: userData
           };
         } else {
-          console.error('Error en la respuesta del servidor:', response.message);
           throw new Error(response.message || 'Error al obtener el usuario');
         }
       }),
-      catchError((error) => {
+      catchError(error => {
         console.error('Error en getUsuario:', error);
-        localStorage.removeItem('userData'); // Limpiar datos en caso de error
+        localStorage.removeItem('userData');
         this.usuarioSubject.next(null);
         return throwError(() => new Error(error.message || 'Error al obtener los datos del usuario'));
       })
     );
   }
 
-  /**
-   * Almacena los datos del usuario en memoria y localStorage.
-   * @param data Los datos del usuario.
-   */
-  setUsuario(data: any): void {
-    this.usuarioSubject.next(data); // Notificar a los suscriptores
-    localStorage.setItem('usuario', JSON.stringify(data)); // Guardar en localStorage
+  getUsuarioData(): UsuarioData | null {
+    return this.usuarioSubject.getValue();
   }
 
-  /**
-   * Obtiene los datos del usuario desde memoria o localStorage si no están cargados.
-   * @returns Los datos del usuario.
-   */
-  getUsuarioData(): any {
-    const usuario = this.usuarioSubject.getValue();
-    if (!usuario) {
-      const storedUser = localStorage.getItem('usuario');
-      return storedUser ? JSON.parse(storedUser) : null;
-    }
-    return usuario;
-  }
-
-  /**
-   * Limpia los datos del usuario de memoria y localStorage.
-   */
-  clearUsuario(): void {
-    this.usuarioSubject.next(null); // Limpiar memoria
-    localStorage.removeItem('usuario'); // Limpiar localStorage
-  }
-
-  /**
-   * Método para establecer el estado de autenticación local.
-   * @param authenticated Estado de autenticación (true o false)
-   */
   setAuthenticated(authenticated: boolean): void {
     this.isAuthenticated = authenticated;
   }
 
-  /**
-   * Método para verificar si el usuario está autenticado localmente.
-   * @returns Estado de autenticación (true o false)
-   */
   checkAuthentication(): boolean {
     return this.isAuthenticated;
   }
 
-  /**
-   * Método para cerrar sesión.
-   * Limpia el estado local y el localStorage.
-   */
   logout(): void {
+    console.log('Cerrando sesión...');
     this.isAuthenticated = false;
-    this.clearUsuario(); // Limpia el usuario almacenado
-    console.log('Usuario ha cerrado sesión');
+    this.clearUsuario();
+    console.log('Sesión cerrada y datos limpiados');
+  }
+
+  clearUsuario(): void {
+    localStorage.removeItem('userData');
+    this.usuarioSubject.next(null);
+  }
+
+  hasUserData(): boolean {
+    return this.usuarioSubject.getValue() !== null;
   }
 }
