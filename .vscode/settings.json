@@ -39,6 +39,10 @@
     {
       "filePath": "src/app/components/view-home",
       "group": "Default"
+    },
+    {
+      "filePath": "request.http",
+      "group": "Default"
     }
   ]
 }
