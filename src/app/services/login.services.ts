@@ -10,7 +10,7 @@ interface LoginResponse {
   message?: string;
 }
 
-interface UsuarioResponse {
+export interface UsuarioResponse {
   success: boolean;
   data: any;
 }
@@ -35,6 +35,10 @@ export class AuthService {
    */
   login(credentials: { CorreoElectronico: string; RUT: number }): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}`, credentials);
+  }
+
+  getPrueba(correo: string): void {
+    console.log('holaaaaaaaa', correo); // Mensaje para verificar la ejecución
   }
 
   /**
