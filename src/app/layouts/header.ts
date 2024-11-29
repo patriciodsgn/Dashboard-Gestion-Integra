@@ -18,20 +18,20 @@ export class HeaderComponent {
         {
             id: 1,
             profile: 'user-profile.jpeg',
-            message: '<strong class="text-sm mr-1">John Doe</strong>invite you to <strong>Prototyping</strong>',
-            time: '45 min ago',
+            message: '<strong class="text-sm mr-1">Juan Pérez</strong> te invitó a colaborar en <strong>Evaluación de Programas Regionales</strong>',
+            time: '45 min atrás',
         },
         {
             id: 2,
             profile: 'profile-34.jpeg',
-            message: '<strong class="text-sm mr-1">Adam Nolan</strong>mentioned you to <strong>UX Basics</strong>',
-            time: '9h Ago',
+            message: '<strong class="text-sm mr-1">Carolina Silva</strong> mencionó tu participación en <strong>Revisión de Indicadores Educativos</strong>',
+        time: '3 horas atrás',
         },
         {
             id: 3,
             profile: 'profile-16.jpeg',
-            message: '<strong class="text-sm mr-1">Anna Morgan</strong>Upload a file',
-            time: '9h Ago',
+            message: '<strong class="text-sm mr-1">Felipe Martínez</strong> subió un archivo sobre <strong>Estadísticas de Jardines Infantiles</strong>',
+            time: '9 horas atrás',
         },
     ];
     messages = [

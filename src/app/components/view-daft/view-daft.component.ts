@@ -34,7 +34,7 @@ export class ViewDaftComponent {
   title: string = 'Dashboard DAFT';
   subtitle: string = 'Datos Estratégicos / Dirección Central';
   headerBgColor: string = '#93c5fd';
-  headerTextColor: string = '#ffffff';
+  headerTextColor: string = '#27272a';
   
   
   

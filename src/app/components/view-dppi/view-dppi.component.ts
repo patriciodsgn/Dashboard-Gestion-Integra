@@ -28,7 +28,7 @@ export class ViewDppiComponent {
   title: string = 'Dashboard DPPI';
   subtitle: string = 'Datos Estratégicos / Dirección Central';
   headerBgColor: string = '#fda4af';
-  headerTextColor: string = '#ffffff';
+  headerTextColor: string = '#27272a';
   
 
   htitle: string = 'Dashboard de Datos';

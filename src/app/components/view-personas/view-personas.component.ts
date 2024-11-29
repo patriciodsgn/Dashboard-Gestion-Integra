@@ -30,7 +30,7 @@ export class ViewPersonasComponent {
   title: string = 'Dashboard de Personas';
   subtitle: string = 'Datos Estratégicos / Dirección Central';
   headerBgColor: string = '#a5b4fc';
-  headerTextColor: string = '#ffffff';
+  headerTextColor: string = '#27272a';
 
 
   htitle: string = 'Dashboard de Datos';

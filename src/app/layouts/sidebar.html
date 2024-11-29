@@ -7,7 +7,7 @@
                     <img class="ml-0 w-[50px] md:w-[70px] lg:w-[150px] h-auto flex-none" src="/assets/images/logo.svg"
                         alt="Logo Integra" />
                     <span
-                        class="align-middle text-xl md:text-2xl font-semibold dark:text-white-light lg:inline ltr:ml-1.5 rtl:mr-1.5 hidden lg:block"></span>
+                        class="align-middle text-xl md:text-2xl font-semibold dark:text-white-light ltr:ml-1.5 rtl:mr-1.5 hidden lg:block"></span>
                 </a>
                 <a href="javascript:;"
                     class="collapse-icon flex h-8 w-8 items-center rounded-full transition duration-300 hover:bg-gray-500/10 hover:text-primary dark:text-white-light dark:hover:bg-dark-light/10 rtl:rotate-180"
@@ -34,12 +34,12 @@
                             </div>
                         </button>
                         <div *ngIf="activeDropdown.includes('regiones')" class="accordion-content max-h-[calc(100vh-200px)] overflow-y-auto">
-                            <ul class="sub-menu text-gray-500 list-none pl-0">
+                            <ul class="sub-menu list-none pl-0 text-teal-500">
                               <li *ngFor="let region of regions" class="h-8"> <!-- Ajustamos altura fija -->
                                 <a [routerLink]="'/region/' + region.codigoRegion" 
                                    routerLinkActive="active" 
                                    (click)="updateMap(region.codigoRegion); toggleMobileMenu()"
-                                   class="text-xs hover:bg-gray-100 hover:text-blue-600 transition-colors duration-200 h-full flex items-center px-3 truncate">
+                                   class="text-xs hover:bg-gray-100 hover:text-blue-600 text-teal-500 transition-colors duration-200 h-full flex items-center px-3 truncate">
                                   {{ region.nombreRegion }}
                                 </a>
                               </li>
@@ -59,7 +59,7 @@
                             </div>
                         </button>
                         <div *ngIf="activeDropdown.includes('direcciones')" class="accordion-content">
-                            <ul class="sub-menu text-gray-500 space-y-1 list-none pl-0 border-l-0 ">
+                            <ul class="sub-menu text-teal-500 space-y-1 list-none pl-0 border-l-0 ">
 
                                 <li class="leading-6">
                                     <a routerLink="/ejecutiva" routerLinkActive="active" (click)="toggleMobileMenu()" class="flex items-center">
@@ -211,7 +211,7 @@
                             </div>
                         </button>
                         <div *ngIf="activeDropdown.includes('reportes')" class="accordion-content">
-                            <ul class="sub-menu text-gray-500 space-y-1 list-none pl-0 border-l-0">
+                            <ul class="sub-menu text-teal-500 space-y-1 list-none pl-0 border-l-0">
                                 <li class="leading-6">
                                     <a routerLink="/reporte/1" routerLinkActive="active"
                                         (click)="toggleMobileMenu()">Reporte 1</a>

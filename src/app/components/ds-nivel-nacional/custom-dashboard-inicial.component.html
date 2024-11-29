@@ -1,19 +1,19 @@
 <app-test-data></app-test-data>
 
-<div class="p-2 shadow-md rounded-lg bg-pink-200 text-blue-500 dark:text-blue-300 mb-2 w-full">
+<div class="p-2 shadow-md  bg-pink-200 text-blue-500 dark:text-blue-300 mb-2 w-full">
     <div class="prose dark:prose-headings:text-blue-300 mb-2">
-        <h4 class="flex items-center gap-2 text-base font-medium">
+        <h4 class="flex items-center gap-2 text-white font-medium">
             <fa-icon [icon]="faCalendar" class="text-xl"></fa-icon>
             Vista Estrategica Nacional
         </h4>
-        <h6 class="text-sm">Gestion de Datos Estratégicos / Casa Central</h6>
+        <h6 class="text-sm text-white">Gestion de Datos Estratégicos / Casa Central</h6>
     </div>
 
     <!-- Tarjetas Superiores -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-2">
         <div *ngFor="let tarjeta of tarjetasSuperiores"
-             class="text-white flex flex-col items-center shadow-md rounded-md p-3 border border-gray-300 hover:scale-105 transition-transform duration-300"
-             [ngClass]="{'bg-fuchsia-500': tarjeta.titulo !== 'Establecimientos', 'bg-violet-500': tarjeta.titulo === 'Establecimientos'}">
+             class="text-white flex flex-col items-center shadow-md p-3 border rounded-md border-gray-300 hover:scale-105 transition-transform duration-300"
+             [ngClass]="{'bg-rose-300': tarjeta.titulo !== 'Establecimientos', 'bg-indigo-300': tarjeta.titulo === 'Establecimientos'}">
             <div class="text-xs font-semibold flex items-center gap-1 mb-1">
                 <fa-icon [icon]="tarjeta.icon" class="text-lg"></fa-icon>
                 <span>{{ tarjeta.titulo }}</span>
@@ -59,7 +59,7 @@
     <!-- Primera, Segunda y Tercera fila con colores personalizados usando ngStyle -->
     <div *ngFor="let tarjeta of tarjetasInferiores; let i = index" 
          [ngStyle]="{
-           'background-color': i < 4 ? '#e0b0ff' : i < 8 ? '#d3d3f7' : i < 12 ? '#90e0b6' : '#4c51bf'
+           'background-color': i < 4 ? '#c4b5fd' : i < 8 ? '#bfdbfe' : i < 12 ? '#bbf7d0' : '#818cf8'
          }"
          class="w-full text-black flex flex-col items-center shadow-md rounded-md p-3 border border-gray-300 hover:scale-105 transition-transform duration-300">
       <div class="text-xs font-semibold flex items-center gap-1">

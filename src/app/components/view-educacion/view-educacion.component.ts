@@ -37,7 +37,7 @@ export class ViewEducacionComponent {
 
   // Colores del header
   headerBgColor: string = '#fdba74'; // Color de fondo del header
-  headerTextColor: string = '#ffffff'; // Color del texto del header
+  headerTextColor: string = '#27272a'; // Color del texto del header
 
 
   buttons: ButtonData[] = [
