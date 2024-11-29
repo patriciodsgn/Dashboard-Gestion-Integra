@@ -77,22 +77,37 @@ export class PanelEducacionNeeComponent implements OnInit {
 
     // bar v
 
+    
+    
+    
+    // getSatisfaccionGeografica      
+    // getNecesidadesPorComuna
+    // getGraficoNEE
 
+      // getPorcentajeATET
+      // getPromedioSatisfaccionATET
+    
+
+
+
+
+    
+   
+    // pie
     this.educacionService.getPorcentajeRezago(ano, codigoRegion).subscribe({
       next: (res) => {
-        console.log('\x1b[34m%s\x1b[0m', '------------------');
+        console.log('\x1b[34m%s\x1b[0m', '-------getPorcentajeRezago-----------');
         console.log(res);
         console.log('\x1b[34m%s\x1b[0m', '-----------');
-        
+
       },
       error: (err) => {
         console.error('Error al cargar el resumen de necesidades:', err);
       },
     });
-    
-    
-    
-    
+
+
+
     
     // pie
     this.educacionService.getPorcentajePermanente(ano, codigoRegion).subscribe({
@@ -103,6 +118,8 @@ export class PanelEducacionNeeComponent implements OnInit {
         console.error('Error al cargar el resumen de necesidades:', err);
       },
     });
+
+
 
     this.educacionService.getResumenNecesidades(ano, codigoRegion).subscribe({
       next: (res) => {

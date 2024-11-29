@@ -1,14 +1,13 @@
-<div
-  [ngClass]="{
-    'bg-teal-500 text-white hover:bg-teal-600': active,
-    'bg-gray-300 text-gray-500 hover:bg-gray-200': !active
-  }" 
-  class="p-4 rounded-lg flex items-center justify-center"
+<button
+  class="p-2 rounded-lg flex items-center justify-center w-full"
+  [disabled]="eb_disable"
+  [style.backgroundColor]="eb_bg_color"
+  [style.color]="eb_text_color"
+  (click)="navigateTo()"
 >
-  <a class="text-center" href="{{ icon }}">
-    <span class="material-icons text-2xl">{{ icon }}</span> <!-- Ícono dinámico -->
-    <p class="mt-2 font-semibold">{{ title }}</p> <!-- Título dinámico -->
-    <p class="text-sm">{{ description }}</p> <!-- Descripción dinámica -->
-  </a>
-  
-</div>
+  <div class="text-center">
+    <span class="material-icons text-1xl">{{ eb_icon }}</span>
+    <p class="text-sm font-semibold">{{ eb_title }}</p>
+    <p class="text-xs">{{ eb_subtitle }}</p>
+  </div>
+</button>
