@@ -30,9 +30,6 @@ export class RegionIntegraService {
     getRegionsintegra(): Observable<Region[]> { // Cambiamos el tipo de retorno
       return this.http.get<Region[]>(this.apiUrl);
     }
-
-
-    
   
     setRegionintegra(regionId: number) {
       console.log('Región seleccionada:', regionId);

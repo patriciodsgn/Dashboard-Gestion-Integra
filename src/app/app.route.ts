@@ -49,6 +49,7 @@ import { KnowledgeBaseComponent } from './pages/knowledge-base';
 import { FaqComponent } from './pages/faq';
 
 export const routes: Routes = [
+    { path: '', redirectTo: '/login', pathMatch: 'full' },
     {
         path: '',
         component: AppLayout,
